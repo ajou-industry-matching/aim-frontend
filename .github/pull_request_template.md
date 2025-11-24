@@ -1,3 +1,10 @@
+<!--
+PR 제목 규칙
+[Feat] #이슈번호 - 작업 내용 요약
+예: [Feat] #673 - 홈 화면 앰플리튜드 연동
+-->
+
+
 ## 🔎 What is this PR?
 <!-- PR의 핵심 목적을 한 줄로 설명해주세요 -->
 - 예: ESLint flat config 전환 및 pre-commit 포맷팅 워크플로우 적용
