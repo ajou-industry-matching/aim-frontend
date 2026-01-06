@@ -29,6 +29,7 @@
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge\&logo=react\&logoColor=000)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge\&logo=typescript\&logoColor=fff)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge\&logo=vite\&logoColor=fff)
+![Storybook](https://img.shields.io/badge/Storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=fff)
 ![TanStack Router](https://img.shields.io/badge/TanStack_Router-000000?style=for-the-badge)
 ![React Query](https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge\&logo=reactquery\&logoColor=fff)
 ![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge)
@@ -67,6 +68,7 @@ AIM AJOU는 다음 기능을 목표로 한다:
 
 ```
 aim-frontend/
+ ├─ .storybook/          # Storybook 설정 (main.ts, preview.ts)
  ├─ public/
  ├─ src/
  │   ├─ routes/          # Routing (TanStack Router)
@@ -117,7 +119,7 @@ pnpm dev
 ```
 
 Local: [http://localhost:5173](http://localhost:5173)
-
+Storybook: http://localhost:6006
 ---
 
 # 🔥 **Firebase 설정**
