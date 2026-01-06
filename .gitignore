@@ -23,5 +23,15 @@ dist-ssr
 *.sln
 *.sw?
 
+
+# Storybook
 *storybook.log
 storybook-static
+/storybook-static
+debug-storybook.log*
+sb-*.log
+
+# Testing (Storybook Addon - Vitest & Playwright)
+/coverage
+/playwright-report
+/test-results
