@@ -20,7 +20,7 @@
 
 ---
 
-# 🧩 **Tech Stack**
+# **Tech Stack**
 
 <div align="center">
 
@@ -51,7 +51,7 @@
 
 ---
 
-# 🏛 **프로젝트 개요**
+# **프로젝트 개요**
 
 AIM AJOU는 다음 기능을 목표로 한다:
 
@@ -64,7 +64,7 @@ AIM AJOU는 다음 기능을 목표로 한다:
 
 ---
 
-# 📦 **폴더 구조**
+# **폴더 구조**
 
 ```
 aim-frontend/
@@ -93,7 +93,7 @@ aim-frontend/
 
 ---
 
-# 🛠 **개발 환경 세팅**
+# **개발 환경 세팅**
 
 ## 1) Node & Package Manager
 
@@ -122,7 +122,7 @@ Local: [http://localhost:5173](http://localhost:5173)
 Storybook: http://localhost:6006
 ---
 
-# 🔥 **Firebase 설정**
+# **Firebase 설정**
 
 환경변수 파일 `.env` 생성:
 
@@ -137,7 +137,7 @@ VITE_API_URL=
 
 ---
 
-# 📡 **API 통신 구조**
+# **API 통신 구조**
 
 Oracle VM → Nginx → Spring Boot → MySQL
 
@@ -149,7 +149,7 @@ Frontend에서 모든 요청은 `src/lib/api.ts`에서 제공하는 Axios instan
 
 ---
 
-# 🧭 **Routing 구조 (TanStack Router)**
+# **Routing 구조 (TanStack Router)**
 
 * `/routes/_layout.tsx` : 공통 레이아웃
 * `/routes/index.tsx` : 메인 페이지
@@ -160,7 +160,7 @@ ProtectedRoute도 구성 가능.
 
 ---
 
-# 🧠 **상태 관리 (Zustand)**
+# **상태 관리 (Zustand)**
 
 * authStore → Firebase Auth 상태 관리
 * uiStore → 모달/토스트 관리
@@ -168,7 +168,7 @@ ProtectedRoute도 구성 가능.
 
 ---
 
-# 🔍 **서버 상태 관리 (React Query)**
+# **서버 상태 관리 (React Query)**
 
 `queryClient`를 이용한 API 캐싱/동기화.
 
@@ -179,7 +179,7 @@ ProtectedRoute도 구성 가능.
 
 ---
 
-# ✨ **코드 규칙 (ESLint + Prettier)**
+# **코드 규칙 (ESLint + Prettier)**
 
 ### ✔ ESLint (Flat Config)
 
@@ -195,7 +195,7 @@ ProtectedRoute도 구성 가능.
 
 ---
 
-# 🧹 **Git Hooks (Husky + lint-staged)**
+# **Git Hooks (Husky + lint-staged)**
 
 커밋 시 자동:
 
@@ -206,7 +206,7 @@ ProtectedRoute도 구성 가능.
 
 ---
 
-# 🌳 **브랜치 전략 (Git Flow)**
+# **브랜치 전략 (Git Flow)**
 
 ```
 main       – 운영/배포 브랜치
@@ -218,7 +218,7 @@ chore/*    – 설정/환경 변경
 
 ---
 
-# 🔀 **PR 규칙**
+# **PR 규칙**
 
 * PR은 반드시 `feature/* → dev` 또는 `dev → main`
 * 최소 1명 리뷰 승인
@@ -228,7 +228,7 @@ chore/*    – 설정/환경 변경
 
 ---
 
-# 🚀 **CI/CD – GitHub Actions + Firebase Hosting**
+# **CI/CD – GitHub Actions + Firebase Hosting**
 
 ### PR 생성 →
 
@@ -242,7 +242,7 @@ chore/*    – 설정/환경 변경
 
 ---
 
-# 🔐 **Firebase 보안 규칙**
+# **Firebase 보안 규칙**
 
 ### Firestore
 
@@ -255,18 +255,7 @@ chore/*    – 설정/환경 변경
 
 ---
 
-# 📅 **로드맵 (Roadmap)**
-
-* 🔧 어드민 페이지 개발
-* 🧠 포트폴리오 AI 추천 엔진 탑재
-* 🗂 사용자별 추천 프로젝트 템플릿 생성
-* 📊 프로젝트/경력 자동 분석 대시보드
-* ⏱ 성능 모니터링 도입 (Sentry 예정)
-* 🧪 테스트 도입 (Vitest)
-
----
-
-# 🙋‍♀️ 문의 / Issue / 협업
+# 문의 / Issue / 협업
 
 * 기능 제안 → Issue
 * 코드 리뷰 → PR
