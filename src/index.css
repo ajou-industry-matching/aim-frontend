@@ -1,70 +1,240 @@
 @import "tailwindcss";
 
+/* ====================================
+   아주대학교 웹 서비스 디자인 시스템
+   Color Palette - CSS Variables
+   Version 1.0
+   ==================================== */
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* ============ Primary Colors (Ajou Blue) ============ */
+  --color-primary-900: #003876;
+  --color-primary-800: #004A9C;  /* Main Ajou Blue */
+  --color-primary-700: #0056B3;
+  --color-primary-600: #0066CC;
+  --color-primary-500: #3385DB;  /* Interactive */
+  --color-primary-400: #5C9DE5;
+  --color-primary-300: #85B5EE;
+  --color-primary-200: #B3D1F7;
+  --color-primary-100: #E0EDFB;
+  --color-primary-50: #F0F6FD;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* ============ Gray Scale (Academic Gray) ============ */
+  --color-gray-900: #1A1A1A;
+  --color-gray-800: #333333;
+  --color-gray-700: #4D4D4D;
+  --color-gray-600: #666666;
+  --color-gray-500: #808080;
+  --color-gray-400: #999999;
+  --color-gray-300: #CCCCCC;
+  --color-gray-200: #E5E5E5;
+  --color-gray-100: #F2F2F2;
+  --color-gray-50: #F9F9F9;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* ============ Semantic Colors ============ */
+  
+  /* Success */
+  --color-success-700: #0F7B4B;
+  --color-success-500: #10A259;
+  --color-success-100: #D4F4E2;
+  
+  /* Warning */
+  --color-warning-700: #D97706;
+  --color-warning-500: #F59E0B;
+  --color-warning-100: #FEF3C7;
+  
+  /* Error */
+  --color-error-700: #B91C1C;
+  --color-error-500: #EF4444;
+  --color-error-100: #FEE2E2;
+  
+  /* Info */
+  --color-info-700: #1E40AF;
+  --color-info-500: #3B82F6;
+  --color-info-100: #DBEAFE;
+
+  /* ============ Accent Colors ============ */
+  --color-accent-orange: #FF6B35;
+  --color-accent-purple: #8B5CF6;
+  --color-accent-teal: #14B8A6;
+
+  /* ============ Background & Surface ============ */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F9F9F9;
+  --color-bg-tertiary: #F2F2F2;
+  --color-surface-elevated: #FFFFFF;
+  --color-overlay: rgba(0, 0, 0, 0.6);
+
+  /* ============ Text Colors ============ */
+  --text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-600);
+  --text-tertiary: var(--color-gray-500);
+  --text-disabled: var(--color-gray-400);
+  --text-link: var(--color-primary-800);
+  --text-link-hover: var(--color-primary-700);
+  --text-inverse: #FFFFFF;
+
+  /* ============ Border Colors ============ */
+  --border-default: var(--color-gray-300);
+  --border-subtle: var(--color-gray-200);
+  --border-strong: var(--color-gray-400);
+  --border-primary: var(--color-primary-500);
+
+  /* ============ Shadow System ============ */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.16);
+  --shadow-2xl: 0 20px 40px rgba(0, 0, 0, 0.20);
+  
+  /* Focus Shadow */
+  --shadow-focus-primary: 0 0 0 3px var(--color-primary-100);
+  --shadow-focus-error: 0 0 0 3px var(--color-error-100);
+
+  /* ============ Spacing Scale (8pt Grid) ============ */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+
+  /* ============ Border Radius ============ */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ============ Typography Scale ============ */
+  
+  /* Font Families */
+  --font-primary: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-secondary: 'Noto Sans KR', sans-serif;
+  --font-mono: 'Fira Code', 'Consolas', monospace;
+  --font-english: 'Inter', sans-serif;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 2rem;      /* 32px */
+  --font-size-4xl: 2.5rem;    /* 40px */
+  --font-size-5xl: 3rem;      /* 48px */
+  --font-size-6xl: 3.5rem;    /* 56px */
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.33;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ============ Z-Index Scale ============ */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+
+  /* ============ Transitions ============ */
+  --transition-fast: 100ms cubic-bezier(0, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0, 0, 0.2, 1);
+  --transition-slower: 500ms cubic-bezier(0, 0, 0.2, 1);
+
+  /* ============ Breakpoints ============ */
+  --breakpoint-mobile: 768px;
+  --breakpoint-tablet: 1024px;
+  --breakpoint-desktop: 1440px;
+
+  /* ============ Container Sizes ============ */
+  --container-xs: 480px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1440px;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  font-family: var(--font-primary);
+  color: var(--text-primary);
+  background-color: var(--color-bg-primary);
+  line-height: var(--line-height-normal);
   min-width: 320px;
+  min-height: 100vh;
+  
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
   min-height: 100vh;
 }
 
+a {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-link);
+  text-decoration: none;
+  transition: color var(--transition-normal);
+}
+
+a:hover {
+  color: var(--text-link-hover);
+}
+
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+/* ============================================
+   Utility Classes
+   ============================================ */
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-link { color: var(--text-link); }
+
+.bg-primary { background-color: var(--color-bg-primary); }
+.bg-secondary { background-color: var(--color-bg-secondary); }
+.bg-tertiary { background-color: var(--color-bg-tertiary); }
+
+.border-default { border-color: var(--border-default); }
+.border-subtle { border-color: var(--border-subtle); }
+.border-primary { border-color: var(--border-primary); }
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
