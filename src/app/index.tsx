@@ -1,7 +1,9 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import reactLogo from "@/shared/assets/images/react.svg";
 import viteLogo from "/vite.svg";
-import "./App.css";
+import "./index.css";
+import { Button } from "@/shared/ui/button/button";
+import { PlusIcon } from "@/shared/ui/icons";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -24,6 +26,9 @@ function App() {
           <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
+      <Button variant="secondary" size="large" iconPosition="left" icon={<PlusIcon />}>
+        포트폴리오 추가
+      </Button>
       <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
     </>
   );
