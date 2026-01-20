@@ -55,7 +55,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           large: "h-12 px-8 text-[16px] leading-[24px] rounded-lg gap-2",
         };
 
-    // Border radius
     const borderRadiusStyle = isIconOnly ? "rounded-lg" : "";
 
     const variantStyles = {
