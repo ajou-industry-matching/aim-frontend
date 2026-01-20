@@ -1,4 +1,5 @@
 import React from "react";
+import { Spinner } from "@/shared/ui/spinner/spinner";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "small" | "medium" | "large";
@@ -9,32 +10,13 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   size?: ButtonSize;
   iconPosition?: IconPosition;
   icon?: React.ReactNode;
-  children?: React.ReactNode;
+  children?: React.ReactNode; // 버튼 텍스트 (없으면 IconButton으로 동작)
   fullWidth?: boolean;
   isLoading?: boolean;
   disabled?: boolean;
   onClick?: () => void;
-  "aria-label"?: string;
+  "aria-label"?: string; //접근성 레이블 (children이 없을 때 필수)
 }
-
-// 로딩 스피너 컴포넌트
-const LoadingSpinner: React.FC = () => (
-  <svg
-    className="animate-spin h-4 w-4"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-  >
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-    <path
-      className="opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-    />
-  </svg>
-);
-
-LoadingSpinner.displayName = "LoadingSpinner";
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
@@ -56,62 +38,58 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // children이 없으면 IconButton 모드
     const isIconOnly = !children && icon;
 
-    // 개발 환경에서 경고 (접근성)
-    if (process.env.NODE_ENV === "development" && isIconOnly && !props["aria-label"]) {
-      console.warn("Button: 아이콘만 있는 버튼은 접근성을 위해 aria-label을 제공해야 합니다.");
-    }
-
-    // 기본 스타일 (font-family Pretendard 포함)
+    // 기본 스타일
     const baseStyles =
       "inline-flex items-center justify-center font-medium transition-all duration-200 ease-out cursor-pointer whitespace-nowrap select-none";
 
-    // 크기별 스타일 (명세서 정확히 반영)
+    // 크기별 스타일
     const sizeStyles = isIconOnly
       ? {
-          // IconButton 스타일 (정사각형)
           small: "w-8 h-8 p-0",
           medium: "w-10 h-10 p-0",
           large: "w-12 h-12 p-0",
         }
       : {
-          // 일반 Button 스타일
           small: "h-8 px-4 text-[14px] leading-[20px] rounded-[6px] gap-1.5",
           medium: "h-10 px-6 text-[14px] leading-[20px] rounded-lg gap-2",
           large: "h-12 px-8 text-[16px] leading-[24px] rounded-lg gap-2",
         };
 
-    // Border radius (IconButton은 항상 rounded-lg)
+    // Border radius
     const borderRadiusStyle = isIconOnly ? "rounded-lg" : "";
 
-    // 변형별 스타일 (명세서 색상 정확히 반영)
     const variantStyles = {
       primary: {
         default:
-          "bg-[#004A9C] text-white hover:bg-[#0056B3] hover:shadow-[0_4px_12px_rgba(0,74,156,0.2)] hover:scale-[1.02] active:bg-[#003876] active:scale-[0.98] active:shadow-none disabled:opacity-60",
-        disabled: "bg-[#CCCCCC] text-[#999999] cursor-not-allowed opacity-60",
-        loading: "bg-[#004A9C] text-white cursor-wait",
+          "bg-[var(--color-primary-800)] text-white hover:bg-[var(--color-primary-700)] hover:shadow-[0_4px_12px_rgba(0,74,156,0.2)] hover:scale-[1.02] active:bg-[var(--color-primary-900)] active:scale-[0.98] active:shadow-none disabled:opacity-60",
+        disabled:
+          "bg-[var(--color-gray-300)] text-[var(--color-gray-400)] cursor-not-allowed opacity-60",
+        loading: "bg-[var(--color-primary-800)] text-white cursor-wait",
       },
       secondary: {
         default:
-          "bg-transparent border-2 border-[#004A9C] text-[#004A9C] hover:bg-[#F0F6FD] hover:border-[#0056B3] hover:text-[#0056B3] active:bg-[#E0EDFB] active:border-[#003876] active:text-[#003876]",
+          "bg-transparent border-2 border-[var(--color-primary-800)] text-[var(--color-primary-800)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-700)] hover:text-[var(--color-primary-700)] active:bg-[var(--color-primary-100)] active:border-[var(--color-primary-900)] active:text-[var(--color-primary-900)]",
         disabled:
-          "bg-transparent border-2 border-[#CCCCCC] text-[#999999] cursor-not-allowed opacity-60",
-        loading: "bg-transparent border-2 border-[#004A9C] text-[#004A9C] cursor-wait",
+          "bg-transparent border-2 border-[var(--color-gray-300)] text-[var(--color-gray-400)] cursor-not-allowed opacity-60",
+        loading:
+          "bg-transparent border-2 border-[var(--color-primary-800)] text-[var(--color-primary-800)] cursor-wait",
       },
       ghost: {
-        default: "bg-transparent text-[#4D4D4D] hover:bg-[#F2F2F2] active:bg-[#E5E5E5]",
-        disabled: "bg-transparent text-[#999999] cursor-not-allowed opacity-60",
-        loading: "bg-transparent text-[#4D4D4D] cursor-wait",
+        default:
+          "bg-transparent text-[var(--color-gray-700)] hover:bg-[var(--color-gray-100)] active:bg-[var(--color-gray-200)]",
+        disabled: "bg-transparent text-[var(--color-gray-400)] cursor-not-allowed opacity-60",
+        loading: "bg-transparent text-[var(--color-gray-700)] cursor-wait",
       },
       danger: {
         default:
-          "bg-[#EF4444] text-white hover:bg-[#B91C1C] hover:shadow-[0_4px_12px_rgba(239,68,68,0.2)] hover:scale-[1.02] active:bg-[#991B1B] active:scale-[0.98] active:shadow-none",
-        disabled: "bg-[#CCCCCC] text-[#999999] cursor-not-allowed opacity-60",
-        loading: "bg-[#EF4444] text-white cursor-wait",
+          "bg-[var(--color-error-500)] text-white hover:bg-[var(--color-error-700)] hover:shadow-[0_4px_12px_rgba(239,68,68,0.2)] hover:scale-[1.02] active:bg-[#991B1B] active:scale-[0.98] active:shadow-none",
+        disabled:
+          "bg-[var(--color-gray-300)] text-[var(--color-gray-400)] cursor-not-allowed opacity-60",
+        loading: "bg-[var(--color-error-500)] text-white cursor-wait",
       },
     };
 
-    // 상태에 따른 스타일 선택
+    // 상태 별 스타일
     const getVariantStyle = () => {
       if (disabled && !isLoading) return variantStyles[variant].disabled;
       if (isLoading) return variantStyles[variant].loading;
@@ -157,7 +135,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {!isIconOnly && (
           <>
             {/* 로딩 상태 */}
-            {isLoading && <LoadingSpinner />}
+            {isLoading && <Spinner size="small" />}
 
             {/* 왼쪽 아이콘 */}
             {!isLoading && iconPosition === "left" && icon && (
