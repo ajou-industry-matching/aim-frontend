@@ -38,12 +38,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // children이 없으면 IconButton 모드
     const isIconOnly = !children && icon;
 
-    // 기본 스타일
-    const baseStyles =
+    // 기본 클래스 토큰
+    const baseClasses =
       "inline-flex items-center justify-center font-medium transition-all duration-200 ease-out cursor-pointer whitespace-nowrap select-none";
 
-    // 크기별 스타일
-    const sizeStyles = isIconOnly
+    // 크기별 클래스 토큰
+    const sizeClasses = isIconOnly
       ? {
           small: "w-8 h-8 p-0",
           medium: "w-10 h-10 p-0",
@@ -55,9 +55,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           large: "h-12 px-8 text-[16px] leading-[24px] rounded-lg gap-2",
         };
 
-    const borderRadiusStyle = isIconOnly ? "rounded-lg" : "";
+    const borderRadiusClass = isIconOnly ? "rounded-lg" : "";
 
-    const variantStyles = {
+    const variantClasses = {
       primary: {
         default:
           "bg-[var(--color-primary-800)] text-white hover:bg-[var(--color-primary-700)] hover:shadow-[0_4px_12px_rgba(0,74,156,0.2)] hover:scale-[1.02] active:bg-[var(--color-primary-900)] active:scale-[0.98] active:shadow-none disabled:opacity-60",
@@ -88,31 +88,29 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       },
     };
 
-    // 상태 별 스타일
-    const getVariantStyle = () => {
-      if (disabled && !isLoading) return variantStyles[variant].disabled;
-      if (isLoading) return variantStyles[variant].loading;
-      return variantStyles[variant].default;
+    // 상태별 클래스 토큰
+    const getVariantClasses = () => {
+      if (disabled && !isLoading) return variantClasses[variant].disabled;
+      if (isLoading) return variantClasses[variant].loading;
+      return variantClasses[variant].default;
     };
 
-    // 전체 너비 스타일
-    const widthStyle = fullWidth ? "w-full" : "w-auto";
+    const widthClass = fullWidth ? "w-full" : "w-auto";
 
-    // 아이콘 크기 스타일
-    const iconSizeStyles = {
+    const iconSizeClasses = {
       small: "[&>svg]:w-4 [&>svg]:h-4",
       medium: "[&>svg]:w-5 [&>svg]:h-5",
       large: "[&>svg]:w-6 [&>svg]:h-6",
     };
 
     // 최종 className 조합
-    const buttonClassName = [
-      baseStyles,
-      sizeStyles[size],
-      borderRadiusStyle,
-      getVariantStyle(),
-      widthStyle,
-      iconSizeStyles[size],
+    const buttonClasses = [
+      baseClasses,
+      sizeClasses[size],
+      borderRadiusClass,
+      getVariantClasses(),
+      widthClass,
+      iconSizeClasses[size],
       className,
     ]
       .filter(Boolean)
@@ -122,7 +120,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         type="button"
-        className={buttonClassName}
+        className={buttonClasses}
         disabled={disabled || isLoading}
         onClick={onClick}
         {...props}
