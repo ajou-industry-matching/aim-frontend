@@ -1,54 +1,99 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-
 import { fn } from "storybook/test";
-
+import "../../../index.css";
 import { Button } from "./button";
+import { PlusIcon, XIcon, ArrowRightIcon } from "@/shared/ui/icons";
 
-// More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
+// Storybook Meta 정의
 const meta = {
   title: "Shared/UI/Button",
   component: Button,
   parameters: {
-    // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
     layout: "centered",
   },
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ["autodocs"],
-  // More on argTypes: https://storybook.js.org/docs/api/argtypes
   argTypes: {
-    backgroundColor: { control: "color" },
+    variant: {
+      control: "select",
+      options: ["primary", "secondary", "ghost", "danger"],
+      description: "버튼의 스타일 변형",
+      table: {
+        type: { summary: "primary | secondary | ghost | danger" },
+        defaultValue: { summary: "primary" },
+      },
+    },
+    size: {
+      control: "select",
+      options: ["small", "medium", "large"],
+      description: "버튼의 크기",
+      table: {
+        type: { summary: "small | medium | large" },
+        defaultValue: { summary: "medium" },
+      },
+    },
+    iconPosition: {
+      control: "select",
+      options: ["none", "left", "right"],
+      description: "아이콘 위치",
+      table: {
+        type: { summary: "none | left | right" },
+        defaultValue: { summary: "none" },
+      },
+    },
+    children: {
+      control: "text",
+      description: "버튼 텍스트 (없으면 IconButton 모드)",
+    },
+    fullWidth: {
+      control: "boolean",
+      description: "전체 너비 사용 여부",
+    },
+    isLoading: {
+      control: "boolean",
+      description: "로딩 상태",
+    },
+    disabled: {
+      control: "boolean",
+      description: "비활성화 상태",
+    },
   },
-  // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#story-args
-  args: { onClick: fn() },
+  args: {
+    onClick: fn(),
+  },
 } satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Primary: Story = {
   args: {
-    primary: true,
-    label: "Button",
+    variant: "primary",
+    children: "Primary Button",
   },
 };
 
-export const Secondary: Story = {
+export const WithLeftIcon: Story = {
   args: {
-    label: "Button",
+    variant: "primary",
+    iconPosition: "left",
+    icon: <PlusIcon />,
+    children: "포트폴리오 추가",
   },
 };
 
-export const Large: Story = {
+export const WithRightIcon: Story = {
   args: {
-    size: "large",
-    label: "Button",
+    variant: "primary",
+    iconPosition: "right",
+    icon: <ArrowRightIcon />,
+    children: "다음",
   },
 };
 
-export const Small: Story = {
+export const IconOnly: Story = {
   args: {
-    size: "small",
-    label: "Button",
+    variant: "ghost",
+    icon: <XIcon />,
+    "aria-label": "닫기",
   },
 };
