@@ -1,25 +1,133 @@
 import React, { useState } from "react";
-// 실제 프로젝트의 아이콘 경로로 수정해주세요
 import { EyeIcon, EyeOffIcon, SearchIcon, XCircleIcon, ChevronDownIcon } from "@/shared/ui/icons";
 
 // ----------------------------------------------------------------------
-// 1. Common Types
+// 1. Types & Interfaces
 // ----------------------------------------------------------------------
 export type InputSize = "medium" | "large";
-type BaseInputProps = {
-  error?: boolean;
-  fullWidth?: boolean;
+
+interface BaseInputProps {
+  hasError?: boolean;
+  isFullWidth?: boolean;
+}
+
+// ----------------------------------------------------------------------
+// 2. Style Tokens (Constants)
+// ----------------------------------------------------------------------
+
+// 모든 입력 컴포넌트(Input, Textarea, Select) 공통 스타일
+const commonStyles = {
+  base: "outline-none transition-all duration-200 border placeholder:text-[color:var(--color-gray-500,#808080)] text-[color:var(--color-gray-900,#1A1A1A)]",
+  disabled:
+    "disabled:bg-[color:var(--color-gray-100,#F2F2F2)] disabled:text-[color:var(--color-gray-400,#999999)] disabled:border-[color:var(--color-gray-200,#E5E5E5)] disabled:cursor-not-allowed",
+  focus:
+    "focus:border-[color:var(--color-primary-500,#3385DB)] focus:shadow-[0_0_0_3px_var(--color-primary-100,#E0EDFB)]",
+  error:
+    "!border-[color:var(--color-error-500,#EF4444)] focus:!shadow-[0_0_0_3px_var(--color-error-100,#FEE2E2)]",
+  defaultBorder: "border-[color:var(--color-gray-300,#CCCCCC)]",
+};
+
+// Input 전용 사이즈 스타일
+const sizeStyles: Record<InputSize, string> = {
+  medium: "h-10 text-[14px] leading-[20px]",
+  large: "h-12 text-[16px] leading-[24px]",
+};
+
+// Input 형태 (기본, 검색창)
+const shapeStyles = {
+  default: `rounded-lg bg-white px-4 ${commonStyles.focus}`,
+  search: `rounded-[20px] bg-[color:var(--color-gray-50,#F9F9F9)] pl-10 pr-10 ${commonStyles.focus}`,
 };
 
 // ----------------------------------------------------------------------
-// 2. Input Component (Text, Password, Search)
+// 3. Helper Functions (Class Assemblers)
 // ----------------------------------------------------------------------
+
+const getInputClasses = (
+  size: InputSize,
+  isSearch: boolean,
+  hasError: boolean,
+  isFullWidth: boolean,
+  hasLeftContent: boolean,
+  hasRightContent: boolean,
+  className?: string,
+): string => {
+  // 1. Shape & State
+  const shapeClass = isSearch ? shapeStyles.search : shapeStyles.default;
+  const stateClass = hasError ? commonStyles.error : commonStyles.defaultBorder;
+
+  // 2. Padding Logic (아이콘 유무에 따른 패딩 계산)
+  const paddingLeftClass = hasLeftContent || isSearch ? (size === "large" ? "pl-10" : "pl-9") : "";
+
+  const paddingRightClass =
+    hasRightContent || (isSearch && hasRightContent) ? (size === "large" ? "pr-10" : "pr-9") : "";
+
+  // 3. Width
+  const widthClass = isFullWidth ? "w-full" : "w-auto";
+
+  return [
+    commonStyles.base,
+    commonStyles.disabled,
+    sizeStyles[size],
+    shapeClass,
+    stateClass,
+    widthClass,
+    paddingLeftClass,
+    paddingRightClass,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+const getTextareaClasses = (
+  hasError: boolean,
+  isFullWidth: boolean,
+  className?: string,
+): string => {
+  const stateClass = hasError ? commonStyles.error : commonStyles.defaultBorder;
+  const widthClass = isFullWidth ? "w-full" : "w-auto";
+
+  return [
+    commonStyles.base,
+    "min-h-[120px] p-3 text-[16px] leading-[24px] rounded-lg bg-white resize-y",
+    commonStyles.focus,
+    stateClass,
+    widthClass,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+const getSelectClasses = (hasError: boolean, isFullWidth: boolean, className?: string): string => {
+  const stateClass = hasError ? commonStyles.error : commonStyles.defaultBorder;
+  const widthClass = isFullWidth ? "w-full" : "w-auto";
+
+  return [
+    commonStyles.base,
+    commonStyles.disabled,
+    "h-[48px] px-4 pr-10 appearance-none rounded-lg bg-white text-[16px]",
+    commonStyles.focus,
+    stateClass,
+    widthClass,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+// ----------------------------------------------------------------------
+// 4. Components
+// ----------------------------------------------------------------------
+
+// --- Input Component ---
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">, BaseInputProps {
   size?: InputSize;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  passwordStrength?: 0 | 1 | 2 | 3; // 0:None, 1:Weak, 2:Medium, 3:Strong
+  passwordStrength?: 0 | 1 | 2 | 3;
   onClear?: () => void;
 }
 
@@ -28,9 +136,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     {
       type = "text",
       size = "large",
-      error = false,
+      hasError = false,
       disabled = false,
-      fullWidth = true,
+      isFullWidth = true,
       leftIcon,
       rightIcon,
       className = "",
@@ -40,57 +148,36 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref,
   ) => {
-    const [showPassword, setShowPassword] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const isSearch = type === "search";
-    const currentType = type === "password" && showPassword ? "text" : type;
+    const currentType = type === "password" && isPasswordVisible ? "text" : type;
 
-    // --- Style Tokens ---
-    const baseContainer = `relative inline-flex flex-col transition-all duration-200 ease-out ${
-      fullWidth ? "w-full min-w-[280px]" : "w-auto"
+    // Right Content Check
+    const hasRightContent = Boolean(
+      rightIcon || type === "password" || (isSearch && props.value && onClear),
+    );
+
+    const inputClasses = getInputClasses(
+      size,
+      isSearch,
+      hasError,
+      isFullWidth,
+      Boolean(leftIcon),
+      hasRightContent,
+      className,
+    );
+
+    // Container Style
+    const containerClasses = `relative inline-flex flex-col transition-all duration-200 ease-out ${
+      isFullWidth ? "w-full min-w-[280px]" : "w-auto"
     }`;
 
-    const inputBase =
-      "w-full outline-none transition-all duration-200 border placeholder:text-[var(--color-gray-500)] text-[var(--color-gray-900)] disabled:bg-[var(--color-gray-100)] disabled:text-[var(--color-gray-400)] disabled:border-[var(--color-gray-200)] disabled:cursor-not-allowed";
-
-    const sizeStyles = {
-      medium: "h-10 text-[14px] leading-[20px]",
-      large: "h-12 text-[16px] leading-[24px]",
-    };
-
-    // Search Type은 Pill Shape(rounded-20px) + Gray Background
-    const shapeStyles = isSearch
-      ? "rounded-[20px] bg-[var(--color-gray-50)] border-[var(--color-gray-300)] pl-10 pr-10 focus:border-[var(--color-primary-500)] focus:shadow-[0_0_0_3px_var(--color-primary-100)]"
-      : "rounded-lg bg-white border-[var(--color-gray-300)] px-4 focus:border-[var(--color-primary-500)] focus:shadow-[0_0_0_3px_var(--color-primary-100)]";
-
-    const errorStyle = error
-      ? "!border-[var(--color-error-500)] focus:!shadow-[0_0_0_3px_var(--color-error-100)]"
-      : "";
-
-    // Padding Calculation for Icons
-    const paddingLeft = leftIcon || isSearch ? (size === "large" ? "pl-10" : "pl-9") : "";
-    const paddingRight =
-      rightIcon || type === "password" || (isSearch && props.value)
-        ? size === "large"
-          ? "pr-10"
-          : "pr-9"
-        : "";
-
-    const combinedClasses = [
-      inputBase,
-      sizeStyles[size],
-      shapeStyles,
-      errorStyle,
-      paddingLeft,
-      paddingRight,
-      className,
-    ].join(" ");
-
     return (
-      <div className={baseContainer}>
+      <div className={containerClasses}>
         <div className="relative w-full">
           {/* Left Icon */}
           {(leftIcon || isSearch) && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-gray-600)] pointer-events-none">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--color-gray-600,#666666)] pointer-events-none">
               {isSearch ? <SearchIcon width={20} /> : leftIcon}
             </div>
           )}
@@ -99,52 +186,51 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             type={currentType}
             disabled={disabled}
-            className={combinedClasses}
+            className={inputClasses}
             {...props}
           />
 
           {/* Right Icon / Actions */}
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            {/* Password Toggle */}
             {type === "password" && !disabled && (
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-[var(--color-gray-600)] hover:text-[var(--color-primary-800)] focus:outline-none"
+                onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                className="text-[color:var(--color-gray-600,#666666)] hover:text-[color:var(--color-primary-800,#004A9C)] focus:outline-none"
               >
-                {showPassword ? <EyeOffIcon width={20} /> : <EyeIcon width={20} />}
+                {isPasswordVisible ? <EyeOffIcon width={20} /> : <EyeIcon width={20} />}
               </button>
             )}
 
-            {/* Search Clear */}
             {isSearch && props.value && onClear && (
               <button
                 type="button"
                 onClick={onClear}
-                className="text-[var(--color-gray-600)] hover:text-[var(--color-gray-900)] focus:outline-none"
+                className="text-[color:var(--color-gray-600,#666666)] hover:text-[color:var(--color-gray-900,#1A1A1A)] focus:outline-none"
               >
                 <XCircleIcon width={16} />
               </button>
             )}
 
-            {/* Custom Right Icon */}
             {!isSearch && type !== "password" && rightIcon && (
-              <span className="text-[var(--color-gray-600)] pointer-events-none">{rightIcon}</span>
+              <span className="text-[color:var(--color-gray-600,#666666)] pointer-events-none">
+                {rightIcon}
+              </span>
             )}
           </div>
         </div>
 
         {/* Password Strength Indicator */}
         {type === "password" && passwordStrength !== undefined && (
-          <div className="mt-2 w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+          <div className="mt-2 w-full h-1 bg-[color:var(--color-gray-100,#F2F2F2)] rounded-full overflow-hidden">
             <div
               className={`h-full transition-all duration-300 ${
                 passwordStrength === 1
-                  ? "w-1/3 bg-[var(--color-error-500)]"
+                  ? "w-1/3 bg-[color:var(--color-error-500,#EF4444)]"
                   : passwordStrength === 2
-                    ? "w-2/3 bg-[var(--color-warning-500)]"
+                    ? "w-2/3 bg-[color:var(--color-warning-500,#F59E0B)]"
                     : passwordStrength === 3
-                      ? "w-full bg-[var(--color-success-500)]"
+                      ? "w-full bg-[color:var(--color-success-500,#10A259)]"
                       : "w-0"
               }`}
             />
@@ -156,16 +242,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-// ----------------------------------------------------------------------
-// 3. Textarea Component
-// ----------------------------------------------------------------------
+// --- Textarea Component ---
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement>, BaseInputProps {
   maxLength?: number;
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ maxLength, error, fullWidth = true, className = "", onChange, ...props }, ref) => {
+  ({ maxLength, hasError, isFullWidth = true, className = "", onChange, ...props }, ref) => {
     const [charCount, setCharCount] = useState(0);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -173,26 +257,20 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       onChange?.(e);
     };
 
-    const baseClasses =
-      "min-h-[120px] p-3 text-[16px] leading-[24px] rounded-lg border bg-white resize-y outline-none transition-all duration-200 placeholder:text-[var(--color-gray-500)] text-[var(--color-gray-900)] focus:border-[var(--color-primary-500)] focus:shadow-[0_0_0_3px_var(--color-primary-100)]";
-
-    const errorClasses = error
-      ? "!border-[var(--color-error-500)] focus:!shadow-[0_0_0_3px_var(--color-error-100)]"
-      : "border-[var(--color-gray-300)]";
-
-    const widthClass = fullWidth ? "w-full" : "w-auto";
+    const textareaClasses = getTextareaClasses(!!hasError, !!isFullWidth, className);
+    const containerClasses = `relative ${isFullWidth ? "w-full" : "w-auto"}`;
 
     return (
-      <div className={`relative ${widthClass}`}>
+      <div className={containerClasses}>
         <textarea
           ref={ref}
-          className={`${baseClasses} ${errorClasses} ${widthClass} ${className}`}
+          className={textareaClasses}
           onChange={handleChange}
           maxLength={maxLength}
           {...props}
         />
         {maxLength && (
-          <div className="absolute right-3 bottom-3 text-[12px] text-[var(--color-gray-500)]">
+          <div className="absolute right-3 bottom-3 text-[12px] text-[color:var(--color-gray-500,#808080)]">
             {charCount} / {maxLength}
           </div>
         )}
@@ -202,32 +280,24 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 );
 Textarea.displayName = "Textarea";
 
-// ----------------------------------------------------------------------
-// 4. Select Component
-// ----------------------------------------------------------------------
+// --- Select Component ---
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement>, BaseInputProps {
   options: { label: string; value: string | number }[];
   placeholder?: string;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ error, fullWidth = true, options, placeholder, className = "", ...props }, ref) => {
-    const baseClasses =
-      "h-[48px] px-4 pr-10 appearance-none bg-white border rounded-lg text-[16px] text-[var(--color-gray-900)] outline-none transition-all duration-200 focus:border-[var(--color-primary-500)] focus:shadow-[0_0_0_3px_var(--color-primary-100)] disabled:bg-[var(--color-gray-100)]";
-
-    const errorClasses = error
-      ? "!border-[var(--color-error-500)]"
-      : "border-[var(--color-gray-300)]";
-
-    const widthClass = fullWidth ? "w-full" : "w-auto";
+  ({ hasError, isFullWidth = true, options, placeholder, className = "", ...props }, ref) => {
+    const selectClasses = getSelectClasses(!!hasError, !!isFullWidth, className);
+    const containerClasses = `relative ${isFullWidth ? "w-full" : "w-auto"}`;
 
     return (
-      <div className={`relative ${widthClass}`}>
+      <div className={containerClasses}>
         <select
           ref={ref}
-          className={`${baseClasses} ${errorClasses} ${widthClass} ${className}`}
-          {...props}
+          className={selectClasses}
           defaultValue={placeholder ? "" : undefined}
+          {...props}
         >
           {placeholder && (
             <option value="" disabled hidden>
@@ -240,7 +310,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-gray-600)]">
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[color:var(--color-gray-600,#666666)]">
           <ChevronDownIcon width={20} />
         </div>
       </div>

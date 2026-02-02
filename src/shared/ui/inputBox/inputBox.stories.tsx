@@ -1,8 +1,13 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Input, Textarea, Select } from "./inputBox";
-import { PlusIcon, UserIcon } from "@/shared/ui/icons"; // 예시 아이콘
+// 실제 프로젝트에 존재하는 아이콘들을 import 해주세요.
+// 예시로 UserIcon, MailIcon 등을 사용합니다.
+import { UserIcon, MailIcon, LockIcon, XCircleIcon } from "@/shared/ui/icons";
 
-// 메인 메타 정보는 'Input'을 기준으로 설정
+// ----------------------------------------------------------------------
+// 1. Meta Configuration
+// ----------------------------------------------------------------------
 const meta = {
   title: "Shared/UI/InputBox",
   component: Input,
@@ -10,115 +15,165 @@ const meta = {
     layout: "padded",
     docs: {
       description: {
-        component:
-          "하나의 모듈(inputBox)에서 제공되는 Input, Textarea, Select 컴포넌트입니다. Figma 2.0 가이드를 준수합니다.",
+        component: "공통 입력 컴포넌트입니다. Input, Textarea, Select를 포함합니다.",
       },
     },
   },
   tags: ["autodocs"],
   argTypes: {
+    // 1. Size
     size: {
       control: "radio",
       options: ["medium", "large"],
-      description: "Input 높이 설정 (Select는 Large 고정)",
+      description: "입력창 크기 조절",
+      table: { defaultValue: { summary: "large" } },
     },
-    error: { control: "boolean" },
-    disabled: { control: "boolean" },
-    fullWidth: { control: "boolean" },
+    // 2. Boolean States (컨벤션: has*, is*)
+    hasError: {
+      control: "boolean",
+      description: "에러 상태 표시 (Red Border)",
+    },
+    isFullWidth: {
+      control: "boolean",
+      description: "부모 컨테이너 너비 100% 차지 여부",
+      table: { defaultValue: { summary: "true" } },
+    },
+    disabled: {
+      control: "boolean",
+      description: "비활성화 상태",
+    },
+    // 3. Icons
+    leftIcon: { control: false, description: "좌측 아이콘 (ReactNode)" },
+    rightIcon: { control: false, description: "우측 아이콘 (ReactNode)" },
   },
 } satisfies Meta<typeof Input>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// --- 1. Basic Text Input ---
-export const TextInput: Story = {
+// ----------------------------------------------------------------------
+// 2. Input Stories
+// ----------------------------------------------------------------------
+
+// 기본 텍스트 입력
+export const Default: Story = {
   args: {
     placeholder: "텍스트를 입력해주세요",
     size: "large",
+    isFullWidth: true,
   },
 };
 
+// 아이콘 포함 (User, Mail 아이콘 예시)
 export const WithIcons: Story = {
   args: {
-    placeholder: "아이콘이 있는 입력창",
-    leftIcon: <PlusIcon />,
-    rightIcon: <UserIcon />,
+    placeholder: "이메일 입력",
+    leftIcon: <UserIcon width={20} />, // 아이콘 크기 지정 권장
+    rightIcon: <MailIcon width={20} />,
+    isFullWidth: true,
   },
 };
 
-export const States: Story = {
-  render: () => (
-    <div className="flex flex-col gap-4 w-[320px]">
-      <Input placeholder="기본 (Default)" />
-      <Input placeholder="포커스 (Focus)" autoFocus />
-      <Input placeholder="에러 (Error)" error defaultValue="잘못된 값" />
-      <Input placeholder="비활성 (Disabled)" disabled defaultValue="입력 불가" />
-    </div>
-  ),
-};
-
-// --- 2. Password Input ---
+// 비밀번호 입력 (강도 표시 포함)
 export const Password: Story = {
   args: {
     type: "password",
-    placeholder: "비밀번호 입력",
-    size: "large",
-  },
-};
-
-export const PasswordStrength: Story = {
-  args: {
-    type: "password",
-    placeholder: "비밀번호 설정",
+    placeholder: "비밀번호를 입력하세요",
+    leftIcon: <LockIcon width={20} />,
     passwordStrength: 2, // 0~3 단계
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "passwordStrength prop(1~3)을 전달하면 하단에 강도 표시 바가 나타납니다.",
-      },
-    },
+    isFullWidth: true,
   },
 };
 
-// --- 3. Search Input ---
+// 검색 입력 (Rounded Pill Shape)
 export const Search: Story = {
   args: {
     type: "search",
     placeholder: "검색어를 입력하세요...",
-    size: "medium", // 검색창은 보통 Medium 사용
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "type='search' 지정 시 Pill Shape(둥근 모서리)와 회색 배경이 적용됩니다.",
-      },
-    },
+    size: "medium",
+    isFullWidth: true,
+    // onClear가 전달되면 값이 있을 때 X 버튼이 자동으로 노출됨
+    onClear: () => alert("Clear Clicked!"),
   },
 };
 
-// --- 4. Textarea ---
-// StoryObj의 타입을 Textarea로 지정하여 args 추론
+// 에러 상태
+export const ErrorState: Story = {
+  args: {
+    placeholder: "잘못된 입력",
+    defaultValue: "유효하지 않은 값",
+    hasError: true,
+    isFullWidth: true,
+    // 에러 테두리 색상과 동일한 빨간색을 아이콘에 적용
+    rightIcon: <XCircleIcon width={20} className="text-[color:var(--color-error-500,#EF4444)]" />,
+  },
+};
+
+// ----------------------------------------------------------------------
+// 3. Textarea Stories
+// ----------------------------------------------------------------------
 export const TextareaField: StoryObj<typeof Textarea> = {
   render: (args) => <Textarea {...args} />,
   args: {
-    placeholder: "내용을 입력해주세요 (최대 500자)",
-    maxLength: 500,
-    fullWidth: true,
+    placeholder: "내용을 자세히 적어주세요.",
+    maxLength: 200, // 글자수 카운터 표시
+    isFullWidth: true,
+    rows: 4,
+  },
+  argTypes: {
+    hasError: { control: "boolean" },
   },
 };
 
-// --- 5. Select ---
+// ----------------------------------------------------------------------
+// 4. Select Stories
+// ----------------------------------------------------------------------
 export const SelectField: StoryObj<typeof Select> = {
   render: (args) => <Select {...args} />,
   args: {
-    placeholder: "선택해주세요",
+    placeholder: "옵션을 선택하세요",
+    isFullWidth: true,
     options: [
-      { label: "옵션 1", value: 1 },
-      { label: "옵션 2", value: 2 },
-      { label: "옵션 3", value: 3 },
+      { label: "옵션 1", value: "option1" },
+      { label: "옵션 2", value: "option2" },
+      { label: "옵션 3", value: "option3" },
     ],
-    fullWidth: true,
   },
+};
+
+// ----------------------------------------------------------------------
+// 5. All States View (한눈에 보기)
+// ----------------------------------------------------------------------
+export const States: Story = {
+  render: () => (
+    <div className="flex flex-col gap-5 w-[360px] p-4 border rounded-xl bg-gray-50">
+      <h3 className="text-sm font-bold text-gray-500 mb-2">Input States</h3>
+
+      {/* 1. 기본 */}
+      <Input placeholder="기본 (Default)" isFullWidth />
+
+      {/* 2. 포커스 시뮬레이션 (autoFocus) */}
+      <Input placeholder="포커스 (Focus)" autoFocus isFullWidth />
+
+      {/* 3. 에러 */}
+      <Input
+        placeholder="에러 (Error)"
+        defaultValue="유효하지 않은 값"
+        hasError
+        isFullWidth
+        rightIcon={<XCircleIcon className="text-red-500" width={20} />}
+      />
+
+      {/* 4. 비활성 */}
+      <Input placeholder="비활성 (Disabled)" defaultValue="수정 불가능한 값" disabled isFullWidth />
+
+      {/* 5. 읽기 전용 */}
+      <Input
+        placeholder="읽기 전용 (Read Only)"
+        defaultValue="읽기 전용 모드"
+        readOnly
+        isFullWidth
+      />
+    </div>
+  ),
 };
