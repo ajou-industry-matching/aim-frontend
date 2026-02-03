@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import { EyeIcon, EyeOffIcon, SearchIcon, XCircleIcon, ChevronDownIcon } from "@/shared/ui/icons";
 
-// ----------------------------------------------------------------------
-// 1. Types & Interfaces
-// ----------------------------------------------------------------------
 export type InputSize = "medium" | "large";
 
 interface BaseInputProps {
   hasError?: boolean;
   isFullWidth?: boolean;
 }
-
-// ----------------------------------------------------------------------
-// 2. Style Tokens (Constants)
-// ----------------------------------------------------------------------
 
 // 모든 입력 컴포넌트(Input, Textarea, Select) 공통 스타일
 const commonStyles = {
@@ -39,10 +32,6 @@ const shapeStyles = {
   search: `rounded-[20px] bg-[color:var(--color-gray-50,#F9F9F9)] pl-10 pr-10 ${commonStyles.focus}`,
 };
 
-// ----------------------------------------------------------------------
-// 3. Helper Functions (Class Assemblers)
-// ----------------------------------------------------------------------
-
 const getInputClasses = (
   size: InputSize,
   isSearch: boolean,
@@ -52,17 +41,16 @@ const getInputClasses = (
   hasRightContent: boolean,
   className?: string,
 ): string => {
-  // 1. Shape & State
   const shapeClass = isSearch ? shapeStyles.search : shapeStyles.default;
   const stateClass = hasError ? commonStyles.error : commonStyles.defaultBorder;
 
-  // 2. Padding Logic (아이콘 유무에 따른 패딩 계산)
+  // 아이콘 유무에 따른 패딩 계산
   const paddingLeftClass = hasLeftContent || isSearch ? (size === "large" ? "pl-10" : "pl-9") : "";
 
   const paddingRightClass =
     hasRightContent || (isSearch && hasRightContent) ? (size === "large" ? "pr-10" : "pr-9") : "";
 
-  // 3. Width
+  // 전체 너비 여부
   const widthClass = isFullWidth ? "w-full" : "w-auto";
 
   return [
@@ -117,11 +105,7 @@ const getSelectClasses = (hasError: boolean, isFullWidth: boolean, className?: s
     .join(" ");
 };
 
-// ----------------------------------------------------------------------
-// 4. Components
-// ----------------------------------------------------------------------
-
-// --- Input Component ---
+// --- Input 컴포넌트 ---
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">, BaseInputProps {
   size?: InputSize;
@@ -152,7 +136,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const isSearch = type === "search";
     const currentType = type === "password" && isPasswordVisible ? "text" : type;
 
-    // Right Content Check
+    // 아이콘 및 액션 존재 여부
     const hasRightContent = Boolean(
       rightIcon || type === "password" || (isSearch && props.value && onClear),
     );
@@ -167,7 +151,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       className,
     );
 
-    // Container Style
     const containerClasses = `relative inline-flex flex-col transition-all duration-200 ease-out ${
       isFullWidth ? "w-full min-w-[280px]" : "w-auto"
     }`;
@@ -175,7 +158,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={containerClasses}>
         <div className="relative w-full">
-          {/* Left Icon */}
+          {/* 왼쪽 아이콘 */}
           {(leftIcon || isSearch) && (
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--color-gray-600,#666666)] pointer-events-none">
               {isSearch ? <SearchIcon width={20} /> : leftIcon}
@@ -190,7 +173,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
 
-          {/* Right Icon / Actions */}
+          {/* 오른쪽 아이콘 및 액션 */}
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
             {type === "password" && !disabled && (
               <button
@@ -220,7 +203,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </div>
         </div>
 
-        {/* Password Strength Indicator */}
+        {/* 비밀번호 강도 표시 */}
         {type === "password" && passwordStrength !== undefined && (
           <div className="mt-2 w-full h-1 bg-[color:var(--color-gray-100,#F2F2F2)] rounded-full overflow-hidden">
             <div
@@ -242,7 +225,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-// --- Textarea Component ---
+// --- Textarea 컴포넌트 ---
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement>, BaseInputProps {
   maxLength?: number;
@@ -250,7 +233,18 @@ export interface TextareaProps
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ maxLength, hasError, isFullWidth = true, className = "", onChange, ...props }, ref) => {
-    const [charCount, setCharCount] = useState(0);
+    // 초기값 계산
+    const [charCount, setCharCount] = useState(() => {
+      const initialValue = props.value ?? props.defaultValue ?? "";
+      return String(initialValue).length;
+    });
+
+    // value가 외부에서 변경될 때도 글자수 동기화
+    React.useEffect(() => {
+      if (props.value !== undefined) {
+        setCharCount(String(props.value).length);
+      }
+    }, [props.value]);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setCharCount(e.target.value.length);
@@ -280,7 +274,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 );
 Textarea.displayName = "Textarea";
 
-// --- Select Component ---
+// --- Select 컴포넌트 ---
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement>, BaseInputProps {
   options: { label: string; value: string | number }[];
   placeholder?: string;

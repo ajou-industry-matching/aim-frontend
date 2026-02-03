@@ -1,13 +1,9 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Input, Textarea, Select } from "./inputBox";
-// 실제 프로젝트에 존재하는 아이콘들을 import 해주세요.
-// 예시로 UserIcon, MailIcon 등을 사용합니다.
+// 아이콘 임포트
 import { UserIcon, MailIcon, LockIcon, XCircleIcon } from "@/shared/ui/icons";
 
-// ----------------------------------------------------------------------
-// 1. Meta Configuration
-// ----------------------------------------------------------------------
 const meta = {
   title: "Shared/UI/InputBox",
   component: Input,
@@ -28,7 +24,7 @@ const meta = {
       description: "입력창 크기 조절",
       table: { defaultValue: { summary: "large" } },
     },
-    // 2. Boolean States (컨벤션: has*, is*)
+    // 2. Boolean States
     hasError: {
       control: "boolean",
       description: "에러 상태 표시 (Red Border)",
@@ -50,10 +46,6 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-// ----------------------------------------------------------------------
-// 2. Input Stories
-// ----------------------------------------------------------------------
 
 // 기본 텍스트 입력
 export const Default: Story = {
@@ -104,14 +96,10 @@ export const ErrorState: Story = {
     defaultValue: "유효하지 않은 값",
     hasError: true,
     isFullWidth: true,
-    // 에러 테두리 색상과 동일한 빨간색을 아이콘에 적용
     rightIcon: <XCircleIcon width={20} className="text-[color:var(--color-error-500,#EF4444)]" />,
   },
 };
 
-// ----------------------------------------------------------------------
-// 3. Textarea Stories
-// ----------------------------------------------------------------------
 export const TextareaField: StoryObj<typeof Textarea> = {
   render: (args) => <Textarea {...args} />,
   args: {
@@ -125,9 +113,6 @@ export const TextareaField: StoryObj<typeof Textarea> = {
   },
 };
 
-// ----------------------------------------------------------------------
-// 4. Select Stories
-// ----------------------------------------------------------------------
 export const SelectField: StoryObj<typeof Select> = {
   render: (args) => <Select {...args} />,
   args: {
@@ -141,9 +126,7 @@ export const SelectField: StoryObj<typeof Select> = {
   },
 };
 
-// ----------------------------------------------------------------------
-// 5. All States View (한눈에 보기)
-// ----------------------------------------------------------------------
+// all states 모음
 export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-5 w-[360px] p-4 border rounded-xl bg-gray-50">
@@ -152,7 +135,7 @@ export const States: Story = {
       {/* 1. 기본 */}
       <Input placeholder="기본 (Default)" isFullWidth />
 
-      {/* 2. 포커스 시뮬레이션 (autoFocus) */}
+      {/* 2. 포커스 (autoFocus) */}
       <Input placeholder="포커스 (Focus)" autoFocus isFullWidth />
 
       {/* 3. 에러 */}
