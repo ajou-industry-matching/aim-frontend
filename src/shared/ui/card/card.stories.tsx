@@ -43,7 +43,6 @@ export const PostCard: Story = {
       "새로운 React Server Components에 대한 깊이 있는 탐구와 애플리케이션 성능 향상 방법을 알아봅니다.",
     author: {
       name: "김이박",
-      avatar: storyDefaultImage,
     },
     date: "2024-01-15",
     stats: {
@@ -92,7 +91,7 @@ export const FeaturedCard: Story = {
     title: "프리미엄 기능 출시",
     description:
       "생산성을 향상시키고 워크플로우를 간소화하도록 설계된 최신 프리미엄 기능을 만나보세요.",
-    ctaLabel: "자세히 보기",
+    ctaLabel: "",
     onCtaClick: () => console.log("CTA clicked"),
   },
 };

@@ -17,7 +17,6 @@ interface CategoryBadge {
 
 interface Author {
   name: string;
-  avatar?: string;
 }
 
 interface PostStats {
@@ -123,11 +122,22 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
 
     const cursorClass = onClick ? "cursor-pointer" : "";
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (!onClick) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onClick();
+      }
+    };
+
     return (
       <div
         ref={ref}
         className={`${baseClasses} ${stateClasses} ${cursorClass} ${className}`}
         onClick={onClick}
+        role={onClick ? "button" : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        onKeyDown={handleKeyDown}
       >
         {/* 썸네일 */}
         {thumbnail && (
@@ -201,8 +211,25 @@ const ProfileCardContent = React.forwardRef<
   const baseClasses =
     "w-80 p-8 bg-white rounded-2xl shadow-[0_8px_24px_rgba(0,0,0,0.06)] text-center";
 
+  const cursorClass = onClick ? "cursor-pointer" : "";
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onClick();
+    }
+  };
+
   return (
-    <div ref={ref} className={`${baseClasses} ${className}`} onClick={onClick}>
+    <div
+      ref={ref}
+      className={`${baseClasses} ${cursorClass} ${className}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={handleKeyDown}
+    >
       {/* 아바타 */}
       <div className="flex justify-center mb-4">
         <img
@@ -230,9 +257,15 @@ const ProfileCardContent = React.forwardRef<
 
       {/* 액션 버튼 */}
       {onAction && (
-        <Button variant="primary" size="medium" fullWidth onClick={onAction}>
-          {actionLabel}
-        </Button>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <Button variant="primary" size="medium" fullWidth onClick={onAction}>
+            {actionLabel}
+          </Button>
+        </div>
       )}
     </div>
   );
@@ -258,11 +291,22 @@ const SimpleCardContent = React.forwardRef<
 
   const cursorClass = onClick ? "cursor-pointer" : "";
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <div
       ref={ref}
       className={`${baseClasses} ${variantClasses[simpleVariant]} ${cursorClass} ${className}`}
       onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={handleKeyDown}
     >
       {children}
     </div>
@@ -285,8 +329,23 @@ const FeaturedCardContent = React.forwardRef<
     ? "cursor-pointer hover:shadow-[0_12px_32px_rgba(0,74,156,0.12)] hover:-translate-y-1"
     : "";
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onClick();
+    }
+  };
+
   return (
-    <div ref={ref} className={`${baseClasses} ${hoverClasses} ${className}`} onClick={onClick}>
+    <div
+      ref={ref}
+      className={`${baseClasses} ${hoverClasses} ${className}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={handleKeyDown}
+    >
       <div className="flex gap-6">
         {/* 왼쪽 섹션 - 이미지 */}
         <div className="flex-shrink-0">
@@ -311,15 +370,14 @@ const FeaturedCardContent = React.forwardRef<
           <p className="text-base leading-6 text-[var(--color-gray-700)] flex-1">{description}</p>
 
           {/* CTA 버튼 */}
-          {onCtaClick && (
-            <div className="mt-auto">
-              <Button
-                variant="primary"
-                size="large"
-                onClick={() => {
-                  onCtaClick();
-                }}
-              >
+          {onCtaClick && ctaLabel && (
+            <div
+              className="mt-auto"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <Button variant="primary" size="large" onClick={onCtaClick}>
                 {ctaLabel}
               </Button>
             </div>
