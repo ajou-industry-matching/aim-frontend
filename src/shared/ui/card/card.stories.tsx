@@ -91,7 +91,7 @@ export const FeaturedCard: Story = {
     title: "프리미엄 기능 출시",
     description:
       "생산성을 향상시키고 워크플로우를 간소화하도록 설계된 최신 프리미엄 기능을 만나보세요.",
-    ctaLabel: "",
-    onCtaClick: () => console.log("CTA clicked"),
+    ctaLabel: "자세히 보기",
+    onCtaClick: fn(),
   },
 };

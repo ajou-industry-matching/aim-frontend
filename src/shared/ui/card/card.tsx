@@ -66,7 +66,7 @@ interface FeaturedCardSpecificProps {
   badge?: string;
   title: string;
   description: string;
-  ctaLabel: string;
+  ctaLabel?: string;
   onCtaClick?: () => void;
 }
 
@@ -323,7 +323,7 @@ const FeaturedCardContent = React.forwardRef<
   const { image, badge, title, description, ctaLabel, onCtaClick, className = "", onClick } = props;
 
   const baseClasses =
-    "w-full min-w-[400px] p-8 bg-gradient-to-br from-[var(--color-primary-50)] to-[var(--color-primary-100)] rounded-2xl shadow-[0_8px_24px_rgba(0,74,156,0.08)] transition-all duration-200 ease-out";
+    "w-full min-w-0 md:min-w-[400px] p-8 bg-gradient-to-br from-[var(--color-primary-50)] to-[var(--color-primary-100)] rounded-2xl shadow-[0_8px_24px_rgba(0,74,156,0.08)] transition-all duration-200 ease-out";
 
   const hoverClasses = onClick
     ? "cursor-pointer hover:shadow-[0_12px_32px_rgba(0,74,156,0.12)] hover:-translate-y-1"
