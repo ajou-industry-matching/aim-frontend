@@ -44,11 +44,11 @@ const getInputClasses = (
   const shapeClass = isSearch ? shapeStyles.search : shapeStyles.default;
   const stateClass = hasError ? commonStyles.error : commonStyles.defaultBorder;
 
-  // 아이콘 유무에 따른 패딩 계산
-  const paddingLeftClass = hasLeftContent || isSearch ? (size === "large" ? "pl-10" : "pl-9") : "";
+  // 아이콘 유무에 따른 패딩 계산 (검색 형태는 shapeStyles.search에 고정 패딩 포함)
+  const paddingLeftClass = !isSearch && hasLeftContent ? (size === "large" ? "pl-10" : "pl-9") : "";
 
   const paddingRightClass =
-    hasRightContent || (isSearch && hasRightContent) ? (size === "large" ? "pr-10" : "pr-9") : "";
+    !isSearch && hasRightContent ? (size === "large" ? "pr-10" : "pr-9") : "";
 
   // 전체 너비 여부
   const widthClass = isFullWidth ? "w-full" : "w-auto";
