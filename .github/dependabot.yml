@@ -4,9 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    allow:
-      - dependency-name: "eslint"
-      - dependency-name: "@eslint/js"
     labels:
       - "dependencies"
       - "security"
