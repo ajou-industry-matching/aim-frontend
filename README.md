@@ -51,6 +51,24 @@
 
 ---
 
+# **빠른 시작**
+
+```bash
+# 개발 서버 실행
+pnpm dev
+
+# Storybook 실행 (포트 6006)
+pnpm storybook
+
+# 프로덕션 빌드
+pnpm build
+
+# 린트 검사
+pnpm lint
+```
+
+---
+
 # **프로젝트 개요**
 
 AIM AJOU는 다음 기능을 목표로 한다:
@@ -124,7 +142,7 @@ aim-frontend/
  └─ package.json
 ```
 
-### 📚 FSD 레이어 규칙
+### FSD 레이어 규칙
 
 **상위 레이어 → 하위 레이어** 방향으로만 의존 가능:
 
@@ -135,7 +153,6 @@ app → pages → widgets → features → entities → shared
 - **하위 레이어는 상위 레이어를 import할 수 없습니다**
 - **`@/` alias를 사용하여 절대 경로로 import**
 - **각 슬라이스는 public API(index.ts)를 통해 export**
-
 
 ---
 
