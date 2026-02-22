@@ -154,7 +154,6 @@ app → pages → widgets → features → entities → shared
 - **`@/` alias를 사용하여 절대 경로로 import**
 - **각 슬라이스는 public API(index.ts)를 통해 export**
 
-
 ---
 
 # **API 통신 구조**
