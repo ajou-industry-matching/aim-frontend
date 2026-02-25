@@ -16,8 +16,8 @@ const commonStyles = {
   focus:
     "focus:border-[color:var(--color-primary-500,#3385DB)] focus:shadow-[0_0_0_3px_var(--color-primary-100,#E0EDFB)]",
   error:
-    "!border-[color:var(--color-error-500,#EF4444)] focus:!shadow-[0_0_0_3px_var(--color-error-100,#FEE2E2)]",
-  defaultBorder: "border-[color:var(--color-gray-300,#CCCCCC)]",
+    "border-[color:var(--color-error-500,`#EF4444`)]! focus:shadow-[0_0_0_3px_var(--color-error-100,`#FEE2E2`)]!",
+  defaultBorder: "border-[color:var(--color-gray-300,`#CCCCCC`)]",
 };
 
 // Input 전용 사이즈 스타일
@@ -107,7 +107,8 @@ const getSelectClasses = (hasError: boolean, isFullWidth: boolean, className?: s
 
 // --- Input 컴포넌트 ---
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">, BaseInputProps {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
+    BaseInputProps {
   size?: InputSize;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -227,7 +228,8 @@ Input.displayName = "Input";
 
 // --- Textarea 컴포넌트 ---
 export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement>, BaseInputProps {
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+    BaseInputProps {
   maxLength?: number;
 }
 
