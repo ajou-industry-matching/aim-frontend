@@ -1,5 +1,5 @@
-/* App-specific root styles are imported from src/index.css */
-/* All shared styles have been consolidated in src/index.css to avoid duplication */
+/* App-specific styles for src/app/index.tsx */
+/* Shared global styles/tokens remain in src/index.css */
 
 #root {
   max-width: 1280px;
