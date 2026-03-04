@@ -1,0 +1,69 @@
+# 📚 **AIM AJOU — 반응형 웹앱 SaaS 포트폴리오 관리 시스템**
+
+<div align="center">
+
+![header](https://capsule-render.vercel.app/api?type=soft&color=0:1E3A8A,50:1E40AF,100:2563EB&height=190&section=header&text=AIM%20AJOU&fontSize=65&fontColor=ffffff&animation=twinkling&fontAlignY=45)
+
+<br />
+
+[![Website](https://img.shields.io/badge/🚀_Live_Service-portfolio.ajou.sw.kr-1E40AF?style=for-the-badge)](https://portfolio.ajou.sw.kr)
+[![Frontend Repo](https://img.shields.io/badge/📦_Frontend_Repository-181717?style=for-the-badge&logo=github)](https://github.com/ajou-industry-matching/aim-frontend)
+[![Backend Repo](https://img.shields.io/badge/🔧_Backend_Repository-181717?style=for-the-badge&logo=github)](https://github.com/ajou-industry-matching/aim-backend)
+
+<br/>
+
+**AIM AJOU**는 아주대학교 SW 전공 학생들이
+프로젝트·활동·역량을 체계적으로 기록하고,
+산업 요구 기반으로 포트폴리오를 추천받을 수 있는 **웹 기반 SaaS 플랫폼**입니다.
+
+</div>
+
+---
+
+## Tech Stack
+
+<div align="center">
+
+### Frontend
+
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=000)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=fff)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=fff)
+![Storybook](https://img.shields.io/badge/Storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=fff)
+![TanStack Router](https://img.shields.io/badge/TanStack_Router-000000?style=for-the-badge)
+![React Query](https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=fff)
+![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=fff)
+
+### Backend
+
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=fff)
+![MySQL](https://img.shields.io/badge/MySQL-00618A?style=for-the-badge&logo=mysql&logoColor=fff)
+
+### Infra
+
+![Oracle Cloud](https://img.shields.io/badge/Oracle_Cloud-F80000?style=for-the-badge&logo=oracle&logoColor=fff)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=000)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions)
+
+</div>
+
+---
+
+## 빠른 시작
+
+```bash
+pnpm install
+pnpm dev        # 개발 서버
+pnpm storybook  # Storybook (포트 6006)
+pnpm build      # 프로덕션 빌드
+pnpm lint       # 린트 검사
+```
+
+> 환경 변수(.env) 설정이 필요합니다. 팀 노션을 참고하세요.
+
+---
+
+## 개발 가이드
+
+프로젝트 구조, 컨벤션, 워크플로우는 **[CONTRIBUTING.md](./CONTRIBUTING.md)** 를 참고하세요.
