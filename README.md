@@ -51,6 +51,24 @@
 
 ---
 
+# **빠른 시작**
+
+```bash
+# 개발 서버 실행
+pnpm dev
+
+# Storybook 실행 (포트 6006)
+pnpm storybook
+
+# 프로덕션 빌드
+pnpm build
+
+# 린트 검사
+pnpm lint
+```
+
+---
+
 # **프로젝트 개요**
 
 AIM AJOU는 다음 기능을 목표로 한다:
@@ -124,7 +142,7 @@ aim-frontend/
  └─ package.json
 ```
 
-### 📚 FSD 레이어 규칙
+### FSD 레이어 규칙
 
 **상위 레이어 → 하위 레이어** 방향으로만 의존 가능:
 
@@ -135,7 +153,6 @@ app → pages → widgets → features → entities → shared
 - **하위 레이어는 상위 레이어를 import할 수 없습니다**
 - **`@/` alias를 사용하여 절대 경로로 import**
 - **각 슬라이스는 public API(index.ts)를 통해 export**
-
 
 ---
 
@@ -151,22 +168,6 @@ Frontend에서 모든 요청은 `src/lib/api.ts`에서 제공하는 Axios instan
 
 ---
 
-# **코드 규칙 (ESLint + Prettier)**
-
-### ✔ ESLint (Flat Config)
-
-- React/Hooks 규칙
-- TypeScript recommended
-- import 정리
-- no unused variables
-
-### ✔ Prettier
-
-- 저장 시 자동 포맷팅
-- 커밋 전 자동 포맷팅 (Husky)
-
----
-
 # **Git Hooks (Husky + lint-staged)**
 
 커밋 시 자동:
@@ -174,29 +175,7 @@ Frontend에서 모든 요청은 `src/lib/api.ts`에서 제공하는 Axios instan
 - eslint --fix
 - prettier --write
 
-→ 포맷팅되지 않은 코드는 커밋 불가.
-
----
-
-# **브랜치 전략 (Git Flow)**
-
-```
-main       – 운영/배포 브랜치
-dev        – 개발 통합 브랜치
-feature/*  – 기능 구현
-fix/*      – 버그 수정
-chore/*    – 설정/환경 변경
-```
-
----
-
-# **PR 규칙**
-
-- PR은 반드시 `feature/* → dev` 또는 `dev → main`
-- 최소 1명 리뷰 승인
-- 충돌 해결 필수
-- CI 통과 필수
-- 머지는 **Squash Merge**
+→ 포맷팅되지 않은 코드는 커밋 불가
 
 ---
 
@@ -211,27 +190,5 @@ chore/*    – 설정/환경 변경
 ### main에 머지 →
 
 - Firebase Hosting Live 자동 배포
-
----
-
-# **Firebase 보안 규칙**
-
-### Firestore
-
-- 인증 필요 (read/write 제한)
-- 프로젝트/활동 데이터 접근 제어
-
-### Storage
-
-- 이미지/파일 업로드 권한 통제
-
----
-
-# 문의 / Issue / 협업
-
-- 기능 제안 → Issue
-- 코드 리뷰 → PR
-- 버그 제보 → Issue
-- 문서/설정 변경 → chore 브랜치
 
 ---
