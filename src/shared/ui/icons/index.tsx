@@ -143,3 +143,178 @@ export const ArrowRightIcon: React.FC<IconProps> = ({ size = 20, ...props }) => 
     />
   </svg>
 );
+
+// Eye (Password Show) 아이콘
+export const EyeIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M1 10C1 10 4.6 3.7 10 3.7C15.4 3.7 19 10 19 10C19 10 15.4 16.3 10 16.3C4.6 16.3 1 10 1 10Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10 12.7C11.4912 12.7 12.7 11.4912 12.7 10C12.7 8.50883 11.4912 7.3 10 7.3C8.50883 7.3 7.3 8.50883 7.3 10C7.3 11.4912 8.50883 12.7 10 12.7Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Eye Off (Password Hide) 아이콘
+export const EyeOffIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M15.3083 15.3083C13.8248 16.4526 11.9675 16.969 10 16.3C4.6 16.3 1 10 1 10C1 10 2.21398 7.34848 4.20849 5.38148M8.31885 3.9015C8.86877 3.76697 9.43174 3.7 10 3.7C15.4 3.7 19 10 19 10C19 10 18.0664 12.0624 16.5165 13.9248M8.28636 8.28636C7.94273 8.63 7.72728 9.09636 7.68378 9.58045C7.64028 10.0645 7.77227 10.5367 8.0506 10.8924C8.32893 11.2481 8.73099 11.4583 9.16738 11.4764C9.60377 11.4944 10.0392 11.3188 10.3776 10.9882M1 1L19 19"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Chevron Down (Select) 아이콘
+export const ChevronDownIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M5 7.5L10 12.5L15 7.5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// X Circle (Clear Search) 아이콘
+export const XCircleIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="10" cy="10" r="8.33333" stroke="currentColor" strokeWidth="2" />
+    <path
+      d="M12.5 7.5L7.5 12.5M7.5 7.5L12.5 12.5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// User 아이콘 (예제용)
+export const UserIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M16.6667 17.5V15.8333C16.6667 14.9493 16.3155 14.1014 15.6904 13.4763C15.0653 12.8512 14.2174 12.5 13.3333 12.5H6.66667C5.78261 12.5 4.93477 12.8512 4.30965 13.4763C3.68452 14.1014 3.33334 14.9493 3.33334 15.8333V17.5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle
+      cx="10"
+      cy="5.83333"
+      r="3.33333"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Mail 아이콘 (예제용)
+export const MailIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M3.33334 3.33334H16.6667C17.5833 3.33334 18.3333 4.08334 18.3333 5.00001V15C18.3333 15.9167 17.5833 16.6667 16.6667 16.6667H3.33334C2.41667 16.6667 1.66667 15.9167 1.66667 15V5.00001C1.66667 4.08334 2.41667 3.33334 3.33334 3.33334Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M18.3333 5L10 10.8333L1.66667 5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Lock 아이콘 (예제용)
+export const LockIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <rect
+      x="3.33333"
+      y="9.16667"
+      width="13.3333"
+      height="9.16667"
+      rx="1.66667"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M5.83333 9.16667V5.83333C5.83333 3.53215 7.69881 1.66667 10 1.66667C12.3012 1.66667 14.1667 3.53215 14.1667 5.83333V9.16667"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
