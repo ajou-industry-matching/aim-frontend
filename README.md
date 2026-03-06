@@ -20,11 +20,11 @@
 
 ---
 
-# **Tech Stack**
+## Tech Stack
 
 <div align="center">
 
-### **Frontend**
+### Frontend
 
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=000)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=fff)
@@ -35,13 +35,12 @@
 ![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=fff)
 
-### **Backend**
+### Backend
 
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=fff)
 ![MySQL](https://img.shields.io/badge/MySQL-00618A?style=for-the-badge&logo=mysql&logoColor=fff)
-![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=fff)
 
-### **Infra**
+### Infra
 
 ![Oracle Cloud](https://img.shields.io/badge/Oracle_Cloud-F80000?style=for-the-badge&logo=oracle&logoColor=fff)
 ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=000)
@@ -51,144 +50,20 @@
 
 ---
 
-# **빠른 시작**
+## 빠른 시작
 
 ```bash
-# 개발 서버 실행
-pnpm dev
-
-# Storybook 실행 (포트 6006)
-pnpm storybook
-
-# 프로덕션 빌드
-pnpm build
-
-# 린트 검사
-pnpm lint
+pnpm install
+pnpm dev        # 개발 서버
+pnpm storybook  # Storybook (포트 6006)
+pnpm build      # 프로덕션 빌드
+pnpm lint       # 린트 검사
 ```
 
----
-
-# **프로젝트 개요**
-
-AIM AJOU는 다음 기능을 목표로 한다:
-
-- **Firebase Auth 기반 사용자 인증**
-- **프로젝트/활동 기록 관리**
-- **AI 기반 포트폴리오 구성 추천 (향후 기능)**
-- **클라우드 기반 프로젝트 데이터 저장 (Firestore, Storage)**
-- **반응형 UI를 통한 학생 포트폴리오 웹뷰 제공**
-- **GitHub Actions + Firebase Hosting 자동 배포 CI/CD**
+> 환경 변수(.env) 설정이 필요합니다. 팀 노션을 참고하세요.
 
 ---
 
-# **폴더 구조 (FSD Architecture)**
+## 개발 가이드
 
-이 프로젝트는 **Feature-Sliced Design (FSD)** 아키텍처를 따릅니다.
-
-```
-aim-frontend/
- ├─ .storybook/             # Storybook 설정 (main.ts, preview.ts)
- ├─ public/
- ├─ src/
- │   ├─ app/                #    애플리케이션 초기화
- │   │   ├─ providers/      #    Context providers
- │   │   ├─ router/         #    라우팅 설정
- │   │   ├─ index.tsx       #    App 컴포넌트
- │   │   └─ index.css       #    전역 스타일
- │   │
- │   ├─ pages/              #    페이지 레이어
- │   │   ├─ home/           #    홈 페이지
- │   │   └─ login/          #    로그인 페이지
- │   │
- │   ├─ widgets/            #    위젯 레이어 (큰 UI 블록)
- │   │   └─ header/         #    헤더 위젯
- │   │       ├─ ui/         #    UI 컴포넌트
- │   │       └─ index.ts    #    Public API
- │   │
- │   ├─ features/           #    기능 레이어
- │   │   └─ auth/           #    인증 기능
- │   │       ├─ ui/         #    UI 컴포넌트
- │   │       ├─ model/      #    비즈니스 로직
- │   │       ├─ api/        #    API 요청
- │   │       └─ index.ts    #    Public API
- │   │
- │   ├─ entities/           #    엔티티 레이어
- │   │   └─ user/           #    사용자 엔티티
- │   │       ├─ ui/         #    UI 컴포넌트
- │   │       ├─ model/      #    데이터 모델
- │   │       ├─ api/        #    API 요청
- │   │       └─ index.ts    #    Public API
- │   │
- │   └─ shared/             # 🔧 공유 레이어
- │       ├─ ui/             #    재사용 가능한 UI 컴포넌트
- │       │   ├─ button/     #    버튼 컴포넌트
- │       │   └─ input/      #    인풋 컴포넌트
- │       ├─ assets/         #    전역 에셋 (images, icons, fonts)
- │       ├─ config/         #    설정 (firebase.ts)
- │       ├─ api/            #    API 클라이언트
- │       ├─ lib/            #    유틸리티 함수
- │       └─ types/          #    공통 타입 정의
- │
- ├─ .github/workflows/      # PR Preview & Live Deploy CI/CD
- ├─ .husky/                 # pre-commit hooks
- ├─ firebase.json
- ├─ firestore.rules
- ├─ storage.rules
- ├─ eslint.config.js        # ESLint Flat Config
- ├─ prettier.config.cjs
- ├─ tailwind.config.js
- ├─ tsconfig.json
- └─ package.json
-```
-
-### FSD 레이어 규칙
-
-**상위 레이어 → 하위 레이어** 방향으로만 의존 가능:
-
-```
-app → pages → widgets → features → entities → shared
-```
-
-- **하위 레이어는 상위 레이어를 import할 수 없습니다**
-- **`@/` alias를 사용하여 절대 경로로 import**
-- **각 슬라이스는 public API(index.ts)를 통해 export**
-
----
-
-# **API 통신 구조**
-
-Oracle VM → Nginx → Spring Boot → MySQL
-
-Frontend에서 모든 요청은 `src/lib/api.ts`에서 제공하는 Axios instance를 사용함.
-
-- 자동 Authorization 헤더 삽입
-- 에러 처리 인터셉터
-- Response 타입 안전성 확보
-
----
-
-# **Git Hooks (Husky + lint-staged)**
-
-커밋 시 자동:
-
-- eslint --fix
-- prettier --write
-
-→ 포맷팅되지 않은 코드는 커밋 불가
-
----
-
-# **CI/CD – GitHub Actions + Firebase Hosting**
-
-### PR 생성 →
-
-- 빌드 검사
-- ESLint 검사
-- Firebase Preview URL 자동 생성
-
-### main에 머지 →
-
-- Firebase Hosting Live 자동 배포
-
----
+프로젝트 구조, 컨벤션, 워크플로우는 **[CONTRIBUTING.md](./CONTRIBUTING.md)** 를 참고하세요.
