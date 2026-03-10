@@ -2,22 +2,23 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/shared/ui/button/button";
 import { UserIcon, LogOutIcon } from "@/shared/ui/icons";
 
-export interface NavItem {
+// --- Types ---
+export type NavItem = {
   label: string;
   href: string;
   isActive?: boolean;
-}
+};
 
-export interface User {
+export type NavUser = {
   name: string;
   email: string;
   userType: "학생" | "기업" | "교수";
   isAdmin?: boolean;
-}
+};
 
-export interface NavigationProps {
+export type NavigationProps = {
   items: NavItem[];
-  user?: User;
+  user?: NavUser;
   isAdminMode?: boolean;
   onAdminToggle?: () => void;
   onLogin?: () => void;
@@ -27,8 +28,63 @@ export interface NavigationProps {
   onAdminDashboardClick?: () => void;
   logoHref?: string;
   className?: string;
-}
+};
 
+// --- Styles ---
+
+// 1. Header Styles
+const headerBaseClasses =
+  "sticky top-0 z-50 h-[80px] bg-white/95 backdrop-blur-[6px] border-b border-[var(--color-gray-200,#e5e5ec)] w-full";
+
+const getHeaderClasses = (className?: string) => {
+  return [headerBaseClasses, className].filter(Boolean).join(" ");
+};
+
+// 2. NavLink Styles
+const navLinkBaseClasses =
+  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-900,#1a1a1a)] transition-all duration-200 border-b-2 h-full font-medium";
+
+const navLinkStatusClasses = {
+  active: "border-[var(--color-primary-800,#004a9c)]",
+  inactive: "border-transparent hover:border-[var(--color-primary-800,#004a9c)]/50",
+};
+
+const getNavLinkClasses = (isActive?: boolean) => {
+  return [
+    navLinkBaseClasses,
+    isActive ? navLinkStatusClasses.active : navLinkStatusClasses.inactive,
+  ].join(" ");
+};
+
+// 3. Admin Toggle Styles
+const toggleBaseClasses =
+  "relative inline-flex h-[24px] w-[44px] items-center rounded-full transition-colors duration-300 ease-in-out";
+const toggleBgClasses = {
+  active: "bg-[var(--color-primary-800,#004a9c)]",
+  inactive: "bg-[var(--color-gray-200,#e5e5ec)]",
+};
+
+const getToggleClasses = (isAdminMode: boolean) => {
+  return [toggleBaseClasses, isAdminMode ? toggleBgClasses.active : toggleBgClasses.inactive].join(
+    " ",
+  );
+};
+
+const toggleHandleBaseClasses =
+  "inline-block h-[18px] w-[18px] transform rounded-full bg-white shadow-sm transition-all duration-300 ease-in-out";
+const toggleHandlePosClasses = {
+  active: "translate-x-[23px]",
+  inactive: "translate-x-[3px]",
+};
+
+const getToggleHandleClasses = (isAdminMode: boolean) => {
+  return [
+    toggleHandleBaseClasses,
+    isAdminMode ? toggleHandlePosClasses.active : toggleHandlePosClasses.inactive,
+  ].join(" ");
+};
+
+// --- Component ---
 export const Navigation = ({
   items,
   user,
@@ -56,21 +112,8 @@ export const Navigation = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const headerClasses = [
-    "sticky top-0 z-50 h-[80px] bg-white/95 backdrop-blur-[6px] border-b border-[var(--color-gray-200,#e5e5ec)] w-full",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const navLinkClasses = (isActive?: boolean) => {
-    const base =
-      "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-900,#1a1a1a)] transition-all duration-200 border-b-2 h-full";
-    const activeState = isActive
-      ? "border-[var(--color-primary-800,#004a9c)] font-medium"
-      : "border-transparent hover:border-[var(--color-primary-800,#004a9c)]/50 font-medium";
-    return `${base} ${activeState}`;
-  };
+  // 최종 클래스 변수 (명사형)
+  const headerClasses = getHeaderClasses(className);
 
   return (
     <header className={headerClasses}>
@@ -92,7 +135,7 @@ export const Navigation = ({
         {/* Navigation Menu */}
         <nav className="flex items-center gap-12 h-full">
           {items.map((item) => (
-            <a key={item.href} href={item.href} className={navLinkClasses(item.isActive)}>
+            <a key={item.href} href={item.href} className={getNavLinkClasses(item.isActive)}>
               {item.label}
             </a>
           ))}
@@ -108,18 +151,10 @@ export const Navigation = ({
               </span>
               <button
                 onClick={onAdminToggle}
-                className={`relative inline-flex h-[24px] w-[44px] items-center rounded-full transition-colors duration-300 ease-in-out ${
-                  isAdminMode
-                    ? "bg-[var(--color-primary-800,#004a9c)]"
-                    : "bg-[var(--color-gray-200,#e5e5ec)]"
-                }`}
+                className={getToggleClasses(isAdminMode)}
                 aria-label="관리자 모드 토글"
               >
-                <span
-                  className={`inline-block h-[18px] w-[18px] transform rounded-full bg-white shadow-sm transition-all duration-300 ease-in-out ${
-                    isAdminMode ? "translate-x-[23px]" : "translate-x-[3px]"
-                  }`}
-                />
+                <span className={getToggleHandleClasses(isAdminMode)} />
               </button>
             </div>
           )}
@@ -134,7 +169,6 @@ export const Navigation = ({
                 <UserIcon size={24} />
               </button>
 
-              {/* Logout Button: 유저 아이콘과 동일한 호버 스타일 적용 */}
               <button
                 onClick={onLogout}
                 className="flex items-center justify-center h-10 w-10 text-[var(--color-primary-800,#004a9c)] hover:bg-[var(--color-primary-50)] rounded-full transition-all duration-200"
