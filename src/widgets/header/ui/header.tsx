@@ -1,5 +1,4 @@
 import { Button } from "@/shared/ui/button/button";
-import "./header.css";
 
 type User = {
   name: string;
@@ -14,9 +13,15 @@ export interface HeaderProps {
 
 export const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps) => (
   <header>
-    <div className="storybook-header">
+    <div className="flex justify-between items-center border-b border-black/10 px-5 py-[15px] font-sans">
       <div>
-        <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          xmlns="http://www.w3.org/2000/svg"
+          className="inline-block align-top"
+        >
           <g fill="none" fillRule="evenodd">
             <path
               d="M10 0h12a10 10 0 0110 10v12a10 10 0 01-10 10H10A10 10 0 010 22V10A10 10 0 0110 0z"
@@ -32,12 +37,14 @@ export const Header = ({ user, onLogin, onLogout, onCreateAccount }: HeaderProps
             />
           </g>
         </svg>
-        <h1>Acme</h1>
+        <h1 className="inline-block align-top ml-2 my-[6px] font-bold text-[20px] leading-none">
+          Acme
+        </h1>
       </div>
       <div>
         {user ? (
           <>
-            <span className="welcome">
+            <span className="mr-2 text-[14px] text-[var(--color-gray-900)]">
               Welcome, <b>{user.name}</b>!
             </span>
             <Button size="small" onClick={onLogout}>

@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Header } from "@/widgets/header";
-import "./home.css";
 
 type User = {
   name: string;
@@ -19,8 +18,10 @@ export const HomePage: React.FC = () => {
         onCreateAccount={() => setUser({ name: "Jane Doe" })}
       />
 
-      <section className="storybook-page">
-        <h2>Pages in Storybook</h2>
+      <section className="mx-auto px-5 py-12 max-w-[600px] text-[14px] leading-6 text-[var(--color-gray-900)] font-sans">
+        <h2 className="inline-block align-top m-0 mb-1 font-bold text-[32px] leading-none">
+          Pages in Storybook
+        </h2>
         <p>
           We recommend building UIs with a{" "}
           <a href="https://componentdriven.org" target="_blank" rel="noopener noreferrer">
@@ -33,8 +34,8 @@ export const HomePage: React.FC = () => {
           needing to navigate to them in your app. Here are some handy patterns for managing page
           data in Storybook:
         </p>
-        <ul>
-          <li>
+        <ul className="my-4 pl-8">
+          <li className="mb-2">
             Use a higher-level connected component. Storybook helps you compose such data from the
             "args" of child component stories
           </li>
@@ -54,19 +55,26 @@ export const HomePage: React.FC = () => {
           </a>
           .
         </p>
-        <div className="tip-wrapper">
-          <span className="tip">Tip</span> Adjust the width of the canvas with the{" "}
-          <svg width="10" height="10" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-            <g fill="none" fillRule="evenodd">
-              <path
-                d="M1.5 5.2h4.8c.3 0 .5.2.5.4v5.1c-.1.2-.3.3-.4.3H1.4a.5.5 0 01-.5-.4V5.7c0-.3.2-.5.5-.5zm0-2.1h6.9c.3 0 .5.2.5.4v7a.5.5 0 01-1 0V4H1.5a.5.5 0 010-1zm0-2.1h9c.3 0 .5.2.5.4v9.1a.5.5 0 01-1 0V2H1.5a.5.5 0 010-1zm4.3 5.2H2V10h3.8V6.2z"
-                id="a"
-                fill="#999"
-              />
-            </g>
-          </svg>
-          Viewports addon in the toolbar
+        <div className="inline-block align-top mt-10 rounded-full bg-[#e7fdd8] px-3 py-1 text-[#357a14] font-bold text-[11px] leading-3 mr-2">
+          Tip
         </div>
+        <span className="align-top">Adjust the width of the canvas with the </span>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          xmlns="http://www.w3.org/2000/svg"
+          className="inline-block align-top mt-[3px] mr-1 w-3 h-3"
+        >
+          <g fill="none" fillRule="evenodd">
+            <path
+              d="M1.5 5.2h4.8c.3 0 .5.2.5.4v5.1c-.1.2-.3.3-.4.3H1.4a.5.5 0 01-.5-.4V5.7c0-.3.2-.5.5-.5zm0-2.1h6.9c.3 0 .5.2.5.4v7a.5.5 0 01-1 0V4H1.5a.5.5 0 010-1zm0-2.1h9c.3 0 .5.2.5.4v9.1a.5.5 0 01-1 0V2H1.5a.5.5 0 010-1zm4.3 5.2H2V10h3.8V6.2z"
+              id="a"
+              fill="#1ea7fd"
+            />
+          </g>
+        </svg>
+        <span>Viewports addon in the toolbar</span>
       </section>
     </article>
   );
