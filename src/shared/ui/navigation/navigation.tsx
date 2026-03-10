@@ -220,12 +220,6 @@ export const Navigation = ({
                       >
                         내 포트폴리오
                       </button>
-                      <button
-                        onClick={() => setShowProfile(false)}
-                        className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
-                      >
-                        계정 설정
-                      </button>
                     </div>
                   </div>
                 </div>
