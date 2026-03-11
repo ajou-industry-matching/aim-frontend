@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Tabs, type TabItem } from "./tabs";
 
-// Mock Badge Component for demo (실제 Badge 컴포넌트가 있다면 그것을 import해서 사용)
-const BadgeMock = ({ count }: { count: number }) => (
+// 데모용 뱃지 컴포넌트 (실제 프로젝트에 Badge 컴포넌트가 있다면 그것으로 교체하세요)
+const BadgeMock = ({ count }: { count: number }): React.ReactElement => (
   <span className="inline-flex items-center justify-center min-w-[16px] h-[16px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full">
     {count}
   </span>
@@ -25,7 +25,7 @@ const meta = {
       table: { defaultValue: { summary: "horizontal" } },
     },
     items: {
-      description: "탭 아이템 배열 ({ id, label, badge?, disabled? })",
+      description: "탭 아이템 배열 ({ id, label, badge?, isDisabled? })", // 설명 업데이트
     },
     value: {
       control: "text",
@@ -38,7 +38,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// --- Mock Data ---
+// ----------------------------------------------------------------------
+// 1. 기본 목업 데이터
+// ----------------------------------------------------------------------
 const defaultItems: TabItem[] = [
   { id: "tab1", label: "전체" },
   { id: "tab2", label: "진행중" },
@@ -46,13 +48,19 @@ const defaultItems: TabItem[] = [
   { id: "tab4", label: "보류" },
 ];
 
-// 💡 ESLint 에러를 해결하기 위한 상태 관리 Wrapper 컴포넌트
-const TabsWithState = (args: React.ComponentProps<typeof Tabs>) => {
+// ----------------------------------------------------------------------
+// 2. 상태 관리용 Wrapper 컴포넌트 (ESLint 훅 규칙 준수)
+// ----------------------------------------------------------------------
+const TabsWithState = (args: React.ComponentProps<typeof Tabs>): React.ReactElement => {
   const [selected, setSelected] = useState(args.value);
   return <Tabs {...args} value={selected} onChange={setSelected} />;
 };
 
-// --- 1. Horizontal (Default) ---
+// ----------------------------------------------------------------------
+// 3. 스토리 정의
+// ----------------------------------------------------------------------
+
+// --- 기본 (수평) 탭 ---
 export const Horizontal: Story = {
   render: (args) => <TabsWithState {...args} />,
   args: {
@@ -63,7 +71,7 @@ export const Horizontal: Story = {
   },
 };
 
-// --- 2. Vertical ---
+// --- 수직 탭 ---
 export const Vertical: Story = {
   render: (args) => <TabsWithState {...args} />,
   args: {
@@ -81,7 +89,7 @@ export const Vertical: Story = {
   },
 };
 
-// --- 3. Pill ---
+// --- 필(알약) 형태 탭 ---
 export const Pill: Story = {
   render: (args) => <TabsWithState {...args} />,
   args: {
@@ -92,7 +100,7 @@ export const Pill: Story = {
   },
 };
 
-// --- 4. With Badges ---
+// --- 뱃지가 포함된 탭 ---
 export const WithBadges: Story = {
   render: (args) => <TabsWithState {...args} />,
   args: {
@@ -107,14 +115,14 @@ export const WithBadges: Story = {
   },
 };
 
-// --- 5. With Disabled Item ---
+// --- 비활성화된 아이템이 포함된 탭 ---
 export const WithDisabledItem: Story = {
   render: (args) => <TabsWithState {...args} />,
   args: {
     items: [
       { id: "tab1", label: "사용 가능" },
-      { id: "tab2", label: "사용 불가", disabled: true }, // 클릭 안됨
-      { id: "tab3", label: "관리자 전용", disabled: true },
+      { id: "tab2", label: "사용 불가", isDisabled: true }, // 불린 컨벤션(isDisabled) 적용
+      { id: "tab3", label: "관리자 전용", isDisabled: true },
     ],
     variant: "horizontal",
     value: "tab1",
