@@ -1,3 +1,4 @@
+import React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/shared/ui/icons";
 
 // --- Types ---
@@ -59,16 +60,33 @@ export const Pagination = ({
 
   const containerClasses = ["flex items-center gap-2", className].filter(Boolean).join(" ");
 
+  // --- Guard Logic for Controls ---
+  const isPrevDisabled = totalPages <= 1 || currentPage <= 1 || currentPage > totalPages;
+  const isNextDisabled = totalPages <= 0 || currentPage >= totalPages;
+
+  const handlePrevClick = () => {
+    const prevPage = Math.max(1, currentPage - 1);
+    if (totalPages > 0 && prevPage < currentPage) {
+      onPageChange(prevPage);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
   return (
     <div className={containerClasses}>
       {/* Previous Button */}
       <button
         type="button"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className={getControlBtnClasses(currentPage === 1)}
+        onClick={handlePrevClick}
+        disabled={isPrevDisabled}
+        className={getControlBtnClasses(isPrevDisabled)}
       >
-        <ChevronLeftIcon size={16} className={currentPage === 1 ? "opacity-30" : ""} />
+        <ChevronLeftIcon size={16} className={isPrevDisabled ? "opacity-30" : ""} />
         <span>이전</span>
       </button>
 
@@ -89,12 +107,12 @@ export const Pagination = ({
       {/* Next Button */}
       <button
         type="button"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className={getControlBtnClasses(currentPage === totalPages)}
+        onClick={handleNextClick}
+        disabled={isNextDisabled}
+        className={getControlBtnClasses(isNextDisabled)}
       >
         <span>다음</span>
-        <ChevronRightIcon size={16} className={currentPage === totalPages ? "opacity-30" : ""} />
+        <ChevronRightIcon size={16} className={isNextDisabled ? "opacity-30" : ""} />
       </button>
     </div>
   );
