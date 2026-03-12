@@ -77,13 +77,21 @@ export const Pagination = ({
     }
   };
 
+  const handlePageClick = (page: number) => {
+    if (page !== currentPage) {
+      onPageChange(page);
+    }
+  };
+
   return (
-    <div className={containerClasses}>
+    <div className={containerClasses} role="navigation" aria-label="Pagination">
       {/* Previous Button */}
       <button
         type="button"
         onClick={handlePrevClick}
         disabled={isPrevDisabled}
+        aria-disabled={isPrevDisabled}
+        aria-label="Previous Page"
         className={getControlBtnClasses(isPrevDisabled)}
       >
         <ChevronLeftIcon size={16} className={isPrevDisabled ? "opacity-30" : ""} />
@@ -92,16 +100,21 @@ export const Pagination = ({
 
       {/* Page Numbers */}
       <div className="flex items-center gap-2">
-        {pages.map((page) => (
-          <button
-            key={page}
-            type="button"
-            onClick={() => onPageChange(page)}
-            className={getPageNumClasses(page === currentPage)}
-          >
-            {page}
-          </button>
-        ))}
+        {pages.map((page) => {
+          const isActive = page === currentPage;
+          return (
+            <button
+              key={page}
+              type="button"
+              onClick={() => handlePageClick(page)}
+              className={getPageNumClasses(isActive)}
+              aria-current={isActive ? "page" : undefined}
+              aria-label={`Page ${page}`}
+            >
+              {page}
+            </button>
+          );
+        })}
       </div>
 
       {/* Next Button */}
@@ -109,6 +122,8 @@ export const Pagination = ({
         type="button"
         onClick={handleNextClick}
         disabled={isNextDisabled}
+        aria-disabled={isNextDisabled}
+        aria-label="Next Page"
         className={getControlBtnClasses(isNextDisabled)}
       >
         <span>다음</span>
