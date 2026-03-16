@@ -35,3 +35,7 @@ sb-*.log
 /coverage
 /playwright-report
 /test-results
+
+# Local tool config
+.claude/
+package-lock.json.claude/

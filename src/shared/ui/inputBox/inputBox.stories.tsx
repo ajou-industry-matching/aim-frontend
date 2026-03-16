@@ -1,4 +1,3 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Input, Textarea, Select } from "./inputBox";
 // 아이콘 임포트
