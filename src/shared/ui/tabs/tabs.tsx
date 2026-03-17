@@ -6,20 +6,20 @@ import React from "react";
 // 💡 배열 생략: 사용하지 않는 배열로 인한 ESLint 에러 방지 및 가이드라인(Literal Union) 준수
 export type TabVariant = "horizontal" | "vertical" | "pill";
 
-export interface TabItem {
+export type TabItem = {
   id: string;
   label: string;
   badge?: React.ReactNode;
   isDisabled?: boolean;
-}
+};
 
-export interface TabsProps {
+export type TabsProps = {
   items: TabItem[];
   value: string;
   onChange: (id: string) => void;
   variant?: TabVariant;
   className?: string;
-}
+};
 
 // ----------------------------------------------------------------------
 // 2. 스타일 토큰 (상수)
@@ -98,7 +98,7 @@ export const Tabs = ({
 
         return (
           <button
-            key={item.id}
+            type="button"
             role="tab"
             aria-selected={isActive}
             disabled={isDisabled}
