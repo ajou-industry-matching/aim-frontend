@@ -37,3 +37,4 @@ sb-*.log
 /test-results
 
 GEMINI.md
+/test-results.claude/
