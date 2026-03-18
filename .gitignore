@@ -34,4 +34,7 @@ sb-*.log
 # Testing (Storybook Addon - Vitest & Playwright)
 /coverage
 /playwright-report
+/test-results
+
+GEMINI.md
 /test-results.claude/
