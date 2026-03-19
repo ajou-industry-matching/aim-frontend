@@ -39,3 +39,5 @@ sb-*.log
 # Local tool config
 .claude/
 package-lock.json.claude/
+GEMINI.md
+/test-results.claude/
