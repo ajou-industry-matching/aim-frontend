@@ -50,10 +50,15 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
     setIsOpen(false);
   };
 
+  const menuId = "dropdown-menu";
+
   return (
     <div ref={containerRef} className={`relative inline-block ${className}`}>
       <button
         type="button"
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        aria-controls={menuId}
         onClick={() => setIsOpen((prev) => !prev)}
         className="inline-flex items-center gap-2 px-4 h-10 rounded-lg border border-[color:var(--color-gray-300,#CCCCCC)] bg-white text-[14px] text-[color:var(--color-gray-900,#1A1A1A)] transition-colors hover:border-[color:var(--color-primary-500,#3385DB)] focus:outline-none focus:shadow-[0_0_0_3px_var(--color-primary-100,#E0EDFB)]"
       >
@@ -65,11 +70,17 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-1 min-w-40 rounded-lg border border-[color:var(--color-gray-200,#E5E5E5)] bg-white shadow-[0_4px_16px_rgba(0,0,0,0.10)] py-1">
+        <div
+          id={menuId}
+          role="menu"
+          className="absolute z-50 mt-1 min-w-40 rounded-lg border border-[color:var(--color-gray-200,#E5E5E5)] bg-white shadow-[0_4px_16px_rgba(0,0,0,0.10)] py-1"
+        >
           {items.map((item) => (
             <React.Fragment key={item.value}>
               <button
                 type="button"
+                role="menuitem"
+                aria-disabled={item.disabled}
                 disabled={item.disabled}
                 onClick={() => handleSelect(item)}
                 className={[
