@@ -1,23 +1,8 @@
 import React from "react";
 
-import { Header } from "@/widgets/header";
-
-type User = {
-  name: string;
-};
-
 export const HomePage: React.FC = () => {
-  const [user, setUser] = React.useState<User>();
-
   return (
     <article>
-      <Header
-        user={user}
-        onLogin={() => setUser({ name: "Jane Doe" })}
-        onLogout={() => setUser(undefined)}
-        onCreateAccount={() => setUser({ name: "Jane Doe" })}
-      />
-
       <section className="mx-auto px-5 py-12 max-w-[600px] text-[14px] leading-6 text-[var(--color-gray-900)] font-sans">
         <h2 className="inline-block align-top m-0 mb-1 font-bold text-[32px] leading-none">
           Pages in Storybook
