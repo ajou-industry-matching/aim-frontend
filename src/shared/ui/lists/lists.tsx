@@ -1,7 +1,7 @@
 import React from "react";
 
 // ----------------------------------------------------------------------
-// 1. 공통 유틸리티 및 아이콘 (내부 사용)
+// 공통 유틸리티 및 아이콘 (내부 사용)
 // ----------------------------------------------------------------------
 const ChevronRightIcon = (): React.ReactElement => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -40,7 +40,7 @@ const InboxIcon = (): React.ReactElement => (
 );
 
 // ----------------------------------------------------------------------
-// 2. 타입 정의 (interface 대신 type 선호 컨벤션 적용)
+// 타입 정의
 // ----------------------------------------------------------------------
 
 // List Item 관련 타입
@@ -73,7 +73,7 @@ export type TableColumn = {
 
 export type TableRowData = {
   id: string;
-  [key: string]: React.ReactNode; // 각 열의 데이터 (키는 column의 id와 매칭)
+  [key: string]: React.ReactNode;
   isSelected?: boolean;
   isDisabled?: boolean;
 };
@@ -90,7 +90,7 @@ export type TableProps = {
 };
 
 // ----------------------------------------------------------------------
-// 3. 스타일 토큰 (상수)
+// 스타일 토큰 (상수)
 // ----------------------------------------------------------------------
 
 // --- List Item 스타일 ---
@@ -122,7 +122,7 @@ const columnAlignClasses: Record<TableColumnAlign, string> = {
 };
 
 // ----------------------------------------------------------------------
-// 4. 헬퍼 함수
+// 함수
 // ----------------------------------------------------------------------
 
 const getListItemClasses = (isActive: boolean, isDisabled: boolean): string => {
@@ -150,12 +150,10 @@ const getTableRowClasses = (isSelected: boolean, isDisabled: boolean): string =>
 };
 
 // ----------------------------------------------------------------------
-// 5. 컴포넌트 정의
+// 컴포넌트 정의
 // ----------------------------------------------------------------------
 
-// ==========================================
 // List Item Component
-// ==========================================
 export const ListItem = ({
   id,
   title,
@@ -257,9 +255,7 @@ export const ListItem = ({
   );
 };
 
-// ==========================================
 // Table Component
-// ==========================================
 export const Table = ({
   columns,
   data,
