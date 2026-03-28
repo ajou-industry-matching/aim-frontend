@@ -24,6 +24,10 @@ export const LoginPage = () => {
   const isStudent = activeTab === "student";
   const signupCopy = "기업 계정이 없으신가요? 회원가입으로 이동하세요.";
 
+  const handleCompanyLoginSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  };
+
   return (
     <div className="login-page flex min-h-screen flex-col bg-white text-[var(--color-gray-900)]">
       <Navigation
@@ -84,7 +88,7 @@ export const LoginPage = () => {
                         </button>
                       </>
                     ) : (
-                      <>
+                      <form onSubmit={handleCompanyLoginSubmit} className="flex flex-col gap-2">
                         <label
                           htmlFor="login-email"
                           className="text-[16px] font-medium leading-5 text-[#000000]"
@@ -122,6 +126,7 @@ export const LoginPage = () => {
                         />
 
                         <Button
+                          type="submit"
                           fullWidth
                           size="large"
                           className="mt-5 rounded-[4px] text-[14px] font-medium hover:scale-100 hover:shadow-none active:scale-100"
@@ -134,7 +139,7 @@ export const LoginPage = () => {
                         >
                           {signupCopy}
                         </a>
-                      </>
+                      </form>
                     )}
                   </div>
                 </div>
