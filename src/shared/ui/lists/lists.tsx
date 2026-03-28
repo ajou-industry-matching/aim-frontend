@@ -1,43 +1,6 @@
 import React from "react";
-
-// ----------------------------------------------------------------------
-// 공통 유틸리티 및 아이콘 (내부 사용)
-// ----------------------------------------------------------------------
-const ChevronRightIcon = (): React.ReactElement => (
-  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M7.5 15L12.5 10L7.5 5"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const InboxIcon = (): React.ReactElement => (
-  <svg
-    width="48"
-    height="48"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="text-[color:var(--color-gray-400,#999999)]"
-  >
-    <path
-      d="M22 12H16L14 15H10L8 12H2V5C2 3.89543 2.89543 3 4 3H20C21.1046 3 22 3.89543 22 5V12Z"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M2 12V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V12"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+// 공통 아이콘 Import 추가
+import { ChevronRightIcon, InboxIcon } from "../icons";
 
 // ----------------------------------------------------------------------
 // 타입 정의
@@ -248,7 +211,7 @@ export const ListItem = ({
               : "text-[color:var(--color-gray-300,#CCCCCC)] group-hover:text-[color:var(--color-primary-800,#004A9C)]"
           }`}
         >
-          <ChevronRightIcon />
+          <ChevronRightIcon size={20} />
         </div>
       )}
     </div>
@@ -297,7 +260,7 @@ export const Table = ({
       {/* Table Body (Empty State) */}
       {isEmpty || data.length === 0 ? (
         <div className="flex flex-col items-center justify-center w-full h-[200px] gap-2 bg-white">
-          <InboxIcon />
+          <InboxIcon size={48} className="text-[color:var(--color-gray-400,#999999)]" />
           <span className="text-[14px] text-[color:var(--color-gray-500,#808080)]">
             데이터가 없습니다
           </span>
