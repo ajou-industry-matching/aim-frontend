@@ -54,12 +54,23 @@ export const FormField = ({ children, className }: FormFieldProps) => {
 };
 
 export const FormLabel = ({ children, required, htmlFor, className }: FormLabelProps) => {
-  return (
-    <label htmlFor={htmlFor} className={getLabelClasses(className)}>
+  const content = (
+    <>
       {children}
       {required && <span className="text-[var(--color-error-500,#EF4444)] ml-0.5">*</span>}
-    </label>
+    </>
   );
+
+  // htmlFor가 있으면 label, 없으면 span으로 렌더링
+  if (htmlFor) {
+    return (
+      <label htmlFor={htmlFor} className={getLabelClasses(className)}>
+        {content}
+      </label>
+    );
+  }
+
+  return <span className={getLabelClasses(className)}>{content}</span>;
 };
 
 export const FormHelperText = ({ children, className }: FormHelperTextProps) => {
