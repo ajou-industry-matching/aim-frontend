@@ -30,7 +30,6 @@ const FilterModalExample = () => {
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <ModalHeader title="필터 선택" onClose={() => setIsOpen(false)} />
         <ModalContent className="space-y-8">
-          {/* 카테고리 섹션 */}
           <div className="space-y-4">
             <h3 className="text-[16px] font-semibold text-[var(--color-gray-800,#333)]">
               카테고리
@@ -45,7 +44,6 @@ const FilterModalExample = () => {
 
           <div className="h-px bg-[var(--color-gray-100,#f2f2f2)]" />
 
-          {/* 학과 섹션 */}
           <div className="space-y-4">
             <h3 className="text-[16px] font-semibold text-[var(--color-gray-800,#333)]">학과</h3>
             <div className="grid grid-cols-2 gap-3">
