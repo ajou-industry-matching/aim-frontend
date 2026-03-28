@@ -1,9 +1,11 @@
+"use client";
+
 import { useState } from "react";
 import { Button } from "@/shared/ui/button/button";
 import { Input } from "@/shared/ui/inputBox/inputBox";
 import { Navigation, Tabs, type NavItem, type TabItem } from "@/shared/ui";
 import { LockIcon, MailIcon } from "@/shared/ui/icons";
-import "./login.css";
+import styles from "./login.module.css";
 
 const navItems: NavItem[] = [
   { label: "포트폴리오", href: "#portfolio" },
@@ -68,7 +70,8 @@ export const LoginPage = () => {
                   <div
                     key={activeTab}
                     className={[
-                      "login-page__panel login-page__panel--animated mx-auto flex w-full flex-col md:max-w-[672px]",
+                      "login-page__panel mx-auto flex w-full flex-col md:max-w-[672px]",
+                      styles.panelAnimated,
                       isStudent ? "items-center text-center" : "gap-2 text-left",
                     ].join(" ")}
                   >

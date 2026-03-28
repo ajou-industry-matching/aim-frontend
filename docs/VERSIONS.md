@@ -11,7 +11,7 @@
 | 항목 | 버전 | 비고 |
 |---|---|---|
 | Node.js | 20.x | ⚠️ LTS(v22) 업그레이드 검토 필요 |
-| pnpm | - | 패키지 매니저 |
+| pnpm | 10.20.0 | 패키지 매니저 |
 
 ### 프로덕션 의존성
 
@@ -19,6 +19,7 @@
 |---|---|---|
 | `react` | 19.2.4 | UI 프레임워크 |
 | `react-dom` | 19.2.4 | React DOM 렌더러 |
+| `next` | ^16.2.1 | App Router 기반 프레임워크 |
 | `firebase` | 12.9.0 | BaaS (Hosting, Firestore, Storage) |
 
 ### 개발 의존성
@@ -26,11 +27,12 @@
 | 패키지 | 버전 | 설명 |
 |---|---|---|
 | `typescript` | ~5.9.3 | 타입스크립트 컴파일러 |
-| `vite` | ^7.2.2 | 빌드 도구 |
+| `vite` | ^7.2.2 | 전환 기간 동안 유지되는 기존 빌드 도구 |
 | `tailwindcss` | 4.2.0 | CSS 프레임워크 |
 | `autoprefixer` | 10.4.24 | CSS 벤더 프리픽스 |
 | `postcss` | ^8.5.6 | CSS 후처리기 |
 | `eslint` | ^9.39.1 | 린터 |
+| `eslint-config-next` | ^16.2.1 | Next.js ESLint 규칙 |
 | `@eslint/js` | 9.39.2 | ESLint JS 규칙 |
 | `typescript-eslint` | ^8.46.3 | TypeScript ESLint |
 | `eslint-plugin-react-hooks` | ^7.0.1 | React Hooks 린트 규칙 |
@@ -52,7 +54,16 @@
 | `@storybook/addon-docs` | ^10.1.11 | 문서화 애드온 |
 | `eslint-plugin-storybook` | ^10.1.11 | Storybook 린트 규칙 |
 | `@chromatic-com/storybook` | 5.0.1 | Chromatic 비주얼 테스트 애드온 |
-| `@vitejs/plugin-react` | ^5.1.0 | Vite React 플러그인 |
+| `@vitejs/plugin-react` | ^5.1.0 | 전환 기간 동안 유지되는 Vite React 플러그인 |
+
+### 2026-03-29 
+
+**적용 내역**
+
+| 패키지 | 이전 버전 | 이후 버전 | 분류 |
+|---|---|---|---|
+| `next` | - | ^16.2.1 | 기능 추가 |
+| `eslint-config-next` | - | ^16.2.1 | 기능 추가 |
 
 ---
 

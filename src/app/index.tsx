@@ -1,4 +1,4 @@
-import { LoginPage } from "@/pages";
+import { LoginPage } from "@/views";
 import "./index.css";
 
 function App() {
