@@ -154,7 +154,9 @@ export const TableEmptyState: StoryObj<typeof Table> = {
 const InteractiveTable = (): React.ReactElement => {
   const [data, setData] = useState<TableRowData[]>(initialTableData);
 
-  const isAllChecked = data.filter((r) => !r.isDisabled).every((r) => r.isSelected);
+  const selectableRows = data.filter((r) => !r.isDisabled);
+  const isAllChecked =
+    selectableRows.length > 0 && selectableRows.every((r) => r.isSelected);
 
   const handleRowCheck = (id: string, isChecked: boolean) => {
     setData((prev) => prev.map((row) => (row.id === id ? { ...row, isSelected: isChecked } : row)));
