@@ -85,6 +85,22 @@ const getTabItemClasses = (
   return [base, variantClasses, motionClasses, stateClasses].filter(Boolean).join(" ");
 };
 
+const getHorizontalIndicatorClasses = (isActive: boolean, isAnimated: boolean): string => {
+  const baseClasses =
+    "absolute bottom-0 left-0 h-[2px] w-full bg-[color:var(--color-primary-800,#004A9C)]";
+
+  const stateClasses = isAnimated
+    ? [
+        "origin-center transition-transform duration-300 ease-out",
+        isActive ? "scale-x-100" : "scale-x-0",
+      ].join(" ")
+    : isActive
+      ? "transition-all duration-200"
+      : "hidden";
+
+  return [baseClasses, stateClasses].filter(Boolean).join(" ");
+};
+
 // ----------------------------------------------------------------------
 // 4. 컴포넌트 정의
 // ----------------------------------------------------------------------
@@ -120,16 +136,8 @@ export const Tabs = ({
             {item.badge && (
               <span className="ml-[6px] inline-flex items-center justify-center">{item.badge}</span>
             )}
-            {variant === "horizontal" && isAnimated && !isDisabled && (
-              <div
-                className={[
-                  "absolute bottom-0 left-0 h-[2px] w-full origin-center bg-[color:var(--color-primary-800,#004A9C)] transition-transform duration-300 ease-out",
-                  isActive ? "scale-x-100" : "scale-x-0",
-                ].join(" ")}
-              />
-            )}
-            {variant === "horizontal" && !isAnimated && isActive && !isDisabled && (
-              <div className="absolute bottom-0 left-0 w-full h-[2px] bg-[color:var(--color-primary-800,#004A9C)] transition-all duration-200" />
+            {variant === "horizontal" && !isDisabled && (
+              <div className={getHorizontalIndicatorClasses(isActive, isAnimated)} />
             )}
           </button>
         );
