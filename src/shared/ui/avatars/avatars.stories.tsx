@@ -14,7 +14,7 @@ const meta = {
 export default meta;
 
 // ==========================================
-// 1. Avatar Stories
+// Avatar Stories
 // ==========================================
 export const AvatarSizes: StoryObj = {
   render: () => (
@@ -75,7 +75,7 @@ export const AvatarWithBadge: StoryObj<typeof Avatar> = {
 };
 
 // ==========================================
-// 2. Avatar Group Stories
+// Avatar Group Stories
 // ==========================================
 const mockAvatars: AvatarProps[] = [
   { src: "https://picsum.photos/200/200?random=1", name: "User 1" },

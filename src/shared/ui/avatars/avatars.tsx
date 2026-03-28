@@ -1,7 +1,7 @@
 import React from "react";
 
 // ----------------------------------------------------------------------
-// 1. 공통 유틸리티 및 아이콘 (내부 사용)
+// 공통 유틸리티 및 아이콘 (내부 사용)
 // ----------------------------------------------------------------------
 const UserIcon = ({ className = "" }: { className?: string }): React.ReactElement => (
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -13,7 +13,7 @@ const UserIcon = ({ className = "" }: { className?: string }): React.ReactElemen
 );
 
 // ----------------------------------------------------------------------
-// 2. 타입 정의
+// 타입 정의
 // ----------------------------------------------------------------------
 export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 export type AvatarStatus = "online" | "away" | "busy" | "offline";
@@ -24,7 +24,7 @@ export type AvatarProps = {
   size?: AvatarSize;
   status?: AvatarStatus;
   badge?: React.ReactNode; // 코너 뱃지 (숫자, 닷 등)
-  hasBorder?: boolean; // 하얀색 테두리 여부 (Group에서 주로 사용)
+  hasBorder?: boolean; // 하얀색 테두리 여부
   isGrouped?: boolean; // 그룹 내 배치 여부 (테두리 두께 3px 및 z-index 조정을 위함)
   className?: string;
   onClick?: () => void;
@@ -38,7 +38,7 @@ export type AvatarGroupProps = {
 };
 
 // ----------------------------------------------------------------------
-// 3. 스타일 토큰 (상수)
+// 스타일 토큰 (상수)
 // ----------------------------------------------------------------------
 const avatarBaseClasses =
   "relative inline-flex items-center justify-center rounded-full bg-[color:var(--color-primary-800,#004A9C)] text-white font-bold shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex-shrink-0 select-none";
@@ -53,7 +53,7 @@ const avatarSizeClasses: Record<AvatarSize, string> = {
   "3xl": "w-[128px] h-[128px]",
 };
 
-// Height ÷ 2.5 비율에 맞춘 텍스트 사이즈
+// 비율에 맞춘 텍스트 사이즈
 const avatarTextSizeClasses: Record<AvatarSize, string> = {
   xs: "text-[10px]",
   sm: "text-[13px]",
@@ -64,7 +64,7 @@ const avatarTextSizeClasses: Record<AvatarSize, string> = {
   "3xl": "text-[51px]",
 };
 
-// Height ÷ 5 비율에 맞춘 상태 표시기 사이즈
+// 비율에 맞춘 상태 표시기 사이즈
 const statusSizeClasses: Record<AvatarSize, string> = {
   xs: "w-[5px] h-[5px] border-[1px]",
   sm: "w-[6px] h-[6px] border-[1.5px]",
@@ -83,7 +83,7 @@ const statusColorClasses: Record<AvatarStatus, string> = {
 };
 
 // ----------------------------------------------------------------------
-// 4. 헬퍼 함수
+// 헬퍼 함수
 // ----------------------------------------------------------------------
 const getInitial = (name: string): string => {
   return name.charAt(0).toUpperCase();
@@ -107,12 +107,10 @@ const getAvatarClasses = (
 };
 
 // ----------------------------------------------------------------------
-// 5. 컴포넌트 정의
+// 컴포넌트 정의
 // ----------------------------------------------------------------------
 
-// ==========================================
 // User Avatar Component
-// ==========================================
 export const Avatar = ({
   src,
   name,
@@ -166,9 +164,7 @@ export const Avatar = ({
   );
 };
 
-// ==========================================
 // Avatar Group Component
-// ==========================================
 export const AvatarGroup = ({
   avatars,
   maxVisible = 4,
