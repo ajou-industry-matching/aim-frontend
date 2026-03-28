@@ -8,61 +8,40 @@ export type CheckboxProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "t
 
 // --- Styles ---
 
-// 1. Container & Input
 const containerBaseClasses = "inline-flex items-center gap-2 cursor-pointer group select-none";
-const inputHiddenClasses = "sr-only"; // Screen reader only
 
-// 2. Checkbox Box
+// 체크박스 박스 스타일 (peer 상태에 반응 및 포커스 인디케이터 추가)
 const boxBaseClasses =
-  "w-5 h-5 flex items-center justify-center rounded border transition-all duration-200 ease-out shrink-0";
+  "w-5 h-5 flex items-center justify-center rounded border transition-all duration-200 ease-out shrink-0 " +
+  "peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-primary-200,#E0EDFB)] peer-focus-visible:ring-offset-1 " +
+  "peer-checked:bg-[var(--color-primary-800,#004A9C)] peer-checked:border-[var(--color-primary-800,#004A9C)] " +
+  "peer-checked:[&_svg]:scale-100 peer-checked:[&_svg]:opacity-100 " +
+  "peer-disabled:bg-[var(--color-gray-100,#F2F2F2)] peer-disabled:border-[var(--color-gray-200,#E5E5E5)] " +
+  "bg-white border-[var(--color-gray-300,#CCCCCC)] group-hover:peer-not-checked:border-[var(--color-primary-500,#3385DB)]";
 
-const getBoxClasses = (checked?: boolean, disabled?: boolean) => {
-  if (disabled) {
-    return [
-      boxBaseClasses,
-      "bg-[var(--color-gray-100,#F2F2F2)] border-[var(--color-gray-200,#E5E5E5)]",
-    ].join(" ");
-  }
-  if (checked) {
-    return [
-      boxBaseClasses,
-      "bg-[var(--color-primary-800,#004A9C)] border-[var(--color-primary-800,#004A9C)]",
-    ].join(" ");
-  }
-  return [
-    boxBaseClasses,
-    "bg-white border-[var(--color-gray-300,#CCCCCC)] group-hover:border-[var(--color-primary-500,#3385DB)]",
-  ].join(" ");
-};
+// 체크 아이콘 기본 스타일
+const iconClasses = "text-white transition-all duration-200 transform scale-0 opacity-0";
 
-// 3. Label
-const labelBaseClasses =
-  "text-[14px] leading-[1.43] tracking-[-0.35px] transition-colors duration-200";
-const getLabelClasses = (disabled?: boolean) => {
-  const statusClasses = disabled
+// 라벨 스타일
+const labelClasses = (disabled?: boolean) => {
+  const base = "text-[14px] leading-[1.43] tracking-[-0.35px] transition-colors duration-200";
+  const status = disabled
     ? "text-[var(--color-gray-400,#999)]"
     : "text-[var(--color-gray-800,#333)]";
-  return [labelBaseClasses, statusClasses].join(" ");
+  return `${base} ${status}`;
 };
 
 // --- Component ---
 
 export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ label, checked, disabled, className = "", ...props }, ref) => {
+  ({ label, disabled, className = "", ...props }, ref) => {
     return (
       <label className={[containerBaseClasses, className].join(" ")}>
-        <input
-          type="checkbox"
-          ref={ref}
-          checked={checked}
-          disabled={disabled}
-          className={inputHiddenClasses}
-          {...props}
-        />
-        <div className={getBoxClasses(checked, disabled)}>
-          <CheckIcon size={14} className={checked ? "text-white" : "text-transparent"} />
+        <input type="checkbox" ref={ref} disabled={disabled} className="peer sr-only" {...props} />
+        <div className={boxBaseClasses}>
+          <CheckIcon size={14} className={iconClasses} />
         </div>
-        {label && <span className={getLabelClasses(disabled)}>{label}</span>}
+        {label && <span className={labelClasses(disabled)}>{label}</span>}
       </label>
     );
   },
