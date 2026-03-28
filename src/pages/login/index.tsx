@@ -25,7 +25,7 @@ export const LoginPage = () => {
   const signupCopy = "기업 계정이 없으신가요? 회원가입으로 이동하세요.";
 
   return (
-    <div className="login-page min-h-screen bg-white text-[var(--color-gray-900)]">
+    <div className="login-page flex min-h-screen flex-col bg-white text-[var(--color-gray-900)]">
       <Navigation
         items={navItems}
         onLogin={() => undefined}
@@ -33,9 +33,9 @@ export const LoginPage = () => {
         className="login-page__nav"
       />
 
-      <main className="login-page__main pb-16 pt-8 md:pt-12">
-        <div>
-          <section className="login-page__surface min-h-[calc(100vh-180px)] rounded-[24px] bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_100%)] px-4 py-10 md:px-8 md:py-14">
+      <main className="login-page__main flex min-h-[calc(100vh-80px)] flex-1 justify-center px-2 pb-5 pt-[10vh] md:px-8 md:pb-10 md:pt-[8vh]">
+        <div className="flex w-full justify-center">
+          <section className="login-page__surface w-full rounded-[24px] bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_100%)] py-0">
             <div className="login-page__content flex flex-col items-center">
               <h1 className="login-page__title mb-8 text-center text-[36px] font-bold leading-[1.3] tracking-[-1px] text-black md:mb-14 md:text-[40px]">
                 AIM AJOU
@@ -97,6 +97,7 @@ export const LoginPage = () => {
                           value={email}
                           onChange={(event) => setEmail(event.target.value)}
                           leftIcon={<MailIcon width={18} />}
+                          iconClassName="!text-[#000000] hover:!text-[#000000]"
                           size="large"
                           isFullWidth
                           className="rounded-[4px] text-[14px] shadow-none"
@@ -114,6 +115,7 @@ export const LoginPage = () => {
                           value={password}
                           onChange={(event) => setPassword(event.target.value)}
                           leftIcon={<LockIcon width={18} />}
+                          iconClassName="!text-[#000000] hover:!text-[#000000]"
                           size="large"
                           isFullWidth
                           className="rounded-[4px] text-[14px] shadow-none"
