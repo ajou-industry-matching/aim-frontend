@@ -47,15 +47,15 @@ Firebase 연동을 위해 `.env` 파일 설정이 필요합니다.
 
 > `.env` 파일은 절대 GitHub에 커밋하지 마세요. `.gitignore`에 등록되어 있습니다.
 
-환경 변수 값은 **팀 노션**을 참고해서 프로젝트 루트에 `.env` 파일을 생성하세요.
+환경 변수 값은 **팀 노션**을 참고해서 프로젝트 루트에 `.env.local` 파일을 생성하세요.
 
 ```
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
-VITE_FIREBASE_PROJECT_ID=...
-VITE_FIREBASE_STORAGE_BUCKET=...
-VITE_FIREBASE_MESSAGING_SENDER_ID=...
-VITE_FIREBASE_APP_ID=...
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
 ```
 
 ---
@@ -67,13 +67,12 @@ aim-frontend/
  ├─ .storybook/             # Storybook 설정 (main.ts, preview.ts)
  ├─ public/
  ├─ src/
- │   ├─ app/                # 애플리케이션 초기화
- │   │   ├─ providers/      # Context providers
- │   │   ├─ router/         # 라우팅 설정
- │   │   ├─ index.tsx       # App 컴포넌트
- │   │   └─ index.css       # 전역 스타일
+ │   ├─ app/                # Next.js App Router 엔트리
+ │   │   ├─ layout.tsx      # 루트 레이아웃
+ │   │   ├─ page.tsx        # 기본 라우트
+ │   │   └─ globals.css     # 전역 스타일 진입점
  │   │
- │   ├─ pages/              # 페이지 레이어
+ │   ├─ views/              # 화면 레이어 (기존 pages 레이어 대체)
  │   ├─ widgets/            # 위젯 레이어 (큰 UI 블록)
  │   ├─ features/           # 기능 레이어
  │   ├─ entities/           # 엔티티 레이어
@@ -107,10 +106,11 @@ aim-frontend/
 레이어 의존 방향은 **단방향**입니다. 하위 레이어는 상위 레이어를 import할 수 없습니다.
 
 ```
-app → pages → widgets → features → entities → shared
+app → views → widgets → features → entities → shared
 ```
 
 - `@/` alias를 사용해 절대 경로로 import
+- Next.js App Router와 충돌하지 않도록 화면 레이어는 `src/views`를 사용
 - 각 슬라이스는 `index.ts`(public API)를 통해서만 export
 
 ```ts
@@ -124,11 +124,11 @@ import { AuthFeature } from '@/features/auth'
 
 ### 인프라 구조
 
-현재는 Vite 기반 SPA이며, Next.js App Router 기반 SSR 전환이 검토 중입니다.
+현재는 Next.js App Router 기반 구조로 전환 중이며, 기존 Vite 설정은 단계적으로 제거될 예정입니다.
 
 ```
 브라우저
-  └─ Firebase Hosting (정적 파일 서빙)
+  └─ Next.js 앱
        └─ Spring 백엔드 API 호출 (Oracle Cloud Run)
             └─ MySQL (Oracle Server)
 

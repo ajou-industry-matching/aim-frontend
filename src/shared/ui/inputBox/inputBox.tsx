@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { EyeIcon, EyeOffIcon, SearchIcon, XCircleIcon, ChevronDownIcon } from "@/shared/ui/icons";
 

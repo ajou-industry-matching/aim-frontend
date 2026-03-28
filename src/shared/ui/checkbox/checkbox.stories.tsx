@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
+import { useArgs } from "@storybook/preview-api";
 import { Checkbox, type CheckboxProps } from "./checkbox";
 
 const meta = {
@@ -16,8 +16,15 @@ type Story = StoryObj<typeof meta>;
 
 // 인터랙션이 가능한 래퍼 컴포넌트
 const InteractiveCheckbox = (args: CheckboxProps) => {
-  const [checked, setChecked] = useState(args.checked || false);
-  return <Checkbox {...args} checked={checked} onChange={(e) => setChecked(e.target.checked)} />;
+  const [{ checked }, updateArgs] = useArgs();
+
+  return (
+    <Checkbox
+      {...args}
+      checked={Boolean(checked)}
+      onChange={(e) => updateArgs({ checked: e.target.checked })}
+    />
+  );
 };
 
 export const Default: Story = {
@@ -47,6 +54,7 @@ export const DisabledChecked: Story = {
     label: "비활성화 및 선택된 상태",
     disabled: true,
     checked: true,
+    readOnly: true,
   },
 };
 

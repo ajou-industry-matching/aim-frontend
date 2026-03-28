@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Tabs, type TabItem } from "./tabs";
 
 // 데모용 뱃지 컴포넌트 (실제 프로젝트에 Badge 컴포넌트가 있다면 그것으로 교체하세요)

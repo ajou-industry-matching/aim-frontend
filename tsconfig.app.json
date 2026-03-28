@@ -29,7 +29,7 @@
     "paths": {
       "@/*": ["*"],
       "@app/*": ["app/*"],
-      "@pages/*": ["pages/*"],
+      "@views/*": ["views/*"],
       "@widgets/*": ["widgets/*"],
       "@features/*": ["features/*"],
       "@entities/*": ["entities/*"],

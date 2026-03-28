@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { FormField, FormLabel, FormHelperText, FormErrorMessage } from "./form";
 import { Input, Textarea } from "@/shared/ui/inputBox/inputBox";
 import { Checkbox } from "@/shared/ui/checkbox/checkbox";
