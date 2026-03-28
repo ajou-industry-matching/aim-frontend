@@ -1,16 +1,6 @@
 import React from "react";
-
-// ----------------------------------------------------------------------
-// 공통 유틸리티 및 아이콘 (내부 사용)
-// ----------------------------------------------------------------------
-const UserIcon = ({ className = "" }: { className?: string }): React.ReactElement => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <path
-      d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+// 1. 공통 아이콘 Import 추가
+import { UserSolidIcon } from "../icons";
 
 // ----------------------------------------------------------------------
 // 타입 정의
@@ -145,7 +135,7 @@ export const Avatar = ({
       ) : (
         /* 3. 이름도 없으면 기본 아이콘 */
         <div className="w-full h-full bg-[color:var(--color-gray-200,#E5E5E5)] rounded-full flex items-center justify-center">
-          <UserIcon className="w-[60%] h-[60%] text-[color:var(--color-gray-500,#808080)]" />
+          <UserSolidIcon className="w-[60%] h-[60%] text-[color:var(--color-gray-500,#808080)]" />
         </div>
       )}
 
