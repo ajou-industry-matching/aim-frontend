@@ -1,6 +1,7 @@
 import React from "react";
 // 1. 공통 아이콘 Import 추가
 import { FileTextIcon, SearchIcon, BellIcon, AlertCircleIcon, LockIcon, ClockIcon } from "../icons";
+import { Button } from "../button/button";
 
 // ----------------------------------------------------------------------
 // 2. 타입 정의 (type 선호 컨벤션)
@@ -88,13 +89,6 @@ const titleClasses =
 const descriptionClasses =
   "font-normal text-[16px] leading-[24px] text-[color:var(--color-gray-600,#666666)] max-w-[480px] whitespace-pre-wrap";
 
-// Button/Primary/Large 스타일 모방 (실제 Button 컴포넌트가 있다면 대체 가능)
-const primaryBtnClasses =
-  "inline-flex items-center justify-center h-[48px] px-6 rounded-lg bg-[color:var(--color-primary-800,#004A9C)] text-white font-medium text-[16px] transition-colors hover:bg-[color:var(--color-primary-900,#003875)] active:bg-[color:var(--color-primary-950,#002B5E)]";
-// Button/Ghost 스타일 모방
-const secondaryBtnClasses =
-  "inline-flex items-center justify-center h-[48px] px-6 rounded-lg bg-transparent text-[color:var(--color-gray-600,#666666)] font-medium text-[16px] transition-colors hover:bg-[color:var(--color-gray-100,#F2F2F2)] mt-[12px]";
-
 // ----------------------------------------------------------------------
 // 5. 컴포넌트 정의
 // ----------------------------------------------------------------------
@@ -139,26 +133,28 @@ export const EmptyState = ({
         {displayDescription && <p className={descriptionClasses}>{displayDescription}</p>}
       </div>
 
-      {/* 3. Action 버튼 영역 */}
+      {/* 3. Action 버튼 영역 (공용 Button 컴포넌트 사용) */}
       {(primaryAction || secondaryAction) && (
-        <div className="flex flex-col items-center mt-2 w-full max-w-[320px]">
+        <div className="flex flex-col items-center mt-2 w-full max-w-[320px] gap-3">
           {primaryAction && (
-            <button
-              type="button"
+            <Button
+              variant="primary"
+              size="large"
               onClick={primaryAction.onClick}
-              className={`${primaryBtnClasses} w-full sm:w-auto min-w-[120px]`}
+              className="w-full sm:w-auto min-w-[120px]"
             >
               {primaryAction.label}
-            </button>
+            </Button>
           )}
           {secondaryAction && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="large"
               onClick={secondaryAction.onClick}
-              className={`${secondaryBtnClasses} w-full sm:w-auto min-w-[120px]`}
+              className="w-full sm:w-auto min-w-[120px]"
             >
               {secondaryAction.label}
-            </button>
+            </Button>
           )}
         </div>
       )}
