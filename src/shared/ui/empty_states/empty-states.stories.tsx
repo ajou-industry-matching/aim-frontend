@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { EmptyState } from "./emptyStates";
+import { EmptyState } from "./empty-states";
 
 const meta = {
   title: "Shared/UI/Empty States",
