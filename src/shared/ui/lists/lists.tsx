@@ -152,7 +152,15 @@ export const ListItem = ({
           <input
             type="checkbox"
             checked={isChecked}
-            readOnly
+            onChange={() => {
+              if (onCheck) {
+                onCheck(id, !isChecked);
+              }
+            }}
+            onClick={(e) => {
+              // 부모 <li> 나 <div>에 걸려있는 onClick 이벤트로 버블링되는 것 방지=
+              e.stopPropagation();
+            }}
             disabled={isDisabled}
             className="w-4 h-4 cursor-pointer accent-[color:var(--color-primary-800,#004A9C)]"
           />
@@ -295,8 +303,16 @@ export const Table = ({
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      readOnly
                       disabled={isDisabled}
+                      onChange={() => {
+                        if (onRowCheck) {
+                          onRowCheck(row.id, !isSelected);
+                        }
+                      }}
+                      onClick={(e) => {
+                        // 부모 영역의 클릭 이벤트와 중복(버블링)되어 두 번 토글되는 현상 방지
+                        e.stopPropagation();
+                      }}
                       className="w-4 h-4 cursor-pointer accent-[color:var(--color-primary-800,#004A9C)]"
                     />
                   </div>
