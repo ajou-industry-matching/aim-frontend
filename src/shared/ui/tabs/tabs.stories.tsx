@@ -31,6 +31,11 @@ const meta = {
       control: "text",
       description: "현재 선택된 탭 ID",
     },
+    isAnimated: {
+      control: "boolean",
+      description: "탭 전환 시 인디케이터 애니메이션 활성화",
+      table: { defaultValue: { summary: "false" } },
+    },
     onChange: { action: "changed", description: "탭 변경 핸들러" },
   },
 } satisfies Meta<typeof Tabs>;
@@ -111,6 +116,18 @@ export const WithBadges: Story = {
     ],
     variant: "horizontal",
     value: "mail", // 초기 선택값
+    onChange: () => {},
+  },
+};
+
+// --- 애니메이션이 적용된 수평 탭 ---
+export const Animated: Story = {
+  render: (args) => <TabsWithState {...args} />,
+  args: {
+    items: defaultItems,
+    variant: "horizontal",
+    value: "tab1",
+    isAnimated: true,
     onChange: () => {},
   },
 };

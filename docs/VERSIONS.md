@@ -58,6 +58,28 @@
 
 ## 업데이트 이력
 
+### 2026-03-29 — Issue #78
+
+**적용 내역**
+
+| 패키지 | 버전 | 분류 |
+|---|---|---|
+| `@tiptap/react` | 3.21.0 | 신규 |
+| `@tiptap/pm` | 3.21.0 | 신규 |
+| `@tiptap/starter-kit` | 3.21.0 | 신규 |
+| `tiptap-extension-global-drag-handle` | 0.1.18 | 신규 |
+| `tiptap-extension-auto-joiner` | 0.1.3 | 신규 |
+
+**추후 적용 시 고려사항**
+
+- `tiptap-extension-global-drag-handle`는 headless 확장이므로 UI 적용 시 `.drag-handle` 스타일을 직접 정의해야 함
+- 실제 에디터 컴포넌트 적용 시 handle 표시 공간을 고려한 레이아웃 조정이 필요할 수 있음
+
+**주의사항**
+
+- 루트 `pnpm lint`는 현재 `storybook-static` 산출물까지 검사하면서 실패할 수 있음
+- 추후 lint ignore 범위에 `storybook-static` 포함 여부 검토 필요
+
 ### 2026-03-19 — 운영 정책 변경
 
 **적용 내역**
