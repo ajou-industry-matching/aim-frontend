@@ -66,10 +66,10 @@ const statusSizeClasses: Record<AvatarSize, string> = {
 };
 
 const statusColorClasses: Record<AvatarStatus, string> = {
-  online: "bg-[#10A259]",
-  away: "bg-[#F59E0B]",
-  busy: "bg-[#EF4444]",
-  offline: "bg-[#999999]",
+  online: "bg-[color:var(--color-success-500,#10A259)]",
+  away: "bg-[color:var(--color-warning-500,#F59E0B)]",
+  busy: "bg-[color:var(--color-error-500,#EF4444)]",
+  offline: "bg-[color:var(--color-gray-400,#999999)]",
 };
 
 // ----------------------------------------------------------------------
@@ -161,8 +161,9 @@ export const AvatarGroup = ({
   size = "md",
   className = "",
 }: AvatarGroupProps): React.ReactElement => {
-  const visibleAvatars = avatars.slice(0, maxVisible);
-  const hiddenCount = avatars.length - maxVisible;
+  const safeMaxVisible = Math.max(0, maxVisible);
+  const visibleAvatars = avatars.slice(0, safeMaxVisible);
+  const hiddenCount = Math.max(0, avatars.length - safeMaxVisible);
 
   return (
     // Gap: -8px (Tailwind -space-x-2)
