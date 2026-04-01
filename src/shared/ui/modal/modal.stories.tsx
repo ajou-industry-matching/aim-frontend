@@ -19,16 +19,25 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // --- 1. Portfolio Filter Modal Example ---
-const FilterModalExample = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const FilterModalExample = ({
+  isOpen: propsIsOpen,
+  onClose: propsOnClose,
+}: {
+  isOpen?: boolean;
+  onClose?: () => void;
+}) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = propsIsOpen ?? internalIsOpen;
+  const onClose = propsOnClose ?? (() => setInternalIsOpen(false));
+
   const categories = ["웹 개발", "모바일 앱", "UI/UX 디자인", "데이터 분석", "AI/ML", "게임 개발"];
   const departments = ["소프트웨어학과", "미디어학과", "산업공학과", "경영학과"];
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>필터 모달 열기</Button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <ModalHeader title="필터 선택" onClose={() => setIsOpen(false)} />
+      {!propsIsOpen && <Button onClick={() => setInternalIsOpen(true)}>필터 모달 열기</Button>}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalHeader title="필터 선택" onClose={onClose} />
         <ModalContent className="space-y-8">
           <div className="space-y-4">
             <h3 className="text-[16px] font-semibold text-[var(--color-gray-800,#333)]">
@@ -55,13 +64,13 @@ const FilterModalExample = () => {
           </div>
         </ModalContent>
         <ModalFooter>
-          <Button variant="ghost" onClick={() => setIsOpen(false)}>
+          <Button variant="ghost" onClick={onClose}>
             초기화
           </Button>
-          <Button variant="secondary" onClick={() => setIsOpen(false)}>
+          <Button variant="secondary" onClick={onClose}>
             취소
           </Button>
-          <Button variant="primary" onClick={() => setIsOpen(false)} className="px-8">
+          <Button variant="primary" onClick={onClose} className="px-8">
             적용
           </Button>
         </ModalFooter>
@@ -71,25 +80,35 @@ const FilterModalExample = () => {
 };
 
 export const FilterModal: Story = {
-  render: () => <FilterModalExample />,
+  render: (args) => <FilterModalExample {...args} />,
   args: {
-    isOpen: true,
+    isOpen: false,
     onClose: () => {},
-    children: null,
+    children: null, // 필수 속성 추가
   },
 };
 
 // --- 2. Profile Edit Modal Example ---
-const ProfileEditModalExample = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const ProfileEditModalExample = ({
+  isOpen: propsIsOpen,
+  onClose: propsOnClose,
+}: {
+  isOpen?: boolean;
+  onClose?: () => void;
+}) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = propsIsOpen ?? internalIsOpen;
+  const onClose = propsOnClose ?? (() => setInternalIsOpen(false));
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setIsOpen(true)}>
-        프로필 편집 열기
-      </Button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} className="max-w-[500px]">
-        <ModalHeader title="프로필 편집" onClose={() => setIsOpen(false)} />
+      {!propsIsOpen && (
+        <Button variant="secondary" onClick={() => setInternalIsOpen(true)}>
+          프로필 편집 열기
+        </Button>
+      )}
+      <Modal isOpen={isOpen} onClose={onClose} className="max-w-[500px]">
+        <ModalHeader title="프로필 편집" onClose={onClose} />
         <ModalContent className="space-y-5">
           <FormField>
             <FormLabel>이름</FormLabel>
@@ -124,10 +143,10 @@ const ProfileEditModalExample = () => {
           </FormField>
         </ModalContent>
         <ModalFooter>
-          <Button variant="secondary" onClick={() => setIsOpen(false)}>
+          <Button variant="secondary" onClick={onClose}>
             취소
           </Button>
-          <Button variant="primary" onClick={() => setIsOpen(false)} className="px-8">
+          <Button variant="primary" onClick={onClose} className="px-8">
             저장
           </Button>
         </ModalFooter>
@@ -137,10 +156,10 @@ const ProfileEditModalExample = () => {
 };
 
 export const ProfileEditModal: Story = {
-  render: () => <ProfileEditModalExample />,
+  render: (args) => <ProfileEditModalExample {...args} />,
   args: {
-    isOpen: true,
+    isOpen: false,
     onClose: () => {},
-    children: null,
+    children: null, // 필수 속성 추가
   },
 };

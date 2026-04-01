@@ -1,6 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useId } from "react";
 import { createPortal } from "react-dom";
 import { XIcon } from "@/shared/ui/icons";
+
+// --- Global State for Nested Modals ---
+let modalOpenCount = 0;
+let originalOverflow = "";
 
 // --- Types ---
 export type ModalProps = {
@@ -8,6 +12,7 @@ export type ModalProps = {
   onClose: () => void;
   children: React.ReactNode;
   className?: string;
+  titleId?: string; // 접근성을 위한 ID
 };
 
 export type ModalHeaderProps = {
@@ -15,6 +20,7 @@ export type ModalHeaderProps = {
   onClose?: () => void;
   children?: React.ReactNode;
   className?: string;
+  id?: string; // h2에 부여될 ID
 };
 
 export type ModalContentProps = {
@@ -29,59 +35,84 @@ export type ModalFooterProps = {
 
 // --- Styles ---
 
-// 1. Overlay
 const overlayBaseClasses =
   "fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm transition-opacity duration-300 flex items-center justify-center p-4";
 
-// 2. Modal Container
 const modalBaseClasses =
   "bg-white rounded-xl shadow-xl w-full max-w-[600px] max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200";
 
-// 3. Sections
 const headerBaseClasses =
   "flex items-center justify-between px-6 py-4 border-b border-[var(--color-gray-100,#f2f2f2)]";
 const contentBaseClasses = "flex-1 overflow-y-auto px-6 py-6";
 const footerBaseClasses =
   "px-6 py-4 border-t border-[var(--color-gray-100,#f2f2f2)] flex justify-end gap-2";
 
-const getModalClasses = (className?: string) =>
-  [modalBaseClasses, className].filter(Boolean).join(" ");
+const getClasses = (...classes: (string | undefined)[]) => classes.filter(Boolean).join(" ");
 
 // --- Components ---
 
 export const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
-  // ESC 키 대응 및 스크롤 잠금
+  const generatedId = useId();
+  const titleId = `modal-title-${generatedId}`;
+
   useEffect(() => {
     if (!isOpen) return;
 
+    // ESC 키 대응
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
 
-    document.body.style.overflow = "hidden";
+    // 스크롤 잠금 (중첩 모달 대응)
+    if (modalOpenCount === 0) {
+      originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+    }
+    modalOpenCount++;
+
     window.addEventListener("keydown", handleEsc);
 
     return () => {
-      document.body.style.overflow = "unset";
+      modalOpenCount--;
+      if (modalOpenCount === 0) {
+        document.body.style.overflow = originalOverflow;
+      }
       window.removeEventListener("keydown", handleEsc);
     };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
+  // 자식 요소들에 titleId를 주입하기 위해 React.Children.map 사용 (ModalHeader 탐색)
+  const childrenWithA11y = React.Children.map(children, (child) => {
+    if (React.isValidElement(child) && child.type === ModalHeader) {
+      return React.cloneElement(child as React.ReactElement<ModalHeaderProps>, { id: titleId });
+    }
+    return child;
+  });
+
   return createPortal(
     <div className={overlayBaseClasses} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div role="dialog" aria-modal="true" className={getModalClasses(className)}>
-        {children}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className={getClasses(modalBaseClasses, className)}
+      >
+        {childrenWithA11y}
       </div>
     </div>,
     document.body,
   );
 };
 
-export const ModalHeader = ({ title, onClose, children, className }: ModalHeaderProps) => (
-  <div className={[headerBaseClasses, className].join(" ")}>
-    {title && <h2 className="text-[20px] font-bold text-[var(--color-gray-900,#111)]">{title}</h2>}
+export const ModalHeader = ({ title, onClose, children, className, id }: ModalHeaderProps) => (
+  <div className={getClasses(headerBaseClasses, className)}>
+    {title && (
+      <h2 id={id} className="text-[20px] font-bold text-[var(--color-gray-900,#111)]">
+        {title}
+      </h2>
+    )}
     {children}
     {onClose && (
       <button
@@ -96,9 +127,9 @@ export const ModalHeader = ({ title, onClose, children, className }: ModalHeader
 );
 
 export const ModalContent = ({ children, className }: ModalContentProps) => (
-  <div className={[contentBaseClasses, className].join(" ")}>{children}</div>
+  <div className={getClasses(contentBaseClasses, className)}>{children}</div>
 );
 
 export const ModalFooter = ({ children, className }: ModalFooterProps) => (
-  <div className={[footerBaseClasses, className].join(" ")}>{children}</div>
+  <div className={getClasses(footerBaseClasses, className)}>{children}</div>
 );
