@@ -479,8 +479,8 @@ export const UserSolidIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
   </svg>
 );
 
-// File Text 아이콘 (Empty States 컴포넌트 사용)
-export const FileTextIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+// File Text 아이콘 (Empty States 전용 스타일)
+export const FileTextAltIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
   <svg
     width={size}
     height={size}
