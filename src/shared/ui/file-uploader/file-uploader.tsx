@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { UploadIcon, ImageIcon, XIcon, FileTextIcon } from "@/shared/ui/icons";
+import { UploadIcon, ImageIcon, XIcon, FileTextAltIcon } from "@/shared/ui/icons";
 import { Button } from "@/shared/ui/button/button";
 
 // --- Types ---
@@ -156,7 +156,7 @@ export const FileListItem = ({ file, onRemove, className }: FileListItemProps) =
     >
       <div className="flex items-center gap-3">
         <div className="text-[var(--color-gray-400,#999)]">
-          {file.type?.includes("image") ? <ImageIcon size={20} /> : <FileTextIcon size={20} />}
+          {file.type?.includes("image") ? <ImageIcon size={20} /> : <FileTextAltIcon size={20} />}
         </div>
         <div>
           <p className="text-[14px] font-medium text-[var(--color-gray-800,#333)] truncate max-w-[200px]">
