@@ -1,6 +1,13 @@
 import React from "react";
 // 1. 공통 아이콘 Import 추가
-import { FileTextIcon, SearchIcon, BellIcon, AlertCircleIcon, LockIcon, ClockIcon } from "../icons";
+import {
+  FileTextAltIcon,
+  SearchIcon,
+  BellIcon,
+  AlertCircleIcon,
+  LockIcon,
+  ClockIcon,
+} from "../icons";
 import { Button } from "../button/button";
 
 // ----------------------------------------------------------------------
@@ -44,7 +51,7 @@ type VariantConfig = {
 const VARIANT_MAP: Record<EmptyStateVariant, VariantConfig> = {
   "no-content": {
     title: "아직 게시물이 없습니다",
-    icon: <FileTextIcon className="w-full h-full" />,
+    icon: <FileTextAltIcon className="w-full h-full" />,
     iconColorClass: "text-[color:var(--color-primary-200,#B3D1F7)]",
   },
   "no-results": {
