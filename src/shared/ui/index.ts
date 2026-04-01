@@ -10,3 +10,5 @@ export type { NavigationProps, NavItem, NavUser } from "./navigation/navigation"
 export * from "./form";
 export * from "./checkbox";
 export * from "./file-uploader";
+export { Tabs } from "./tabs/tabs";
+export type { TabsProps, TabItem, TabVariant } from "./tabs/tabs";

@@ -107,11 +107,11 @@ const getSelectClasses = (hasError: boolean, isFullWidth: boolean, className?: s
 
 // --- Input 컴포넌트 ---
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
-    BaseInputProps {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">, BaseInputProps {
   size?: InputSize;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  iconClassName?: string;
   passwordStrength?: 0 | 1 | 2 | 3;
   onClear?: () => void;
 }
@@ -126,6 +126,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       isFullWidth = true,
       leftIcon,
       rightIcon,
+      iconClassName = "",
       className = "",
       passwordStrength,
       onClear,
@@ -161,7 +162,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div className="relative w-full">
           {/* 왼쪽 아이콘 */}
           {(leftIcon || isSearch) && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--color-gray-600,#666666)] pointer-events-none">
+            <div
+              className={[
+                "absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--color-gray-600,#666666)] pointer-events-none",
+                iconClassName,
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
               {isSearch ? <SearchIcon width={20} /> : leftIcon}
             </div>
           )}
@@ -180,7 +188,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               <button
                 type="button"
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                className="text-[color:var(--color-gray-600,#666666)] hover:text-[color:var(--color-primary-800,#004A9C)] focus:outline-none"
+                className={[
+                  "text-[color:var(--color-gray-600,#666666)] hover:text-[color:var(--color-primary-800,#004A9C)] focus:outline-none",
+                  iconClassName,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
               >
                 {isPasswordVisible ? <EyeOffIcon width={20} /> : <EyeIcon width={20} />}
               </button>
@@ -197,7 +210,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
 
             {!isSearch && type !== "password" && rightIcon && (
-              <span className="text-[color:var(--color-gray-600,#666666)] pointer-events-none">
+              <span
+                className={[
+                  "text-[color:var(--color-gray-600,#666666)] pointer-events-none",
+                  iconClassName,
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
                 {rightIcon}
               </span>
             )}
@@ -228,8 +248,7 @@ Input.displayName = "Input";
 
 // --- Textarea 컴포넌트 ---
 export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    BaseInputProps {
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement>, BaseInputProps {
   maxLength?: number;
 }
 
