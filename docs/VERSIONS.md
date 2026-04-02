@@ -82,6 +82,7 @@
 
 ## 업데이트 이력
 
+<<<<<<< HEAD
 ### 2026-03-29 — Issue #78
 
 **적용 내역**
@@ -104,6 +105,8 @@
 - 루트 `pnpm lint`는 현재 `storybook-static` 산출물까지 검사하면서 실패할 수 있음
 - 추후 lint ignore 범위에 `storybook-static` 포함 여부 검토 필요
 
+=======
+>>>>>>> da991be (chore: Next.js 전환 구조 정리 및 Vite 제거)
 ### 2026-04-01 — Next.js 전환 1단계 문서 정리
 
 **적용 내역**

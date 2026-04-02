@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 "use client";
 
 import React, { useEffect, useId, useState } from "react";
+=======
+import React, { useEffect, useId } from "react";
+>>>>>>> da991be (chore: Next.js 전환 구조 정리 및 Vite 제거)
 import { createPortal } from "react-dom";
 import { XIcon } from "@/shared/ui/icons";
 
@@ -56,6 +60,7 @@ const getClasses = (...classes: (string | undefined)[]) => classes.filter(Boolea
 export const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
   const generatedId = useId();
   const titleId = `modal-title-${generatedId}`;
+<<<<<<< HEAD
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -65,6 +70,11 @@ export const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
 
   useEffect(() => {
     if (!isMounted || !isOpen) return;
+=======
+
+  useEffect(() => {
+    if (!isOpen) return;
+>>>>>>> da991be (chore: Next.js 전환 구조 정리 및 Vite 제거)
 
     // ESC 키 대응
     const handleEsc = (e: KeyboardEvent) => {
@@ -87,9 +97,15 @@ export const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
       }
       window.removeEventListener("keydown", handleEsc);
     };
+<<<<<<< HEAD
   }, [isMounted, isOpen, onClose]);
 
   if (!isMounted || !isOpen) return null;
+=======
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+>>>>>>> da991be (chore: Next.js 전환 구조 정리 및 Vite 제거)
 
   // 자식 요소들에 titleId를 주입하기 위해 React.Children.map 사용 (ModalHeader 탐색)
   const childrenWithA11y = React.Children.map(children, (child) => {
@@ -124,7 +140,10 @@ export const ModalHeader = ({ title, onClose, children, className, id }: ModalHe
     {children}
     {onClose && (
       <button
+<<<<<<< HEAD
         type="button"
+=======
+>>>>>>> da991be (chore: Next.js 전환 구조 정리 및 Vite 제거)
         onClick={onClose}
         className="p-1 rounded-md text-[var(--color-gray-400,#999)] hover:text-[var(--color-gray-600,#666)] hover:bg-[var(--color-gray-100,#f2f2f2)] transition-colors"
         aria-label="Close modal"
