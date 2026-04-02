@@ -28,7 +28,7 @@
 # 의존성 설치
 pnpm install
 
-# 개발 서버 실행
+# 개발 서버 실행 (Next.js)
 pnpm dev
 
 # Storybook 실행 (포트 6006)
@@ -68,6 +68,9 @@ aim-frontend/
  ├─ public/
  ├─ src/
  │   ├─ app/                # Next.js App Router 엔트리
+ │   │   ├─ (auth)/         # 인증 관련 route group
+ │   │   │   └─ login/
+ │   │   │       └─ page.tsx
  │   │   ├─ layout.tsx      # 루트 레이아웃
  │   │   ├─ page.tsx        # 기본 라우트
  │   │   └─ globals.css     # 전역 스타일 진입점
@@ -92,10 +95,21 @@ aim-frontend/
  ├─ firestore.rules
  ├─ storage.rules
  ├─ eslint.config.js
+ ├─ next.config.ts
  ├─ prettier.config.cjs
  ├─ tailwind.config.js
+ ├─ public/index.html       # Firebase Hosting rewrite 호환용 fallback 파일
  └─ tsconfig.json
 ```
+
+### 현재 실행 기준
+
+- 앱 실행과 빌드는 `Next.js`를 기준으로 한다.
+- 라우팅 엔트리는 `src/app`이며, 새 페이지는 `src/app/**/page.tsx`에 추가한다.
+- 현재 인증 라우트는 `src/app/(auth)` route group 기준으로 관리한다.
+- `src/main.tsx`, `index.html`, `vite.config.ts`, `src/firebase.js`는 제거되었다.
+- Storybook은 `@storybook/nextjs` 기반으로 동작한다.
+- `public/index.html`은 현재 Firebase Hosting rewrite 호환 때문에 임시 유지 중이다.
 
 ---
 
@@ -124,7 +138,7 @@ import { AuthFeature } from '@/features/auth'
 
 ### 인프라 구조
 
-현재는 Next.js App Router 기반 구조로 전환 중이며, 기존 Vite 설정은 단계적으로 제거될 예정입니다.
+현재 앱 실행 기준은 Next.js App Router이며, Vite 기반 앱 엔트리는 제거되었다. 다만 Firebase Hosting은 아직 정적 `public` 기준 설정을 사용 중이라 fallback 파일 정리가 별도로 남아 있다.
 
 ```
 브라우저
@@ -160,6 +174,16 @@ git checkout -b fix/header-layout
 - `prettier --write`
 
 포맷팅되지 않은 코드는 커밋이 불가합니다.
+
+### 3-1. 구조 변경 시 체크리스트
+
+Next.js 전환 작업이나 구조 변경이 포함되면 아래 항목을 함께 확인합니다.
+
+- 새 라우트가 `src/app` 기준으로 추가되었는가
+- SEO 대상 페이지인지, CSR 유지 페이지인지 분류했는가
+- `use client`가 꼭 필요한 곳에만 선언되었는가
+- `NEXT_PUBLIC_*` 기준으로 환경 변수 사용이 정리되었는가
+- `docs/VERSIONS.md`, 관련 가이드 문서가 함께 갱신되었는가
 
 ### 4. PR 생성
 
@@ -212,10 +236,9 @@ enum ButtonVariant { Primary = "primary" }
 ```ts
 // 1. 외부 라이브러리
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 
 // 2. 내부 alias (FSD 레이어 순서)
-import { apiClient } from '@/shared/api'
+import { auth } from '@/shared/config/firebase'
 import { UserEntity } from '@/entities/user'
 import { AuthFeature } from '@/features/auth'
 
@@ -297,42 +320,57 @@ export const Loading: Story = {
 
 | 용도 | 도구 |
 |---|---|
-| 서버 상태 (API 데이터) | **React Query** (`@tanstack/react-query`) |
-| 클라이언트 전역 상태 | **Zustand** |
-| 라우팅 | **TanStack Router** |
+| 라우팅 | **Next.js App Router** |
+| 서버 데이터 패칭 | **Next.js Server Component / fetch** |
+| 폼 상태 관리 | **react-hook-form** |
+| 입력값 검증 | **zod** |
+| 클라이언트 전역 상태 | **zustand** |
+| 단순 로컬 상호작용 상태 | **React state** (`useState`, `useReducer`) |
 
 ```ts
-// React Query — 서버 데이터 패칭
-const { data, isLoading } = useQuery({
-  queryKey: ['portfolios'],
-  queryFn: () => apiClient.get('/portfolios'),
-})
+// Server Component — 서버 데이터 패칭
+async function PortfolioPage() {
+  const data = await fetch("https://api/portfolios").then((response) => response.json())
+  return <PortfolioList data={data} />
+}
 
-// Zustand — 클라이언트 전역 상태
-const useAuthStore = create<AuthStore>((set) => ({
-  user: null,
-  setUser: (user) => set({ user }),
-}))
+// Client Component — 상호작용 상태
+"use client"
+
+function LikeButton() {
+  const [liked, setLiked] = useState(false)
+  return <button onClick={() => setLiked(true)}>좋아요</button>
+}
 ```
+
+권장 원칙:
+
+- 폼은 `react-hook-form + zod` 조합을 기본으로 사용한다.
+- 여러 컴포넌트에서 공유되는 클라이언트 상태는 `zustand`를 사용한다.
+- 서버 데이터는 가능한 한 Server Component 또는 서버 측 fetch로 가져온다.
+- 단순한 토글/탭/입력 표시 상태는 `useState`로 시작한다.
 
 ---
 
 ## API 호출 가이드
 
-모든 API 요청은 `src/shared/api`의 Axios 인스턴스를 사용합니다.
+현재 저장소에는 공통 API 클라이언트 레이어가 아직 없다. API 연동이 시작되면 `src/shared/api` 또는 `src/shared/lib/api` 하위에 공통 fetch/HTTP 래퍼를 두고 일관되게 사용하는 것을 기본 정책으로 한다.
 
-- 자동 Authorization 헤더 삽입
-- 에러 처리 인터셉터
-- Response 타입 안전성 확보
+권장 원칙:
 
-### Next.js 도입 시 (검토 중)
+- 서버 컴포넌트에서 우선적으로 데이터 패칭
+- 인증 헤더/토큰 주입 로직 중앙화
+- 에러 처리와 응답 파싱 로직 공통화
+- 브라우저 전용 상호작용만 Client Component에서 처리
 
-Next.js App Router 전환 후에는 보안을 위해 **서버 컴포넌트에서 API를 호출**합니다. 클라이언트에서 백엔드를 직접 호출하는 것을 최소화하고, 인터랙션이 필요한 컴포넌트에만 `"use client"`를 선언합니다.
+### Next.js 기준 권장 방식
+
+보안을 위해 **서버 컴포넌트에서 API를 호출**하는 방식을 우선합니다. 클라이언트에서 백엔드를 직접 호출하는 경우는 사용자 입력, 이벤트 처리, 즉시 반응이 필요한 상호작용으로 제한합니다.
 
 ```tsx
 // 서버 컴포넌트 — 데이터 패칭
 async function PortfolioPage() {
-  const data = await fetch('https://api/portfolios').then(r => r.json())
+  const data = await fetch("https://api/portfolios").then((response) => response.json())
   return <PortfolioList data={data} />
 }
 

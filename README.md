@@ -28,11 +28,8 @@
 
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=000)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=fff)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=fff)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=fff)
 ![Storybook](https://img.shields.io/badge/Storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=fff)
-![TanStack Router](https://img.shields.io/badge/TanStack_Router-000000?style=for-the-badge)
-![React Query](https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=fff)
-![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=fff)
 
 ### Backend
@@ -54,7 +51,7 @@
 
 ```bash
 pnpm install
-pnpm dev        # 개발 서버
+pnpm dev        # Next.js 개발 서버
 pnpm storybook  # Storybook (포트 6006)
 pnpm build      # 프로덕션 빌드
 pnpm lint       # 린트 검사
@@ -64,6 +61,17 @@ pnpm lint       # 린트 검사
 
 ---
 
+## 현재 구조 메모
+
+- 앱 실행 기준은 `Next.js App Router`입니다.
+- `src/app`가 라우팅 엔트리이며, 공개 SEO 페이지와 인증 기반 내부 페이지를 분리하는 방향으로 전환을 진행 중입니다.
+- Vite 직접 의존성과 레거시 앱 엔트리(`src/main.tsx`, `index.html`, `vite.config.ts`)는 제거했습니다.
+- Storybook은 `@storybook/nextjs` 기준으로 전환했습니다.
+- `public/index.html`은 현재 Firebase Hosting rewrite 호환을 위해 임시 유지 중입니다.
+- 구조 설계 문서는 [docs/seo-nextjs-migration-plan.md](./docs/seo-nextjs-migration-plan.md)에서 관리합니다.
+
+---
+
 ## 개발 가이드
 
-프로젝트 구조, 컨벤션, 워크플로우는 **[CONTRIBUTING.md](./CONTRIBUTING.md)** 를 참고하세요.
+프로젝트 구조, 컨벤션, 워크플로우는 **[docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md)** 를 참고하세요.

@@ -27,34 +27,47 @@
 | 패키지 | 버전 | 설명 |
 |---|---|---|
 | `typescript` | ~5.9.3 | 타입스크립트 컴파일러 |
-| `vite` | ^7.2.2 | 전환 기간 동안 유지되는 기존 빌드 도구 |
 | `tailwindcss` | 4.2.0 | CSS 프레임워크 |
 | `autoprefixer` | 10.4.24 | CSS 벤더 프리픽스 |
 | `postcss` | ^8.5.6 | CSS 후처리기 |
-| `eslint` | ^9.39.1 | 린터 |
+| `eslint` | ^9.39.2 | 린터 |
 | `eslint-config-next` | ^16.2.1 | Next.js ESLint 규칙 |
 | `@eslint/js` | 9.39.2 | ESLint JS 규칙 |
 | `typescript-eslint` | ^8.46.3 | TypeScript ESLint |
 | `eslint-plugin-react-hooks` | ^7.0.1 | React Hooks 린트 규칙 |
-| `eslint-plugin-react-refresh` | ^0.4.24 | React Refresh 린트 규칙 |
 | `prettier` | 3.8.1 | 코드 포매터 |
 | `lint-staged` | 16.2.7 | staged 파일 린트 |
 | `husky` | ^9.1.7 | Git hooks |
 | `@types/react` | 19.2.14 | React 타입 정의 |
 | `@types/react-dom` | ^19.2.2 | React DOM 타입 정의 |
-| `@types/node` | 24.10.1 | Node.js 타입 정의 |
-| `playwright` | 1.58.2 | 브라우저 자동화 (Vitest 엔진) |
-| `vitest` | ^4.0.17 | 테스트 프레임워크 |
-| `@vitest/browser-playwright` | ^4.0.17 | Vitest 브라우저 테스트 |
-| `@vitest/coverage-v8` | ^4.0.17 | 커버리지 |
-| `storybook` | ^10.1.11 | UI 컴포넌트 개발 환경 |
-| `@storybook/react-vite` | ^10.1.11 | Storybook React+Vite 통합 |
-| `@storybook/addon-vitest` | ^10.1.11 | Storybook Vitest 애드온 |
-| `@storybook/addon-a11y` | ^10.1.11 | 접근성 검사 애드온 |
-| `@storybook/addon-docs` | ^10.1.11 | 문서화 애드온 |
-| `eslint-plugin-storybook` | ^10.1.11 | Storybook 린트 규칙 |
+| `@types/node` | ^24.10.0 | Node.js 타입 정의 |
+| `storybook` | ^10.3.3 | UI 컴포넌트 개발 환경 |
+| `@storybook/nextjs` | ^10.3.3 | Next.js 기반 Storybook 프레임워크 |
+| `@storybook/addon-a11y` | ^10.3.3 | 접근성 검사 애드온 |
+| `@storybook/addon-docs` | ^10.3.3 | 문서화 애드온 |
+| `eslint-plugin-storybook` | ^10.3.3 | Storybook 린트 규칙 |
 | `@chromatic-com/storybook` | 5.0.1 | Chromatic 비주얼 테스트 애드온 |
-| `@vitejs/plugin-react` | ^5.1.0 | 전환 기간 동안 유지되는 Vite React 플러그인 |
+
+---
+
+## 현재 구조 기준 메모
+
+- 앱 실행 기준은 `Next.js`이며, `package.json`의 `dev`, `build`, `start` 스크립트도 모두 Next.js를 사용한다.
+- Vite 직접 의존성은 제거되었고, 현재는 레거시 파일 정리와 Storybook 설정 마이그레이션이 남아 있다.
+- 정리 대상 잔존 자산 예시:
+  - `public/index.html` (Firebase Hosting fallback)
+
+### Storybook 전환 메모
+
+- Storybook 프레임워크는 `@storybook/react-vite`에서 `@storybook/nextjs`로 전환 중이다.
+- Storybook 관련 핵심 패키지 버전은 `10.3.3`으로 정렬되었다.
+- 다음 정리 단계에서는 설정 파일과 스토리 import 경로를 `@storybook/nextjs` 기준으로 정리해야 한다.
+
+### 도입 방향 메모
+
+- 상태 관리/폼 처리의 채택 방향은 `react-hook-form + zod + zustand` 조합이다.
+- 단, 이 항목들은 아직 설치 완료 기준이 아니라 구조 설계상 채택 방향으로 관리한다.
+- 실제 의존성 추가 시 이 문서의 현재 버전 현황 테이블과 업데이트 이력을 함께 갱신한다.
 
 ### 2026-03-29 
 
@@ -68,6 +81,33 @@
 ---
 
 ## 업데이트 이력
+
+### 2026-04-01 — Next.js 전환 1단계 문서 정리
+
+**적용 내역**
+
+- 실행 기준을 `Next.js App Router`로 문서상 명확화
+- `vite` 관련 의존성 설명을 "전환 잔존/Storybook 용도" 기준으로 정리
+- `eslint`, `@types/node` 표기 버전을 `package.json` 기준으로 보정
+- 구조 정리 대상 Vite 잔존 자산 목록 추가
+
+### 2026-04-01 — Next.js 전환 2단계 설계 반영
+
+**적용 내역**
+
+- 페이지 인벤토리와 SEO/CSR 1차 분류 기준 문서화
+- 상태 관리/폼 처리 채택 방향을 `react-hook-form + zod + zustand`로 정리
+- 실제 설치 전까지는 "도입 방향"으로 관리한다는 기준 명시
+
+### 2026-04-02 — Vite 제거 착수
+
+**적용 내역**
+
+- `vite`, `vitest`, `playwright`, `@storybook/react-vite`, `@storybook/addon-vitest`, `@vitejs/plugin-react` 직접 의존성 제거
+- `eslint-plugin-react-refresh` 제거
+- Storybook 프레임워크를 `@storybook/nextjs`로 전환 시작
+- 런타임은 이미 Next.js 기준이며, 남아 있는 것은 레거시 파일과 Storybook 설정 정리임을 문서에 반영
+- Storybook 관련 패키지 핵심 버전을 `10.3.3`으로 정렬
 
 ### 2026-03-19 — 운영 정책 변경
 
@@ -122,13 +162,13 @@
 - CI(`firebase-hosting-merge.yml`)에 Node.js 버전 미명시
 - **다음 회의 안건**: Node.js 버전 정책 수립 후 일괄 정리 필요
 
----
-
 ## 🗓️ 다음 검토 예정
 
 | 항목 | 내용 |
 |---|---|
 | Node.js 버전 정책 | v20 → v22 LTS 업그레이드 검토, `.nvmrc` 및 CI 버전 명시 |
 | `@types/node` | Node.js 버전 정책 확정 후 맞춰서 업데이트 |
+| Firebase Hosting 마이그레이션 | `public/index.html` fallback 제거를 포함해 Next.js 배포 방식에 맞는 Hosting 설정으로 전환 |
+| Storybook 설정 정리 | `.storybook` 설정과 스토리 import를 `@storybook/nextjs` 기준으로 정리 |
 | Chromatic 도입 | PR마다 UI 스냅샷 자동 비교 도입 검토 (SSR/SEO 개선 안건과 함께) |
 | Firestore 보안 규칙 | `allow read, write: if true` → 적절한 인증 기반 규칙으로 수정 필요 |
