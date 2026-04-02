@@ -117,8 +117,8 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
       "w-full min-w-[280px] max-w-[360px] p-6 bg-white border rounded-xl transition-all duration-200 ease-out";
 
     const stateClasses = isSelected
-      ? "bg-[var(--color-primary-50)] border-[var(--color-primary-800)] shadow-[0_4px_12px_rgba(0,74,156,0.12)]"
-      : "border-[var(--color-gray-200)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-[var(--color-primary-200)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:-translate-y-0.5";
+      ? "bg-(--color-primary-50,#F0F6FD) border-(--color-primary-800,#004A9C) shadow-[0_4px_12px_rgba(0,74,156,0.12)]"
+      : "border-(--color-gray-200,#E5E5E5) shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-(--color-primary-200,#B3D1F7) hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:-translate-y-0.5";
 
     const cursorClass = onClick ? "cursor-pointer" : "";
 
@@ -163,20 +163,20 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
         )}
 
         {/* 제목 */}
-        <h3 className="mb-3 text-xl font-semibold leading-7 text-[var(--color-gray-800)] line-clamp-1">
+        <h3 className="mb-3 text-xl font-semibold leading-7 text-(--color-gray-800,#333333) line-clamp-1">
           {title}
         </h3>
 
         {/* 설명 */}
-        <p className="mb-4 text-sm leading-5 text-[var(--color-gray-600)] line-clamp-3">
+        <p className="mb-4 text-sm leading-5 text-(--color-gray-600,#666666) line-clamp-3">
           {description}
         </p>
 
         {/* 작성자 정보 */}
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-xs text-[var(--color-gray-500)]">{author.name}</span>
-          <span className="text-xs text-[var(--color-gray-400)]">·</span>
-          <span className="text-xs text-[var(--color-gray-500)]">{date}</span>
+          <span className="text-xs text-(--color-gray-500,#808080)">{author.name}</span>
+          <span className="text-xs text-(--color-gray-400,#999999)">·</span>
+          <span className="text-xs text-(--color-gray-500,#808080)">{date}</span>
         </div>
 
         {/* 통계 */}
@@ -240,13 +240,13 @@ const ProfileCardContent = React.forwardRef<
       </div>
 
       {/* 이름 */}
-      <h3 className="text-2xl font-bold leading-8 text-[var(--color-gray-900)] mb-1">{name}</h3>
+      <h3 className="text-2xl font-bold leading-8 text-(--color-gray-900,#1A1A1A) mb-1">{name}</h3>
 
       {/* 역할 */}
-      <p className="text-sm text-[var(--color-gray-600)] mb-6">{role}</p>
+      <p className="text-sm text-(--color-gray-600,#666666) mb-6">{role}</p>
 
       {/* 구분선 */}
-      <div className="w-full h-px bg-[var(--color-gray-200)] mb-6" />
+      <div className="w-full h-px bg-(--color-gray-200,#E5E5E5) mb-6" />
 
       {/* 통계 */}
       <div className="flex justify-around mb-6">
@@ -283,10 +283,11 @@ const SimpleCardContent = React.forwardRef<
   const baseClasses = "w-auto p-5 bg-white rounded-lg transition-all duration-200 ease-out";
 
   const variantClasses: Record<SimpleCardVariant, string> = {
-    default: "border border-[var(--color-gray-200)] shadow-[0_1px_3px_rgba(0,0,0,0.04)]",
-    bordered: "border-2 border-[var(--color-gray-300)] hover:border-[var(--color-primary-500)]",
+    default: "border border-(--color-gray-200,#E5E5E5) shadow-[0_1px_3px_rgba(0,0,0,0.04)]",
+    bordered:
+      "border-2 border-(--color-gray-300,#CCCCCC) hover:border-(--color-primary-500,#3385DB)",
     elevated:
-      "border border-[var(--color-gray-200)] shadow-[0_4px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.12)]",
+      "border border-(--color-gray-200,#E5E5E5) shadow-[0_4px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.12)]",
   };
 
   const cursorClass = onClick ? "cursor-pointer" : "";
@@ -323,7 +324,7 @@ const FeaturedCardContent = React.forwardRef<
   const { image, badge, title, description, ctaLabel, onCtaClick, className = "", onClick } = props;
 
   const baseClasses =
-    "w-full min-w-0 md:min-w-[400px] p-8 bg-gradient-to-br from-[var(--color-primary-50)] to-[var(--color-primary-100)] rounded-2xl shadow-[0_8px_24px_rgba(0,74,156,0.08)] transition-all duration-200 ease-out";
+    "w-full min-w-0 md:min-w-[400px] p-8 bg-gradient-to-br from-(--color-primary-50) to-(--color-primary-100) rounded-2xl shadow-[0_8px_24px_rgba(0,74,156,0.08)] transition-all duration-200 ease-out";
 
   const hoverClasses = onClick
     ? "cursor-pointer hover:shadow-[0_12px_32px_rgba(0,74,156,0.12)] hover:-translate-y-1"
@@ -357,17 +358,21 @@ const FeaturedCardContent = React.forwardRef<
           {/* 뱃지 */}
           {badge && (
             <div>
-              <span className="inline-flex items-center h-6 px-3 bg-[var(--color-primary-800)] text-white text-xs font-medium rounded-full">
+              <span className="inline-flex items-center h-6 px-3 bg-(--color-primary-800,#004A9C) text-white text-xs font-medium rounded-full">
                 {badge}
               </span>
             </div>
           )}
 
           {/* 제목 */}
-          <h2 className="text-[28px] font-bold leading-9 text-[var(--color-gray-900)]">{title}</h2>
+          <h2 className="text-[28px] font-bold leading-9 text-(--color-gray-900,#1A1A1A)">
+            {title}
+          </h2>
 
           {/* 설명 */}
-          <p className="text-base leading-6 text-[var(--color-gray-700)] flex-1">{description}</p>
+          <p className="text-base leading-6 text-(--color-gray-700,#4D4D4D) flex-1">
+            {description}
+          </p>
 
           {/* CTA 버튼 */}
           {onCtaClick && ctaLabel && (
@@ -415,18 +420,18 @@ const StatItem: React.FC<{ icon: "heart" | "comment" | "view"; count: number }> 
         viewBox="0 0 16 16"
         fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
-        className="text-[var(--color-gray-500)]"
+        className="text-(--color-gray-500,#808080)"
       >
         {icons[icon]}
       </svg>
-      <span className="text-xs font-medium text-[var(--color-gray-500)]">{count}</span>
+      <span className="text-xs font-medium text-(--color-gray-500,#808080)">{count}</span>
     </div>
   );
 };
 
 const StatColumn: React.FC<{ label: string; value: number }> = ({ label, value }) => (
   <div className="flex flex-col items-center">
-    <span className="text-xl font-bold text-[var(--color-primary-800)]">{value}</span>
-    <span className="text-xs text-[var(--color-gray-500)]">{label}</span>
+    <span className="text-xl font-bold text-(--color-primary-800,#004A9C)">{value}</span>
+    <span className="text-xs text-(--color-gray-500,#808080)">{label}</span>
   </div>
 );
