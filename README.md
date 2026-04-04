@@ -60,16 +60,6 @@ pnpm lint       # 린트 검사
 
 > 환경 변수(.env) 설정이 필요합니다. 팀 노션을 참고하세요.
 
----
-
-## 현재 구조 메모
-
-- 앱 실행 기준은 `Next.js App Router`입니다.
-- `src/app`가 라우팅 엔트리이며, 공개 SEO 페이지는 `SSG 중심`, 인증 기반 내부 페이지는 `CSR 중심`으로 분리하는 방향으로 전환을 진행 중입니다.
-- Vite 직접 의존성과 레거시 앱 엔트리(`src/main.tsx`, `index.html`, `vite.config.ts`)는 제거했습니다.
-- Storybook은 `@storybook/nextjs` 기준으로 전환했습니다.
-- Firebase Hosting은 Next 정적 산출물(`out/`)을 직접 배포하는 구조로 정리했습니다.
-- 구조 설계 문서는 [docs/seo-nextjs-migration-plan.md](./docs/seo-nextjs-migration-plan.md)에서 관리합니다.
 
 ---
 
