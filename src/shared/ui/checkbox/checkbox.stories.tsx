@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { useArgs } from "@storybook/preview-api";
-=======
-import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/nextjs";
->>>>>>> da991be (chore: Next.js 전환 구조 정리 및 Vite 제거)
 import { Checkbox, type CheckboxProps } from "./checkbox";
 
 const meta = {
@@ -21,7 +16,6 @@ type Story = StoryObj<typeof meta>;
 
 // 인터랙션이 가능한 래퍼 컴포넌트
 const InteractiveCheckbox = (args: CheckboxProps) => {
-<<<<<<< HEAD
   const [{ checked }, updateArgs] = useArgs();
 
   return (
@@ -31,10 +25,6 @@ const InteractiveCheckbox = (args: CheckboxProps) => {
       onChange={(e) => updateArgs({ checked: e.target.checked })}
     />
   );
-=======
-  const [checked, setChecked] = useState(args.checked || false);
-  return <Checkbox {...args} checked={checked} onChange={(e) => setChecked(e.target.checked)} />;
->>>>>>> da991be (chore: Next.js 전환 구조 정리 및 Vite 제거)
 };
 
 export const Default: Story = {
@@ -64,10 +54,7 @@ export const DisabledChecked: Story = {
     label: "비활성화 및 선택된 상태",
     disabled: true,
     checked: true,
-<<<<<<< HEAD
     readOnly: true,
-=======
->>>>>>> da991be (chore: Next.js 전환 구조 정리 및 Vite 제거)
   },
 };
 

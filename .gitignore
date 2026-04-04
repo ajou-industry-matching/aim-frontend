@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 .next
 out
+.vercel
 dist
 dist-ssr
 *.local
