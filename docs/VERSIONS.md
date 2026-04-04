@@ -47,6 +47,8 @@
 | `@storybook/addon-docs` | ^10.3.3 | 문서화 애드온 |
 | `eslint-plugin-storybook` | ^10.3.3 | Storybook 린트 규칙 |
 | `@chromatic-com/storybook` | 5.0.1 | Chromatic 비주얼 테스트 애드온 |
+| `@tailwindcss/postcss` | ^4.1.18 | Tailwind CSS PostCSS 플러그인 |
+| `globals` | ^16.5.0 | ESLint 글로벌 변수 정의 |
 
 ---
 
@@ -58,9 +60,9 @@
 
 ### Storybook 전환 메모
 
-- Storybook 프레임워크는 `@storybook/react-vite`에서 `@storybook/nextjs`로 전환 중이다.
+- Storybook 프레임워크는 `@storybook/react-vite`에서 `@storybook/nextjs`로 전환 완료했다.
 - Storybook 관련 핵심 패키지 버전은 `10.3.3`으로 정렬되었다.
-- 다음 정리 단계에서는 설정 파일과 스토리 import 경로를 `@storybook/nextjs` 기준으로 정리해야 한다.
+- 스토리 타입 import와 설정 파일도 `@storybook/nextjs` 기준으로 정리되었다.
 
 ### 도입 방향 메모
 
@@ -141,6 +143,7 @@
 - Firebase Hosting public 디렉터리를 `out/`으로 변경
 - `/index.html` SPA rewrite와 `public/index.html` fallback 의존 제거
 - `pnpm preview`, `pnpm start`를 정적 산출물 미리보기 기준으로 조정
+- `src/app/index.tsx`, `src/app/index.css` 레거시 App 엔트리 제거
 
 ### 2026-03-19 — 운영 정책 변경
 
@@ -201,6 +204,5 @@
 |---|---|
 | Node.js 버전 정책 | v20 → v22 LTS 업그레이드 검토, `.nvmrc` 및 CI 버전 명시 |
 | `@types/node` | Node.js 버전 정책 확정 후 맞춰서 업데이트 |
-| Storybook 설정 정리 | `.storybook` 설정과 스토리 import를 `@storybook/nextjs` 기준으로 정리 |
 | Chromatic 도입 | PR마다 UI 스냅샷 자동 비교 도입 검토 (SSR/SEO 개선 안건과 함께) |
 | Firestore 보안 규칙 | `allow read, write: if true` → 적절한 인증 기반 규칙으로 수정 필요 |

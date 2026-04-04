@@ -44,6 +44,18 @@ pnpm preview
 pnpm lint
 ```
 
+### 이번 구조 변경으로 달라진 점
+
+이전에는 "Vite 기반 SPA + 일부 Next 파일"처럼 보일 수 있었지만, 현재는 아래 기준으로 이해하면 됩니다.
+
+- 앱 개발 기준은 `Next.js App Router`다.
+- Firebase Hosting은 유지하되, 배포는 `out/` 정적 산출물을 기준으로 한다.
+- 공개 페이지는 `SSG`, 로그인 이후 내부 페이지는 `CSR`을 기본 전략으로 삼는다.
+- `src/app`는 라우팅과 레이아웃을 담당하고, 실제 화면 구현은 `src/views`에 둔다.
+- Vite 앱 엔트리(`src/main.tsx`, `index.html`)와 레거시 App 엔트리(`src/app/index.tsx`)는 더 이상 사용하지 않는다.
+
+새로 합류한 팀원은 "Next.js로 실행하지만 모든 페이지를 SSR로 만드는 프로젝트는 아니다"라고 이해하면 가장 덜 헷갈린다.
+
 ### 환경 변수 설정 (.env)
 
 Firebase 연동을 위해 `.env` 파일 설정이 필요합니다.
@@ -110,10 +122,38 @@ aim-frontend/
 - 앱 실행과 빌드는 `Next.js`를 기준으로 한다.
 - 라우팅 엔트리는 `src/app`이며, 새 페이지는 `src/app/**/page.tsx`에 추가한다.
 - 현재 인증 라우트는 `src/app/(auth)` route group 기준으로 관리한다.
+- 전역 스타일 진입점은 `src/app/globals.css`이며, 디자인 토큰과 베이스 스타일은 `src/index.css`를 import해서 사용한다.
 - Firebase Hosting 유지가 우선 조건이며, 공개 SEO 페이지는 `SSG`를 기본 전략으로 삼는다.
 - `src/main.tsx`, `index.html`, `vite.config.ts`, `src/firebase.js`는 제거되었다.
+- `src/app/index.tsx`, `src/app/index.css` 같은 레거시 App 엔트리 파일은 제거했다.
 - Storybook은 `@storybook/nextjs` 기반으로 동작한다.
 - Firebase Hosting은 `out/` 정적 산출물을 직접 배포한다.
+
+### 파일을 어디에 두면 되는가
+
+작업 전 아래 기준으로 파일 위치를 먼저 정합니다.
+
+- 새 URL 경로 추가:
+  - `src/app/**/page.tsx`
+- 라우트 공통 레이아웃/metadata:
+  - `src/app/**/layout.tsx`
+- 실제 화면 구현:
+  - `src/views/**`
+- 큰 화면 블록 조합:
+  - `src/widgets/**`
+- 재사용 UI:
+  - `src/shared/ui/**`
+- 전역 스타일 진입:
+  - `src/app/globals.css`
+- 디자인 토큰/베이스 스타일:
+  - `src/index.css`
+
+현재 기준 예시:
+
+- `/login` 라우트 파일:
+  - `src/app/(auth)/login/page.tsx`
+- 로그인 화면 구현:
+  - `src/views/login/index.tsx`
 
 ---
 
@@ -184,11 +224,25 @@ git checkout -b fix/header-layout
 Next.js 전환 작업이나 구조 변경이 포함되면 아래 항목을 함께 확인합니다.
 
 - 새 라우트가 `src/app` 기준으로 추가되었는가
+- 라우트 파일이 화면 구현까지 전부 떠안지 않고, 필요한 경우 `src/views`를 조합하는가
 - SEO 대상 페이지인지, CSR 유지 페이지인지 분류했는가
 - 공개 SEO 페이지라면 `SSG` 가능한 구조인지 먼저 검토했는가
 - `use client`가 꼭 필요한 곳에만 선언되었는가
 - `NEXT_PUBLIC_*` 기준으로 환경 변수 사용이 정리되었는가
+- `pnpm build` 시 `out/` 정적 산출물이 생성되는 구조인지 확인했는가
 - `docs/VERSIONS.md`, 관련 가이드 문서가 함께 갱신되었는가
+
+### 3-2. 자주 헷갈리는 포인트
+
+- `CSR 페이지`라고 해서 Vite를 다시 쓰는 것은 아니다.
+  - Next.js 안에서도 Client Component 기반으로 충분히 구현할 수 있다.
+- `src/app/page.tsx`는 라우트 파일이고, `src/views/**`는 화면 구현 파일이다.
+  - 라우트 정의와 화면 구현을 분리하는 것이 현재 기준이다.
+- `pnpm build` 결과물은 `.next`만 보는 것이 아니라 최종적으로 `out/` 배포를 염두에 둔다.
+- `/`는 지금 정적 export 환경을 고려해 클라이언트에서 `/login`으로 이동한다.
+  - 향후 공개 랜딩 페이지가 생기면 이 역할은 다시 바뀔 수 있다.
+- 로컬에서 IP로 접속해 탭/클릭이 안 먹는 경우, 코드 문제가 아니라 `allowedDevOrigins` 문제일 수 있다.
+  - 이 경우 `next.config.ts`를 먼저 확인한다.
 
 ### 4. PR 생성
 
@@ -319,6 +373,34 @@ export const Loading: Story = {
 }
 ```
 
+### 화면 개발 패턴
+
+현재 프로젝트에서는 "라우트 파일은 얇게, 화면 구현은 views로" 가져가는 것을 권장합니다.
+
+```tsx
+// src/app/(auth)/login/page.tsx
+import { LoginPage } from "@/views"
+
+export default function LoginRoute() {
+  return <LoginPage />
+}
+```
+
+```tsx
+// src/views/login/index.tsx
+"use client"
+
+export function LoginPage() {
+  return <main>...</main>
+}
+```
+
+권장 이유:
+
+- 라우팅 구조와 화면 구현 책임이 분리된다.
+- 같은 화면을 Storybook이나 다른 진입점에서 재사용하기 쉽다.
+- 추후 `(public)`, `(dashboard)` route group 확장 시 일관성이 유지된다.
+
 ---
 
 ## 상태 관리 및 데이터 패칭
@@ -355,6 +437,15 @@ function LikeButton() {
 - 공개 SEO 페이지는 가능한 한 `SSG`로 생성한다.
 - 서버 데이터는 가능한 한 Server Component 또는 빌드 시점 fetch로 가져온다.
 - 단순한 토글/탭/입력 표시 상태는 `useState`로 시작한다.
+
+현재 합의된 적용 범위:
+
+- `react-hook-form + zod`
+  - 인증/회원가입 등 실제 폼 라우트 구현 시점부터 도입
+- `zustand`
+  - 모달, 필터, 다단계 작성 흐름처럼 "여러 컴포넌트에서 실제로 공유되는 상태"가 생길 때 최소 범위로 도입
+- `ISR`
+  - 현재는 공지사항 계열만 추후 검토 가능
 
 ---
 
@@ -424,3 +515,9 @@ pnpm remove [패키지명]
 ### `main` 머지 시
 
 - Firebase Hosting Live 자동 배포
+
+### 배포 관점에서 기억할 점
+
+- 현재 Hosting은 SPA용 `/index.html` rewrite가 아니라 `out/` 정적 산출물을 직접 배포한다.
+- 따라서 공개 페이지 작업 시 "이 페이지가 정적으로 생성 가능한가?"를 먼저 확인해야 한다.
+- 배포 이슈가 생기면 `firebase.json`, `next.config.ts`, `pnpm build` 결과를 함께 본다.
