@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { useArgs } from "@storybook/preview-api";
+import { useArgs } from "storybook/preview-api";
 import { Checkbox, type CheckboxProps } from "./checkbox";
 
 const meta = {
