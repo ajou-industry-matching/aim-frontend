@@ -27,7 +27,8 @@ const FilterModalExample = ({
   onClose?: () => void;
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const isOpen = propsIsOpen ?? internalIsOpen;
+  const isControlled = propsIsOpen !== undefined;
+  const isOpen = isControlled ? propsIsOpen : internalIsOpen;
   const onClose = propsOnClose ?? (() => setInternalIsOpen(false));
 
   const categories = ["웹 개발", "모바일 앱", "UI/UX 디자인", "데이터 분석", "AI/ML", "게임 개발"];
@@ -35,7 +36,7 @@ const FilterModalExample = ({
 
   return (
     <>
-      {!propsIsOpen && <Button onClick={() => setInternalIsOpen(true)}>필터 모달 열기</Button>}
+      {!isControlled && <Button onClick={() => setInternalIsOpen(true)}>필터 모달 열기</Button>}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalHeader title="필터 선택" onClose={onClose} />
         <ModalContent className="space-y-8">
@@ -82,8 +83,6 @@ const FilterModalExample = ({
 export const FilterModal: Story = {
   render: (args) => <FilterModalExample {...args} />,
   args: {
-    isOpen: false,
-    onClose: () => {},
     children: null, // 필수 속성 추가
   },
 };
@@ -97,12 +96,13 @@ const ProfileEditModalExample = ({
   onClose?: () => void;
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const isOpen = propsIsOpen ?? internalIsOpen;
+  const isControlled = propsIsOpen !== undefined;
+  const isOpen = isControlled ? propsIsOpen : internalIsOpen;
   const onClose = propsOnClose ?? (() => setInternalIsOpen(false));
 
   return (
     <>
-      {!propsIsOpen && (
+      {!isControlled && (
         <Button variant="secondary" onClick={() => setInternalIsOpen(true)}>
           프로필 편집 열기
         </Button>
@@ -158,8 +158,6 @@ const ProfileEditModalExample = ({
 export const ProfileEditModal: Story = {
   render: (args) => <ProfileEditModalExample {...args} />,
   args: {
-    isOpen: false,
-    onClose: () => {},
     children: null, // 필수 속성 추가
   },
 };
