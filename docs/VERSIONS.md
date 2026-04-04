@@ -52,10 +52,9 @@
 
 ## 현재 구조 기준 메모
 
-- 앱 실행 기준은 `Next.js`이며, `package.json`의 `dev`, `build`, `start` 스크립트도 모두 Next.js를 사용한다.
-- Vite 직접 의존성은 제거되었고, 현재는 레거시 파일 정리와 Storybook 설정 마이그레이션이 남아 있다.
-- 정리 대상 잔존 자산 예시:
-  - `public/index.html` (Firebase Hosting fallback)
+- 앱 실행 기준은 `Next.js`이며, `build`는 정적 산출물 `out/`을 생성하고 `preview/start`는 이를 정적 서버로 확인하는 용도로 사용한다.
+- Firebase Hosting 유지가 우선 조건이며, 공개 SEO 페이지는 `SSG 중심`으로 설계한다.
+- Vite 직접 의존성은 제거되었고, Firebase Hosting은 `out/` 산출물을 직접 배포하는 구조로 정리되었다.
 
 ### Storybook 전환 메모
 
@@ -108,6 +107,15 @@
 - Storybook 프레임워크를 `@storybook/nextjs`로 전환 시작
 - 런타임은 이미 Next.js 기준이며, 남아 있는 것은 레거시 파일과 Storybook 설정 정리임을 문서에 반영
 - Storybook 관련 패키지 핵심 버전을 `10.3.3`으로 정렬
+
+### 2026-04-04 — Firebase Hosting 정적 export 정리
+
+**적용 내역**
+
+- `next.config.ts`를 `output: "export"` 기준으로 조정
+- Firebase Hosting public 디렉터리를 `out/`으로 변경
+- `/index.html` SPA rewrite와 `public/index.html` fallback 의존 제거
+- `pnpm preview`, `pnpm start`를 정적 산출물 미리보기 기준으로 조정
 
 ### 2026-03-19 — 운영 정책 변경
 
@@ -168,7 +176,6 @@
 |---|---|
 | Node.js 버전 정책 | v20 → v22 LTS 업그레이드 검토, `.nvmrc` 및 CI 버전 명시 |
 | `@types/node` | Node.js 버전 정책 확정 후 맞춰서 업데이트 |
-| Firebase Hosting 마이그레이션 | `public/index.html` fallback 제거를 포함해 Next.js 배포 방식에 맞는 Hosting 설정으로 전환 |
 | Storybook 설정 정리 | `.storybook` 설정과 스토리 import를 `@storybook/nextjs` 기준으로 정리 |
 | Chromatic 도입 | PR마다 UI 스냅샷 자동 비교 도입 검토 (SSR/SEO 개선 안건과 함께) |
 | Firestore 보안 규칙 | `allow read, write: if true` → 적절한 인증 기반 규칙으로 수정 필요 |

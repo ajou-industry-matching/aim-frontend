@@ -53,7 +53,8 @@
 pnpm install
 pnpm dev        # Next.js 개발 서버
 pnpm storybook  # Storybook (포트 6006)
-pnpm build      # 프로덕션 빌드
+pnpm build      # 정적 산출물(out) 생성
+pnpm preview    # 정적 산출물 로컬 미리보기
 pnpm lint       # 린트 검사
 ```
 
@@ -64,10 +65,10 @@ pnpm lint       # 린트 검사
 ## 현재 구조 메모
 
 - 앱 실행 기준은 `Next.js App Router`입니다.
-- `src/app`가 라우팅 엔트리이며, 공개 SEO 페이지와 인증 기반 내부 페이지를 분리하는 방향으로 전환을 진행 중입니다.
+- `src/app`가 라우팅 엔트리이며, 공개 SEO 페이지는 `SSG 중심`, 인증 기반 내부 페이지는 `CSR 중심`으로 분리하는 방향으로 전환을 진행 중입니다.
 - Vite 직접 의존성과 레거시 앱 엔트리(`src/main.tsx`, `index.html`, `vite.config.ts`)는 제거했습니다.
 - Storybook은 `@storybook/nextjs` 기준으로 전환했습니다.
-- `public/index.html`은 현재 Firebase Hosting rewrite 호환을 위해 임시 유지 중입니다.
+- Firebase Hosting은 Next 정적 산출물(`out/`)을 직접 배포하는 구조로 정리했습니다.
 - 구조 설계 문서는 [docs/seo-nextjs-migration-plan.md](./docs/seo-nextjs-migration-plan.md)에서 관리합니다.
 
 ---
