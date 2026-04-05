@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import "../../../index.css";
 import { DropdownMenu } from "./dropdown-menu";
 import { SelectDropdown } from "./select-dropdown";
