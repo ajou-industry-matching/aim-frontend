@@ -1,5 +1,4 @@
-import React from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Avatar, AvatarGroup, type AvatarProps } from "./avatars";
 
 const meta = {
