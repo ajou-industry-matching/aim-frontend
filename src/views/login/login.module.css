@@ -1,4 +1,4 @@
-.login-page__panel--animated {
+.panelAnimated {
   animation: login-panel-enter 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
