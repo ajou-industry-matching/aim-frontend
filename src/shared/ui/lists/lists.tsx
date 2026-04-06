@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 // 공통 아이콘 Import 추가
 import { ChevronRightIcon, InboxIcon } from "../icons";
 
@@ -169,10 +170,12 @@ export const ListItem = ({
 
       {/* 썸네일 이미지 */}
       {imageUrl && (
-        <img
+        <Image
           src={imageUrl}
           alt={title}
-          className="w-[48px] h-[48px] rounded-[8px] object-cover flex-shrink-0 border border-[color:var(--color-gray-200,#E5E5E5)]"
+          width={48}
+          height={48}
+          className="rounded-[8px] object-cover flex-shrink-0 border border-[color:var(--color-gray-200,#E5E5E5)]"
         />
       )}
 

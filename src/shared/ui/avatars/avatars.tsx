@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 // 1. 공통 아이콘 Import 추가
 import { UserSolidIcon } from "../icons";
 
@@ -124,11 +125,7 @@ export const Avatar = ({
     <div className={avatarClasses} onClick={onClick}>
       {/* 1. 이미지 우선 렌더링 */}
       {src ? (
-        <img
-          src={src}
-          alt={name || "User avatar"}
-          className="w-full h-full object-cover rounded-full"
-        />
+        <Image src={src} alt={name || "User avatar"} fill className="object-cover rounded-full" />
       ) : /* 2. 이미지가 없으면 이름 이니셜 */
       name ? (
         <span className={`${avatarTextSizeClasses[size]} tracking-tight`}>{getInitial(name)}</span>
