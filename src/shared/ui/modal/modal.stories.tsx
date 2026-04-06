@@ -23,8 +23,8 @@ const FilterModalExample = ({
   isOpen: propsIsOpen,
   onClose: propsOnClose,
 }: {
-  isOpen?: boolean;
-  onClose?: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isControlled = propsIsOpen !== undefined;
@@ -92,8 +92,8 @@ const ProfileEditModalExample = ({
   isOpen: propsIsOpen,
   onClose: propsOnClose,
 }: {
-  isOpen?: boolean;
-  onClose?: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isControlled = propsIsOpen !== undefined;
