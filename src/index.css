@@ -244,3 +244,37 @@ body {
 .shadow-lg {
   box-shadow: var(--shadow-lg);
 }
+
+@layer utilities {
+  /* 프로그레스 바 빗살무늬 배경 */
+  .bg-stripes {
+    background-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.15) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.15) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 1rem 1rem; /* 빗살무늬 크기 조절 */
+  }
+
+  /* 프로그레스 바 빗살무늬 애니메이션 */
+  @keyframes progress-stripes {
+    0% { background-position: 1rem 0; }
+    100% { background-position: 0 0; }
+  }
+  .animate-progress-stripes {
+    animation: progress-stripes 1s linear infinite;
+  }
+
+  /* 스켈레톤 로더 애니메이션 */
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+  .animate-shimmer {
+    animation: shimmer 1.5s infinite;
+  }
+}

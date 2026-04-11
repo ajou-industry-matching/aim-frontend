@@ -1,5 +1,5 @@
 export { Button } from "./button";
-export { Input, Textarea, Select } from "./inputBox/inputBox";
+export { Input } from "./input";
 export { DropdownMenu, SelectDropdown } from "./dropdown";
 export { Pagination } from "./pagination/pagination";
 export type { PaginationProps } from "./pagination/pagination";

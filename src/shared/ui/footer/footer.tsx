@@ -1,3 +1,6 @@
+import Image from "next/image";
+import Link from "next/link";
+
 // --- Types ---
 export type FooterLink = {
   label: string;
@@ -30,18 +33,22 @@ const linkClasses =
 const copyrightClasses = "text-[12px] leading-[1.6] text-[color:var(--color-gray-400,#b3b3b3)]";
 
 // --- Default Values ---
-const defaultLinks: FooterLink[] = [
+const DEFAULT_LINKS: FooterLink[] = [
   { label: "이용약관", href: "/terms" },
   { label: "개인정보처리방침", href: "/privacy" },
   { label: "사이트맵", href: "/sitemap" },
 ];
 
+const DEFAULT_ADDRESS = "16499 경기도 수원시 영통구 월드컵로 206 아주대학교";
+const DEFAULT_PHONE = "T. 031-219-2114";
+const DEFAULT_COPYRIGHT = "© 2025 AJOU University. All rights reserved.";
+
 // --- Component ---
 export const Footer = ({
-  links = defaultLinks,
-  address = "16499 경기도 수원시 영통구 월드컵로 206 아주대학교",
-  phone = "T. 031-219-2114",
-  copyright = "© 2025 AJOU University. All rights reserved.",
+  links = DEFAULT_LINKS,
+  address = DEFAULT_ADDRESS,
+  phone = DEFAULT_PHONE,
+  copyright = DEFAULT_COPYRIGHT,
   className,
 }: FooterProps) => {
   const footerClasses = getFooterClasses(className);
@@ -53,11 +60,12 @@ export const Footer = ({
           {/* Left: Logo + Info */}
           <div className="flex items-center gap-10 flex-col sm:flex-row">
             {/* Ajou Logo */}
-            <div className="shrink-0 h-15 w-58">
-              <img
+            <div className="relative shrink-0 h-15 w-58">
+              <Image
                 src="/assets/ajou-logo-text.svg"
                 alt="Ajou University Logo"
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain"
               />
             </div>
 
@@ -66,9 +74,9 @@ export const Footer = ({
               {/* Policy Links */}
               <div className="flex items-center gap-4 flex-wrap">
                 {links.map((link) => (
-                  <a key={link.href} href={link.href} className={linkClasses}>
+                  <Link key={link.href} href={link.href} className={linkClasses}>
                     {link.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
 

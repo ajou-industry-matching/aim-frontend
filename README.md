@@ -28,11 +28,8 @@
 
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=000)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=fff)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=fff)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=fff)
 ![Storybook](https://img.shields.io/badge/Storybook-FF4785?style=for-the-badge&logo=storybook&logoColor=fff)
-![TanStack Router](https://img.shields.io/badge/TanStack_Router-000000?style=for-the-badge)
-![React Query](https://img.shields.io/badge/React_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=fff)
-![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=fff)
 
 ### Backend
@@ -54,16 +51,18 @@
 
 ```bash
 pnpm install
-pnpm dev        # 개발 서버
+pnpm dev        # Next.js 개발 서버
 pnpm storybook  # Storybook (포트 6006)
-pnpm build      # 프로덕션 빌드
+pnpm build      # 정적 산출물(out) 생성
+pnpm preview    # 정적 산출물 로컬 미리보기
 pnpm lint       # 린트 검사
 ```
 
 > 환경 변수(.env) 설정이 필요합니다. 팀 노션을 참고하세요.
 
+
 ---
 
 ## 개발 가이드
 
-프로젝트 구조, 컨벤션, 워크플로우는 **[CONTRIBUTING.md](./CONTRIBUTING.md)** 를 참고하세요.
+프로젝트 구조, 컨벤션, 워크플로우는 **[docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md)** 를 참고하세요.
