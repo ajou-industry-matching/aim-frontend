@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/shared/ui/button/button";
 import { Input } from "@/shared/ui/inputBox/inputBox";
-import { Navigation, Tabs, type NavItem, type TabItem } from "@/shared/ui";
+import { Footer, Navigation, Tabs, type NavItem, type TabItem } from "@/shared/ui";
 import { LockIcon, MailIcon } from "@/shared/ui/icons";
 import styles from "./login.module.css";
 
@@ -151,6 +151,7 @@ export const LoginPage = () => {
           </section>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };
