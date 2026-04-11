@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Modal, ModalHeader, ModalContent, ModalFooter } from "./modal";
-import { Button } from "@/shared/ui/button/button";
-import { Checkbox } from "@/shared/ui/checkbox/checkbox";
-import { FormField, FormLabel } from "@/shared/ui/form";
-import { Input, Textarea, Select } from "@/shared/ui/inputBox/inputBox";
+import { Button } from "../button/button";
+import { Checkbox } from "../checkbox/checkbox";
+import { FormField, FormLabel } from "../form";
+import { Input, Textarea, Select } from "../inputBox/inputBox";
 
 const meta = {
   title: "Shared/UI/Modal",

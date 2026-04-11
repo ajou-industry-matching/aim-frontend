@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import "../../../index.css";
 import { Badge } from "./badge";
 import { CheckIcon, PlusIcon } from "@/shared/ui/icons";

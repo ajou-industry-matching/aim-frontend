@@ -1,15 +1,15 @@
 import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { FormField, FormLabel, FormHelperText, FormErrorMessage } from "./form";
-import { Input, Textarea } from "@/shared/ui/inputBox/inputBox";
-import { Checkbox } from "@/shared/ui/checkbox/checkbox";
+import { Input, Textarea } from "../inputBox/inputBox";
+import { Checkbox } from "../checkbox/checkbox";
 import {
   ThumbnailUploader,
   FileListItem,
   FileUploader,
   type FileItem,
-} from "@/shared/ui/file-uploader/file-uploader";
-import { Button } from "@/shared/ui/button/button";
+} from "../file-uploader/file-uploader";
+import { Button } from "../button/button";
 
 const meta = {
   title: "Shared/UI/Form",
