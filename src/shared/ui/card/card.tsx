@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Button } from "../button";
 
 export type CardVariant = "post" | "profile" | "simple" | "featured";
@@ -8,11 +9,6 @@ export type SimpleCardVariant = "default" | "bordered" | "elevated";
 interface BaseCardProps {
   className?: string;
   onClick?: () => void;
-}
-
-interface CategoryBadge {
-  label: string;
-  color?: string;
 }
 
 interface Author {
@@ -34,14 +30,14 @@ interface ProfileStats {
 // 개별 카드 타입 정의
 interface PostCardSpecificProps {
   variant: "post";
+  href?: string;
   thumbnail?: string;
-  category?: CategoryBadge;
+  tags?: string[];
   title: string;
   description: string;
   author: Author;
   date: string;
   stats: PostStats;
-  isSelected?: boolean;
 }
 
 interface ProfileCardSpecificProps {
@@ -101,90 +97,90 @@ Card.displayName = "Card";
 const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { variant: "post" }>>(
   (props, ref) => {
     const {
+      href,
       thumbnail,
-      category,
+      tags,
       title,
       description,
       author,
       date,
       stats,
-      isSelected = false,
       className = "",
       onClick,
     } = props;
 
-    const baseClasses =
-      "w-full min-w-[280px] max-w-[360px] p-6 bg-white border rounded-xl transition-all duration-200 ease-out";
+    const wrapperClasses = `flex flex-col group ${onClick ? "cursor-pointer" : ""} ${className}`;
 
-    const stateClasses = isSelected
-      ? "bg-[var(--color-primary-50)] border-[var(--color-primary-800)] shadow-[0_4px_12px_rgba(0,74,156,0.12)]"
-      : "border-[var(--color-gray-200)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-[var(--color-primary-200)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:-translate-y-0.5";
+    const content = (
+      <>
+        {thumbnail && (
+          <div className="relative aspect-[360/203] w-full border border-[color:var(--color-gray-200,#e5e5e5)] border-b-0 rounded-t-xl overflow-hidden">
+            <img
+              src={typeof thumbnail === "string" ? thumbnail : (thumbnail as { src: string }).src}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        )}
 
-    const cursorClass = onClick ? "cursor-pointer" : "";
+        <div className="bg-white border border-[color:var(--color-gray-200,#e5e5e5)] flex flex-col gap-4 p-6 rounded-b-xl">
+          {tags && tags.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              {tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="border border-[color:var(--color-primary-800,#003876)] text-[color:var(--color-primary-800,#003876)] text-[12px] font-medium leading-[1.33] tracking-[-0.3px] px-3 py-1 rounded-xl"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (!onClick) return;
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        onClick();
-      }
-    };
+          <h3 className="text-[color:var(--color-gray-800,#333)] text-[20px] font-semibold leading-[1.4] tracking-[-0.5px] line-clamp-1">
+            {title}
+          </h3>
+
+          <p className="text-[color:var(--color-gray-600,#666)] text-[14px] leading-[1.43] tracking-[-0.35px] line-clamp-1">
+            {description}
+          </p>
+
+          <div className="flex items-center gap-1">
+            <span className="text-[color:var(--color-gray-500,#808080)] text-[12px] leading-[1.33] tracking-[-0.3px]">
+              {author.name}
+            </span>
+            <div className="w-[2px] h-[2px] bg-[color:var(--color-gray-500,#808080)] rounded-full" />
+            <span className="text-[color:var(--color-gray-500,#808080)] text-[12px] leading-[1.33] tracking-[-0.3px]">
+              {date}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <StatItem icon="heart" count={stats.likes} />
+            <StatItem icon="comment" count={stats.comments} />
+            <StatItem icon="view" count={stats.views} />
+          </div>
+        </div>
+      </>
+    );
+
+    if (href) {
+      return (
+        <Link ref={ref as React.Ref<HTMLAnchorElement>} href={href} className={wrapperClasses}>
+          {content}
+        </Link>
+      );
+    }
 
     return (
       <div
         ref={ref}
-        className={`${baseClasses} ${stateClasses} ${cursorClass} ${className}`}
+        className={wrapperClasses}
         onClick={onClick}
         role={onClick ? "button" : undefined}
         tabIndex={onClick ? 0 : undefined}
-        onKeyDown={handleKeyDown}
       >
-        {/* 썸네일 */}
-        {thumbnail && (
-          <div className="w-full aspect-video mb-4 rounded-lg overflow-hidden">
-            <img src={thumbnail} alt={title} className="w-full h-full object-cover" />
-          </div>
-        )}
-
-        {/* 카테고리 뱃지 */}
-        {category && (
-          <div className="mb-4">
-            <span
-              className="inline-flex items-center h-6 px-3 rounded-full text-xs font-medium border"
-              style={{
-                backgroundColor: "#FFFFFF",
-                color: category.color || "var(--color-primary-800)",
-                borderColor: category.color || "var(--color-primary-800)",
-              }}
-            >
-              {category.label}
-            </span>
-          </div>
-        )}
-
-        {/* 제목 */}
-        <h3 className="mb-3 text-xl font-semibold leading-7 text-[var(--color-gray-800)] line-clamp-1">
-          {title}
-        </h3>
-
-        {/* 설명 */}
-        <p className="mb-4 text-sm leading-5 text-[var(--color-gray-600)] line-clamp-3">
-          {description}
-        </p>
-
-        {/* 작성자 정보 */}
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-xs text-[var(--color-gray-500)]">{author.name}</span>
-          <span className="text-xs text-[var(--color-gray-400)]">·</span>
-          <span className="text-xs text-[var(--color-gray-500)]">{date}</span>
-        </div>
-
-        {/* 통계 */}
-        <div className="flex items-center gap-4">
-          <StatItem icon="heart" count={stats.likes} />
-          <StatItem icon="comment" count={stats.comments} />
-          <StatItem icon="view" count={stats.views} />
-        </div>
+        {content}
       </div>
     );
   },
