@@ -269,7 +269,11 @@ export const Table = ({
           <tr>
             <td colSpan={totalCols}>
               <div className="flex flex-col items-center justify-center w-full h-[200px] gap-2">
-                <InboxIcon size={48} className="text-[color:var(--color-gray-400,#999999)]" />
+                <InboxIcon
+                  size={48}
+                  strokeWidth={1}
+                  className="text-[color:var(--color-gray-400,#999999)]"
+                />
                 <span className="text-[14px] text-[color:var(--color-gray-500,#808080)]">
                   데이터가 없습니다
                 </span>
