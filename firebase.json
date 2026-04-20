@@ -7,7 +7,16 @@
   },
   "hosting": {
     "public": "out",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "run": {
+          "serviceId": "aim-be-prod",
+          "region": "us-central1"
+        }
+      }
+    ]
   },
   "storage": {
     "rules": "storage.rules"

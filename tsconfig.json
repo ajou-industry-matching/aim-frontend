@@ -31,17 +31,14 @@
       "@app/*": [
         "src/app/*"
       ],
-      "@views/*": [
-        "src/views/*"
+      "@screens/*": [
+        "src/screens/*"
       ],
-      "@widgets/*": [
-        "src/widgets/*"
+      "@api/*": [
+        "src/api/*"
       ],
-      "@features/*": [
-        "src/features/*"
-      ],
-      "@entities/*": [
-        "src/entities/*"
+      "@lib/*": [
+        "src/lib/*"
       ],
       "@shared/*": [
         "src/shared/*"

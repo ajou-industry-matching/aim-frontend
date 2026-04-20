@@ -4,13 +4,13 @@ import { ListItem, Table, type TableColumn, type TableRowData } from "./lists";
 
 const meta = {
   title: "Shared/UI/Lists & Tables",
-  // Storybook Meta는 하나의 메인 컴포넌트를 필요로 하지만, 두 개를 문서화하기 위해 Wrapper 활용
+  component: ListItem,
   parameters: {
     layout: "padded",
     componentSubtitle: "디자인 시스템에 정의된 List Item 및 Table 컴포넌트",
   },
   tags: ["autodocs"],
-} satisfies Meta;
+} satisfies Meta<typeof ListItem>;
 
 export default meta;
 
