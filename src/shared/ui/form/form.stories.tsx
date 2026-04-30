@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { FormField, FormLabel, FormHelperText, FormErrorMessage } from "./form";
-import { Input, Textarea } from "@/shared/ui/inputBox/inputBox";
+import { Input, Textarea } from "@/shared/ui/input";
 import { Checkbox } from "@/shared/ui/checkbox/checkbox";
 import {
   ThumbnailUploader,

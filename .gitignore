@@ -13,7 +13,10 @@ out
 .vercel
 dist
 dist-ssr
+.env
+.env.*.local
 *.local
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*

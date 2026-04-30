@@ -1,5 +1,5 @@
+import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { useArgs } from "storybook/preview-api";
 import { Checkbox, type CheckboxProps } from "./checkbox";
 
 const meta = {
@@ -16,15 +16,9 @@ type Story = StoryObj<typeof meta>;
 
 // 인터랙션이 가능한 래퍼 컴포넌트
 const InteractiveCheckbox = (args: CheckboxProps) => {
-  const [{ checked }, updateArgs] = useArgs();
+  const [checked, setChecked] = useState(Boolean(args.checked));
 
-  return (
-    <Checkbox
-      {...args}
-      checked={Boolean(checked)}
-      onChange={(e) => updateArgs({ checked: e.target.checked })}
-    />
-  );
+  return <Checkbox {...args} checked={checked} onChange={(e) => setChecked(e.target.checked)} />;
 };
 
 export const Default: Story = {

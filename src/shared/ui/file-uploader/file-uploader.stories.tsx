@@ -4,11 +4,12 @@ import { ThumbnailUploader, FileListItem, FileUploader } from "./file-uploader";
 
 const meta = {
   title: "Shared/UI/FileUploader",
+  component: FileUploader,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-} satisfies Meta;
+} satisfies Meta<typeof FileUploader>;
 
 export default meta;
 

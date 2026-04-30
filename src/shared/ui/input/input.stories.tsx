@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { Input, Textarea, Select } from "./inputBox";
+import { Input, Textarea, Select } from ".";
 // 아이콘 임포트
 import { UserIcon, MailIcon, LockIcon, XCircleIcon } from "@/shared/ui/icons";
 
 const meta = {
-  title: "Shared/UI/InputBox",
+  title: "Shared/UI/Input",
   component: Input,
   parameters: {
     layout: "padded",

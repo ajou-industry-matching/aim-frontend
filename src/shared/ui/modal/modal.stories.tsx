@@ -4,7 +4,7 @@ import { Modal, ModalHeader, ModalContent, ModalFooter } from "./modal";
 import { Button } from "@/shared/ui/button/button";
 import { Checkbox } from "@/shared/ui/checkbox/checkbox";
 import { FormField, FormLabel } from "@/shared/ui/form";
-import { Input, Textarea, Select } from "@/shared/ui/inputBox/inputBox";
+import { Input, Textarea, Select } from "@/shared/ui/input";
 
 const meta = {
   title: "Shared/UI/Modal",
