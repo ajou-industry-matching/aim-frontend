@@ -46,19 +46,25 @@ const createSession = async (
 
 export const signInWithGoogle = async (): Promise<SessionResponse> => {
   const credential = await signInWithPopup(auth, googleProvider);
-  const googleCredential = GoogleAuthProvider.credentialFromResult(credential);
-  const accessToken = googleCredential?.accessToken;
 
-  if (!accessToken) {
-    throw new Error("Google access token is missing.");
+  try {
+    const googleCredential = GoogleAuthProvider.credentialFromResult(credential);
+    const accessToken = googleCredential?.accessToken;
+
+    if (!accessToken) {
+      throw new Error("Google access token is missing.");
+    }
+
+    const [idToken, profile] = await Promise.all([
+      credential.user.getIdToken(),
+      fetchGoogleProfile(accessToken),
+    ]);
+
+    return await createSession(idToken, profile);
+  } catch (error) {
+    await firebaseSignOut(auth).catch(() => undefined);
+    throw error;
   }
-
-  const [idToken, profile] = await Promise.all([
-    credential.user.getIdToken(),
-    fetchGoogleProfile(accessToken),
-  ]);
-
-  return createSession(idToken, profile);
 };
 
 export const signInWithEmail = async (

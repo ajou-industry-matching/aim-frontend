@@ -56,7 +56,7 @@ const inferAuthRole = (organization?: PeopleApiOrganization): AuthRole => {
     throw new GoogleProfileRoleError();
   }
 
-  return "STUDENT";
+  throw new GoogleProfileRoleError();
 };
 
 export const fetchGoogleProfile = async (accessToken: string): Promise<BackendLoginRequest> => {

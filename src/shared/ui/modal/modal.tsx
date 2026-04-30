@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useId } from "react";
 import { createPortal } from "react-dom";
 import { XIcon } from "@/shared/ui/icons";
 
@@ -56,15 +56,8 @@ const getClasses = (...classes: (string | undefined)[]) => classes.filter(Boolea
 export const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
   const generatedId = useId();
   const titleId = `modal-title-${generatedId}`;
-  const [isMounted, setIsMounted] = useState(false);
-
   useEffect(() => {
-    setIsMounted(true);
-    return () => setIsMounted(false);
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted || !isOpen) return;
+    if (!isOpen || typeof document === "undefined") return;
 
     // ESC 키 대응
     const handleEsc = (e: KeyboardEvent) => {
@@ -87,9 +80,9 @@ export const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
       }
       window.removeEventListener("keydown", handleEsc);
     };
-  }, [isMounted, isOpen, onClose]);
+  }, [isOpen, onClose]);
 
-  if (!isMounted || !isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
   // 자식 요소들에 titleId를 주입하기 위해 React.Children.map 사용 (ModalHeader 탐색)
   const childrenWithA11y = React.Children.map(children, (child) => {
