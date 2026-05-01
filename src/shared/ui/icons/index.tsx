@@ -535,7 +535,7 @@ export const UploadIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
 );
 
 // Inbox 아이콘
-export const InboxIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+export const InboxIcon: React.FC<IconProps> = ({ size = 20, strokeWidth = 2, ...props }) => (
   <svg
     width={size}
     height={size}
@@ -547,13 +547,13 @@ export const InboxIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
     <path
       d="M3.33333 4.16667H16.6667L15 15.8333H5L3.33333 4.16667Z"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth={strokeWidth}
       strokeLinejoin="round"
     />
     <path
       d="M3.33333 11.6667H7.5L8.75 13.3333H11.25L12.5 11.6667H16.6667"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
