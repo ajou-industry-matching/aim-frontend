@@ -176,12 +176,7 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
 
     if (href) {
       return (
-        <Link
-          ref={ref as React.Ref<HTMLAnchorElement>}
-          href={href}
-          className={wrapperClasses}
-          onClick={onClick}
-        >
+        <Link href={href} className={wrapperClasses} onClick={onClick}>
           {content}
         </Link>
       );

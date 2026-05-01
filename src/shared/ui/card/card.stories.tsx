@@ -50,6 +50,13 @@ export const PostCard: Story = {
   },
 };
 
+export const PostCardWithHref: Story = {
+  args: {
+    ...PostCard.args,
+    href: "/home",
+  },
+};
+
 export const ProfileCard: Story = {
   args: {
     variant: "profile",
