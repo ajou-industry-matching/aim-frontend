@@ -1,124 +1,126 @@
-import React, { useEffect } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { SuggestionKeyDownProps, SuggestionProps } from "@tiptap/suggestion";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
+import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
+import { TextStyle, Color } from "@tiptap/extension-text-style";
+import GlobalDragHandle from "tiptap-extension-global-drag-handle";
+import AutoJoiner from "tiptap-extension-auto-joiner";
+
+import {
+  Heading1Icon,
+  Heading2Icon,
+  Heading3Icon,
+  ListBulletIcon,
+  ListOrderedIcon,
+  QuoteIcon,
+  CodeIcon,
+  ImageIcon,
+} from "@/shared/ui/icons";
+
+import { SlashCommand, filterSuggestionItems, type SlashCommandItem } from "./slash-command";
+import { SlashCommandMenu } from "./slash-command-menu";
 
 export type RichEditorProps = {
   content?: string;
   onChange?: (html: string) => void;
   isEditable?: boolean;
+  placeholder?: string;
   className?: string;
 };
 
-// Toolbar icon components
-const BoldIcon = () => (
-  <svg
-    width={16}
-    height={16}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2.5}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" />
-    <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z" />
-  </svg>
-);
+const slashCommandItems: SlashCommandItem[] = [
+  {
+    title: "제목 1",
+    description: "큰 제목",
+    searchTerms: ["heading1", "h1", "제목1"],
+    icon: <Heading1Icon size={18} />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 1 }).run();
+    },
+  },
+  {
+    title: "제목 2",
+    description: "중간 제목",
+    searchTerms: ["heading2", "h2", "제목2"],
+    icon: <Heading2Icon size={18} />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 2 }).run();
+    },
+  },
+  {
+    title: "제목 3",
+    description: "작은 제목",
+    searchTerms: ["heading3", "h3", "제목3"],
+    icon: <Heading3Icon size={18} />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setNode("heading", { level: 3 }).run();
+    },
+  },
+  {
+    title: "불릿 리스트",
+    description: "순서 없는 목록",
+    searchTerms: ["bullet", "list", "ul", "불릿", "리스트"],
+    icon: <ListBulletIcon size={18} />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleBulletList().run();
+    },
+  },
+  {
+    title: "숫자 리스트",
+    description: "순서 있는 목록",
+    searchTerms: ["numbered", "ordered", "ol", "숫자", "리스트"],
+    icon: <ListOrderedIcon size={18} />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleOrderedList().run();
+    },
+  },
+  {
+    title: "인용구",
+    description: "인용 블록",
+    searchTerms: ["quote", "blockquote", "인용"],
+    icon: <QuoteIcon size={18} />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleBlockquote().run();
+    },
+  },
+  {
+    title: "코드 블록",
+    description: "코드를 표시합니다",
+    searchTerms: ["code", "codeblock", "코드"],
+    icon: <CodeIcon size={18} />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
+    },
+  },
+  {
+    title: "이미지",
+    description: "이미지 삽입",
+    searchTerms: ["image", "img", "이미지", "사진"],
+    icon: <ImageIcon size={18} />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run();
+      const url = window.prompt("이미지 URL을 입력하세요:");
+      if (url) {
+        editor.chain().focus().setImage({ src: url }).run();
+      }
+    },
+  },
+];
 
-const ItalicIcon = () => (
-  <svg
-    width={16}
-    height={16}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="19" x2="10" y1="4" y2="4" />
-    <line x1="14" x2="5" y1="20" y2="20" />
-    <line x1="15" x2="9" y1="4" y2="20" />
-  </svg>
-);
-
-const BulletListIcon = () => (
-  <svg
-    width={16}
-    height={16}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="9" x2="21" y1="6" y2="6" />
-    <line x1="9" x2="21" y1="12" y2="12" />
-    <line x1="9" x2="21" y1="18" y2="18" />
-    <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" />
-    <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" />
-    <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
-  </svg>
-);
-
-const OrderedListIcon = () => (
-  <svg
-    width={16}
-    height={16}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="10" x2="21" y1="6" y2="6" />
-    <line x1="10" x2="21" y1="12" y2="12" />
-    <line x1="10" x2="21" y1="18" y2="18" />
-    <path d="M4 6h1v4" />
-    <path d="M4 10h2" />
-    <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
-  </svg>
-);
-
-const BlockquoteIcon = () => (
-  <svg width={16} height={16} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z" />
-    <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z" />
-  </svg>
-);
-
-const CodeBlockIcon = () => (
-  <svg
-    width={16}
-    height={16}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="16 18 22 12 16 6" />
-    <polyline points="8 6 2 12 8 18" />
-  </svg>
-);
-
-// Class helpers
-const getToolbarButtonClasses = (isActive: boolean): string => {
-  const baseClasses =
-    "inline-flex items-center justify-center w-8 h-8 rounded text-sm font-medium transition-colors cursor-pointer";
-  const activeClasses = "bg-[var(--color-primary-800,#004a9c)] text-white";
-  const defaultClasses =
-    "text-[var(--color-gray-700,#4d4d4d)] hover:bg-[var(--color-gray-100,#f2f2f2)]";
-  return [baseClasses, isActive ? activeClasses : defaultClasses].join(" ");
+type MenuState = {
+  items: SlashCommandItem[];
+  command: (item: SlashCommandItem) => void;
+  clientRect: (() => DOMRect | null) | null;
+  selectedIndex: number;
 };
 
 const getContainerClasses = (className: string): string => {
-  const baseClasses =
-    "w-full border border-[var(--border-default,#cccccc)] rounded-lg bg-white overflow-hidden";
+  const baseClasses = "w-full border border-[var(--border-default,#cccccc)] rounded-lg bg-white";
   return [baseClasses, className].filter(Boolean).join(" ");
 };
 
@@ -136,144 +138,127 @@ const editorContentClasses = [
   "[&_.ProseMirror_pre]:bg-[var(--color-gray-900,#1a1a1a)] [&_.ProseMirror_pre]:text-[var(--color-gray-50,#f9f9f9)] [&_.ProseMirror_pre]:rounded-lg [&_.ProseMirror_pre]:p-4 [&_.ProseMirror_pre]:my-3 [&_.ProseMirror_pre]:overflow-x-auto",
   "[&_.ProseMirror_pre_code]:bg-transparent [&_.ProseMirror_pre_code]:text-inherit [&_.ProseMirror_pre_code]:p-0",
   "[&_.ProseMirror_code]:bg-[var(--color-gray-100,#f2f2f2)] [&_.ProseMirror_code]:px-1.5 [&_.ProseMirror_code]:py-0.5 [&_.ProseMirror_code]:rounded [&_.ProseMirror_code]:text-xs [&_.ProseMirror_code]:font-mono",
+  "[&_.ProseMirror_a]:text-[var(--color-primary-700,#0e63cb)] [&_.ProseMirror_a]:underline",
+  "[&_.ProseMirror_img]:max-w-full [&_.ProseMirror_img]:rounded-md [&_.ProseMirror_img]:my-3",
+  "[&_.ProseMirror_p.is-editor-empty:first-child::before]:text-[var(--text-tertiary,#999999)]",
+  "[&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)]",
+  "[&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left",
+  "[&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none",
+  "[&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0",
 ].join(" ");
 
-// Sub-components
-type ToolbarButtonProps = {
-  onClick: () => void;
-  isActive?: boolean;
-  "aria-label": string;
-  children: React.ReactNode;
-};
+export const RichEditor = ({
+  content = "",
+  onChange,
+  isEditable = true,
+  placeholder = "내용을 작성해주세요... (/ 를 입력하여 명령어 메뉴를 열 수 있습니다)",
+  className = "",
+}: RichEditorProps) => {
+  const [menuState, setMenuState] = useState<MenuState | null>(null);
+  const menuStateRef = useRef<MenuState | null>(null);
 
-const ToolbarButton = ({
-  onClick,
-  isActive = false,
-  "aria-label": ariaLabel,
-  children,
-}: ToolbarButtonProps) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-label={ariaLabel}
-    aria-pressed={isActive}
-    className={getToolbarButtonClasses(isActive)}
-  >
-    {children}
-  </button>
-);
+  const updateMenu = useCallback((next: MenuState | null) => {
+    menuStateRef.current = next;
+    setMenuState(next);
+  }, []);
 
-const ToolbarDivider = () => (
-  <div className="w-px h-5 bg-[var(--border-default,#cccccc)] mx-0.5" aria-hidden="true" />
-);
-
-// Main component
-export const RichEditor = React.forwardRef<HTMLDivElement, RichEditorProps>(
-  ({ content = "", onChange, isEditable = true, className = "" }, ref) => {
-    const editor = useEditor({
-      extensions: [
-        StarterKit.configure({
-          heading: { levels: [1, 2, 3] },
-        }),
-      ],
-      content,
-      editable: isEditable,
-      onUpdate: ({ editor }) => {
-        onChange?.(editor.getHTML());
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: [
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3, 4, 5, 6] },
+      }),
+      Image,
+      Link.configure({ openOnClick: !isEditable }),
+      TextStyle,
+      Color,
+      GlobalDragHandle,
+      AutoJoiner,
+      Placeholder.configure({ placeholder }),
+      SlashCommand.configure({
+        suggestion: {
+          items: ({ query }: { query: string }) => filterSuggestionItems(slashCommandItems, query),
+          render: () => ({
+            onStart: ({
+              items,
+              command,
+              clientRect,
+            }: SuggestionProps<SlashCommandItem, SlashCommandItem>) =>
+              updateMenu({
+                items,
+                command,
+                clientRect: clientRect ?? null,
+                selectedIndex: 0,
+              }),
+            onUpdate: ({
+              items,
+              command,
+              clientRect,
+            }: SuggestionProps<SlashCommandItem, SlashCommandItem>) =>
+              updateMenu({
+                items,
+                command,
+                clientRect: clientRect ?? null,
+                selectedIndex: 0,
+              }),
+            onExit: () => updateMenu(null),
+            onKeyDown: ({ event }: SuggestionKeyDownProps) => {
+              const current = menuStateRef.current;
+              if (!current) return false;
+              const total = current.items.length;
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                const nextIndex = total === 0 ? 0 : (current.selectedIndex + 1) % total;
+                updateMenu({ ...current, selectedIndex: nextIndex });
+                return true;
+              }
+              if (event.key === "ArrowUp") {
+                event.preventDefault();
+                const nextIndex = total === 0 ? 0 : (current.selectedIndex - 1 + total) % total;
+                updateMenu({ ...current, selectedIndex: nextIndex });
+                return true;
+              }
+              if (event.key === "Enter") {
+                const selected = current.items[current.selectedIndex];
+                if (!selected) return false;
+                event.preventDefault();
+                current.command(selected);
+                return true;
+              }
+              return false;
+            },
+          }),
+        },
+      }),
+    ],
+    content,
+    editable: isEditable,
+    editorProps: {
+      attributes: {
+        class: "focus:outline-none",
       },
-    });
+    },
+    onUpdate: ({ editor }) => {
+      onChange?.(editor.getHTML());
+    },
+  });
 
-    useEffect(() => {
-      if (!editor) return;
-      editor.setEditable(isEditable);
-    }, [editor, isEditable]);
+  useEffect(() => {
+    if (!editor) return;
+    editor.setEditable(isEditable);
+  }, [editor, isEditable]);
 
-    return (
-      <div ref={ref} className={getContainerClasses(className)}>
-        {isEditable && (
-          <div
-            className="flex items-center flex-wrap gap-0.5 px-3 py-2 border-b border-[var(--border-subtle,#e5e5e5)] bg-[var(--color-gray-50,#f9f9f9)]"
-            role="toolbar"
-            aria-label="텍스트 서식 도구"
-          >
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-              isActive={editor?.isActive("heading", { level: 1 }) ?? false}
-              aria-label="제목 1"
-            >
-              <span className="text-xs font-bold">H1</span>
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-              isActive={editor?.isActive("heading", { level: 2 }) ?? false}
-              aria-label="제목 2"
-            >
-              <span className="text-xs font-bold">H2</span>
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-              isActive={editor?.isActive("heading", { level: 3 }) ?? false}
-              aria-label="제목 3"
-            >
-              <span className="text-xs font-bold">H3</span>
-            </ToolbarButton>
-
-            <ToolbarDivider />
-
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleBold().run()}
-              isActive={editor?.isActive("bold") ?? false}
-              aria-label="굵게"
-            >
-              <BoldIcon />
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleItalic().run()}
-              isActive={editor?.isActive("italic") ?? false}
-              aria-label="기울임꼴"
-            >
-              <ItalicIcon />
-            </ToolbarButton>
-
-            <ToolbarDivider />
-
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleBulletList().run()}
-              isActive={editor?.isActive("bulletList") ?? false}
-              aria-label="불릿 리스트"
-            >
-              <BulletListIcon />
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-              isActive={editor?.isActive("orderedList") ?? false}
-              aria-label="숫자 리스트"
-            >
-              <OrderedListIcon />
-            </ToolbarButton>
-
-            <ToolbarDivider />
-
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleBlockquote().run()}
-              isActive={editor?.isActive("blockquote") ?? false}
-              aria-label="인용구"
-            >
-              <BlockquoteIcon />
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-              isActive={editor?.isActive("codeBlock") ?? false}
-              aria-label="코드 블록"
-            >
-              <CodeBlockIcon />
-            </ToolbarButton>
-          </div>
-        )}
-        <EditorContent editor={editor} className={editorContentClasses} />
-      </div>
-    );
-  },
-);
-
-RichEditor.displayName = "RichEditor";
+  return (
+    <div className={getContainerClasses(className)}>
+      <EditorContent editor={editor} className={editorContentClasses} />
+      {isEditable && menuState && (
+        <SlashCommandMenu
+          items={menuState.items}
+          selectedIndex={menuState.selectedIndex}
+          onSelect={menuState.command}
+          clientRect={menuState.clientRect}
+        />
+      )}
+    </div>
+  );
+};

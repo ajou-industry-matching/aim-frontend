@@ -23,6 +23,10 @@ const meta = {
       control: "text",
       description: "초기 HTML 콘텐츠 (초기값만 적용, 이후 변경 미반영)",
     },
+    placeholder: {
+      control: "text",
+      description: "빈 상태에서 보여줄 안내 문구",
+    },
     className: {
       control: "text",
       description: "추가 CSS 클래스",
@@ -58,5 +62,21 @@ export const ReadOnly: Story = {
   args: {
     isEditable: false,
     content: sampleContent,
+  },
+};
+
+export const PortfolioPlaceholder: Story = {
+  args: {
+    isEditable: true,
+    content: "",
+    placeholder: "포트폴리오 내용을 작성해주세요... (/ 를 입력하여 명령어 메뉴를 열 수 있습니다)",
+  },
+};
+
+export const NoticePlaceholder: Story = {
+  args: {
+    isEditable: true,
+    content: "",
+    placeholder: "공지사항 내용을 작성해주세요... (/ 를 입력하여 명령어 메뉴를 열 수 있습니다)",
   },
 };
