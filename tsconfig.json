@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -21,13 +25,24 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@app/*": ["src/app/*"],
-      "@views/*": ["src/views/*"],
-      "@widgets/*": ["src/widgets/*"],
-      "@features/*": ["src/features/*"],
-      "@entities/*": ["src/entities/*"],
-      "@shared/*": ["src/shared/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@screens/*": [
+        "src/screens/*"
+      ],
+      "@api/*": [
+        "src/api/*"
+      ],
+      "@lib/*": [
+        "src/lib/*"
+      ],
+      "@shared/*": [
+        "src/shared/*"
+      ]
     }
   },
   "include": [

@@ -34,10 +34,7 @@ export const PostCard: Story = {
   args: {
     variant: "post",
     thumbnail: storyDefaultImage,
-    category: {
-      label: "기술",
-      color: "#4F46E5",
-    },
+    tags: ["React", "Next.js", "TypeScript"],
     title: "React Server Components 이해하기",
     description:
       "새로운 React Server Components에 대한 깊이 있는 탐구와 애플리케이션 성능 향상 방법을 알아봅니다.",
@@ -50,6 +47,13 @@ export const PostCard: Story = {
       comments: 28,
       views: 1205,
     },
+  },
+};
+
+export const PostCardWithHref: Story = {
+  args: {
+    ...PostCard.args,
+    href: "/home",
   },
 };
 

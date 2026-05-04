@@ -62,27 +62,25 @@ const listItemBaseClasses =
   "flex flex-row items-center w-full min-h-[64px] px-[20px] py-[16px] gap-[16px] border-b border-[color:var(--color-gray-200,#E5E5E5)] transition-colors duration-200 outline-none";
 
 // --- Table 스타일 ---
-const tableContainerClasses =
-  "w-full flex flex-col border border-[color:var(--color-gray-200,#E5E5E5)] rounded-[8px] overflow-hidden bg-white";
-const tableHeaderRowClasses =
-  "flex flex-row items-center w-full h-[48px] px-[20px] py-[12px] bg-[color:var(--color-gray-50,#F9F9F9)] border-b-[2px] border-[color:var(--color-gray-300,#CCCCCC)]";
-const tableRowBaseClasses =
-  "flex flex-row items-center w-full min-h-[56px] px-[20px] py-[16px] border-b border-[color:var(--color-gray-200,#E5E5E5)] transition-colors duration-200";
+const tableThBaseClasses =
+  "bg-[color:var(--color-gray-100,#f2f2f2)] border-b border-t-2 border-[color:var(--color-gray-200,#e5e5e5)] h-12 px-5 py-3 text-[color:var(--color-gray-800,#333)] text-[16px] font-semibold leading-[1.5] tracking-[-0.4px]";
+const tableTdBaseClasses =
+  "border border-[color:var(--color-gray-200,#e5e5e5)] border-t-0 border-l-0 h-[56px] px-5 py-4 text-[color:var(--color-gray-800,#333)] text-[14px] leading-[1.43] tracking-[-0.35px]";
 
 // 너비 맵핑 클래스
 const columnWidthClasses: Record<TableColumnWidth, string> = {
-  checkbox: "w-[48px] flex-shrink-0",
-  sm: "w-[80px] flex-shrink-0",
-  md: "w-[120px] flex-shrink-0",
-  lg: "w-[200px] flex-shrink-0",
-  fill: "flex-1 min-w-0",
+  checkbox: "w-[48px]",
+  sm: "w-[80px]",
+  md: "w-[120px]",
+  lg: "w-[200px]",
+  fill: "",
 };
 
 // 정렬 맵핑 클래스
 const columnAlignClasses: Record<TableColumnAlign, string> = {
-  left: "justify-start text-left",
-  center: "justify-center text-center",
-  right: "justify-end text-right",
+  left: "text-left",
+  center: "text-center",
+  right: "text-right",
 };
 
 // ----------------------------------------------------------------------
@@ -102,15 +100,10 @@ const getListItemClasses = (isActive: boolean, isDisabled: boolean): string => {
 };
 
 const getTableRowClasses = (isSelected: boolean, isDisabled: boolean): string => {
-  if (isDisabled) {
-    return [tableRowBaseClasses, "bg-white opacity-50 cursor-not-allowed"].join(" ");
-  }
-
-  const stateClasses = isSelected
-    ? "bg-[color:var(--color-primary-50,#F0F6FD)] border-[color:var(--color-primary-200,#B3D1F7)]"
-    : "bg-white hover:bg-[color:var(--color-gray-50,#F9F9F9)] cursor-pointer";
-
-  return [tableRowBaseClasses, stateClasses].join(" ");
+  if (isDisabled) return "opacity-50 cursor-not-allowed";
+  if (isSelected)
+    return "bg-[color:var(--color-primary-50,#F0F6FD)] cursor-pointer transition-colors";
+  return "hover:bg-[color:var(--color-gray-50,#F9F9F9)] cursor-pointer transition-colors";
 };
 
 // ----------------------------------------------------------------------
@@ -240,103 +233,99 @@ export const Table = ({
   onRowCheck,
   onCheckAll,
 }: TableProps): React.ReactElement => {
-  return (
-    <div className={tableContainerClasses}>
-      {/* Table Header */}
-      <div className={tableHeaderRowClasses}>
-        {hasCheckbox && (
-          <div className={`${columnWidthClasses.checkbox} flex items-center justify-center`}>
-            <input
-              type="checkbox"
-              checked={isAllChecked}
-              onChange={(e) => onCheckAll && onCheckAll(e.target.checked)}
-              className="w-4 h-4 cursor-pointer accent-[color:var(--color-primary-800,#004A9C)]"
-            />
-          </div>
-        )}
-        {columns.map((col) => (
-          <div
-            key={col.id}
-            className={`flex items-center ${columnWidthClasses[col.width || "fill"]} ${
-              columnAlignClasses[col.align || "left"]
-            }`}
-          >
-            <span className="text-[14px] font-semibold leading-[20px] text-[color:var(--color-gray-800,#333333)] truncate">
-              {col.label}
-            </span>
-          </div>
-        ))}
-      </div>
+  const totalCols = columns.length + (hasCheckbox ? 1 : 0);
 
-      {/* Table Body (Empty State) */}
-      {isEmpty || data.length === 0 ? (
-        <div className="flex flex-col items-center justify-center w-full h-[200px] gap-2 bg-white">
-          <InboxIcon size={48} className="text-[color:var(--color-gray-400,#999999)]" />
-          <span className="text-[14px] text-[color:var(--color-gray-500,#808080)]">
-            데이터가 없습니다
-          </span>
-        </div>
-      ) : (
-        /* Table Body (Rows) */
-        <div className="flex flex-col w-full">
-          {data.map((row) => {
+  return (
+    <table className="w-full border-collapse">
+      <thead>
+        <tr>
+          {hasCheckbox && (
+            <th className={`${tableThBaseClasses} w-[48px] text-center`}>
+              <input
+                type="checkbox"
+                checked={isAllChecked}
+                onChange={(e) => onCheckAll && onCheckAll(e.target.checked)}
+                className="w-4 h-4 cursor-pointer accent-[color:var(--color-primary-800,#004A9C)]"
+              />
+            </th>
+          )}
+          {columns.map((col, i) => (
+            <th
+              key={col.id}
+              className={[
+                tableThBaseClasses,
+                i > 0 || hasCheckbox ? "border-l" : "",
+                columnWidthClasses[col.width || "fill"],
+                columnAlignClasses[col.align || "center"],
+              ].join(" ")}
+            >
+              {col.label}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {isEmpty || data.length === 0 ? (
+          <tr>
+            <td colSpan={totalCols}>
+              <div className="flex flex-col items-center justify-center w-full h-[200px] gap-2">
+                <InboxIcon
+                  size={48}
+                  strokeWidth={1}
+                  className="text-[color:var(--color-gray-400,#999999)]"
+                />
+                <span className="text-[14px] text-[color:var(--color-gray-500,#808080)]">
+                  데이터가 없습니다
+                </span>
+              </div>
+            </td>
+          </tr>
+        ) : (
+          data.map((row) => {
             const isSelected = !!row.isSelected;
             const isDisabled = !!row.isDisabled;
 
-            const handleRowClick = () => {
-              if (!isDisabled && onRowClick) onRowClick(row.id);
-            };
-
-            const handleCheckClick = (e: React.MouseEvent) => {
-              e.stopPropagation();
-              if (!isDisabled && onRowCheck) onRowCheck(row.id, !isSelected);
-            };
-
             return (
-              <div
+              <tr
                 key={row.id}
                 className={getTableRowClasses(isSelected, isDisabled)}
-                onClick={handleRowClick}
+                onClick={() => !isDisabled && onRowClick && onRowClick(row.id)}
               >
                 {hasCheckbox && (
-                  <div
-                    className={`${columnWidthClasses.checkbox} flex items-center justify-center`}
-                    onClick={handleCheckClick}
+                  <td
+                    className={`${tableTdBaseClasses} text-center`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isDisabled && onRowCheck) onRowCheck(row.id, !isSelected);
+                    }}
                   >
                     <input
                       type="checkbox"
                       checked={isSelected}
                       disabled={isDisabled}
-                      onChange={() => {
-                        if (onRowCheck) {
-                          onRowCheck(row.id, !isSelected);
-                        }
-                      }}
-                      onClick={(e) => {
-                        // 부모 영역의 클릭 이벤트와 중복(버블링)되어 두 번 토글되는 현상 방지
-                        e.stopPropagation();
-                      }}
+                      onChange={() => onRowCheck && onRowCheck(row.id, !isSelected)}
+                      onClick={(e) => e.stopPropagation()}
                       className="w-4 h-4 cursor-pointer accent-[color:var(--color-primary-800,#004A9C)]"
                     />
-                  </div>
+                  </td>
                 )}
-                {columns.map((col) => (
-                  <div
+                {columns.map((col, i) => (
+                  <td
                     key={col.id}
-                    className={`flex items-center ${columnWidthClasses[col.width || "fill"]} ${
-                      columnAlignClasses[col.align || "left"]
-                    }`}
+                    className={[
+                      tableTdBaseClasses,
+                      i === columns.length - 1 ? "border-r-0" : "",
+                      columnAlignClasses[col.align || "center"],
+                    ].join(" ")}
                   >
-                    <span className="text-[14px] leading-[20px] text-[color:var(--color-gray-600,#666666)] truncate w-full">
-                      {row[col.id]}
-                    </span>
-                  </div>
+                    {row[col.id]}
+                  </td>
                 ))}
-              </div>
+              </tr>
             );
-          })}
-        </div>
-      )}
-    </div>
+          })
+        )}
+      </tbody>
+    </table>
   );
 };

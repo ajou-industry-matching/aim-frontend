@@ -3,12 +3,13 @@ import { Avatar, AvatarGroup, type AvatarProps } from "./avatars";
 
 const meta = {
   title: "Shared/UI/Avatars",
+  component: Avatar,
   parameters: {
     layout: "padded",
     componentSubtitle: "유저 프로필 및 다중 유저를 표시하는 아바타 컴포넌트",
   },
   tags: ["autodocs"],
-} satisfies Meta;
+} satisfies Meta<typeof Avatar>;
 
 export default meta;
 
