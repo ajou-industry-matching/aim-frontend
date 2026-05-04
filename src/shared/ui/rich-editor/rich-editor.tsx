@@ -103,14 +103,33 @@ const slashCommandItems: SlashCommandItem[] = [
     searchTerms: ["image", "img", "이미지", "사진"],
     icon: <ImageIcon size={18} />,
     command: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).run();
-      const url = window.prompt("이미지 URL을 입력하세요:");
-      if (url) {
-        editor.chain().focus().setImage({ src: url }).run();
-      }
+      const url = promptForImageUrl();
+      if (!url) return;
+      editor.chain().focus().deleteRange(range).setImage({ src: url }).run();
     },
   },
 ];
+
+const SAFE_IMAGE_DATA_URL = /^data:image\/(png|jpeg|jpg|gif|webp|svg\+xml);base64,/i;
+
+const isSafeImageUrl = (raw: string): boolean => {
+  const trimmed = raw.trim();
+  if (!trimmed) return false;
+  if (SAFE_IMAGE_DATA_URL.test(trimmed)) return true;
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const promptForImageUrl = (): string | null => {
+  if (typeof window === "undefined" || typeof window.prompt !== "function") return null;
+  const input = window.prompt("이미지 URL을 입력하세요:");
+  if (input === null) return null;
+  return isSafeImageUrl(input) ? input.trim() : null;
+};
 
 type MenuState = {
   items: SlashCommandItem[];
@@ -156,6 +175,11 @@ export const RichEditor = ({
 }: RichEditorProps) => {
   const [menuState, setMenuState] = useState<MenuState | null>(null);
   const menuStateRef = useRef<MenuState | null>(null);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   const updateMenu = useCallback((next: MenuState | null) => {
     menuStateRef.current = next;
@@ -169,7 +193,7 @@ export const RichEditor = ({
         heading: { levels: [1, 2, 3, 4, 5, 6] },
       }),
       Image,
-      Link.configure({ openOnClick: !isEditable }),
+      Link.configure({ openOnClick: false }),
       TextStyle,
       Color,
       GlobalDragHandle,
@@ -237,9 +261,19 @@ export const RichEditor = ({
       attributes: {
         class: "focus:outline-none",
       },
+      handleClick: (view, _pos, event) => {
+        if (view.editable) return false;
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return false;
+        const anchor = target.closest("a");
+        const href = anchor?.getAttribute("href");
+        if (!href || !/^https?:\/\//i.test(href)) return false;
+        window.open(href, "_blank", "noopener,noreferrer");
+        return true;
+      },
     },
     onUpdate: ({ editor }) => {
-      onChange?.(editor.getHTML());
+      onChangeRef.current?.(editor.getHTML());
     },
   });
 

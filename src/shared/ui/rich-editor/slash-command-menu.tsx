@@ -53,7 +53,7 @@ export const SlashCommandMenu = ({
   const positionStyle = getMenuPosition(clientRect);
 
   return createPortal(
-    <div className={menuClasses} style={positionStyle} role="listbox">
+    <div className={menuClasses} style={positionStyle} role="menu">
       {items.length === 0 ? (
         <div className={emptyClasses}>명령어가 없습니다</div>
       ) : (
@@ -64,8 +64,8 @@ export const SlashCommandMenu = ({
               itemRefs.current[index] = el;
             }}
             type="button"
-            role="option"
-            aria-selected={index === selectedIndex}
+            role="menuitem"
+            aria-current={index === selectedIndex ? "true" : undefined}
             className={getItemClasses(index === selectedIndex)}
             onMouseDown={(event) => {
               event.preventDefault();

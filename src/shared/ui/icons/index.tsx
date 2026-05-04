@@ -568,6 +568,7 @@ export const Heading1Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
     <path
@@ -595,6 +596,7 @@ export const Heading2Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
     <path
@@ -622,6 +624,7 @@ export const Heading3Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
     <path
@@ -649,6 +652,7 @@ export const ListBulletIcon: React.FC<IconProps> = ({ size = 20, ...props }) => 
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
     <path
@@ -672,6 +676,7 @@ export const ListOrderedIcon: React.FC<IconProps> = ({ size = 20, ...props }) =>
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
     <path
@@ -713,6 +718,7 @@ export const QuoteIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
     <path
@@ -740,6 +746,7 @@ export const CodeIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
     <path
