@@ -559,3 +559,202 @@ export const InboxIcon: React.FC<IconProps> = ({ size = 20, strokeWidth = 2, ...
     />
   </svg>
 );
+
+// Heading 1 아이콘
+export const Heading1Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M3.33333 4.16667V15.8333M3.33333 10H10M10 4.16667V15.8333"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M14.1667 7.5L16.6667 6.66667V15.8333"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Heading 2 아이콘
+export const Heading2Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M3.33333 4.16667V15.8333M3.33333 10H10M10 4.16667V15.8333"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.75 8.33333C13.75 7.41286 14.4961 6.66667 15.4167 6.66667H15.8333C16.7538 6.66667 17.5 7.41286 17.5 8.33333C17.5 9.25381 16.9583 9.79167 16.25 10.4167L13.75 12.9167V15.8333H17.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Heading 3 아이콘
+export const Heading3Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M3.33333 4.16667V15.8333M3.33333 10H10M10 4.16667V15.8333"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.75 7.5C13.75 7.04167 14.1667 6.66667 14.5833 6.66667H17.0833C17.5 6.66667 17.9167 7.04167 17.9167 7.5C17.9167 7.95833 17.7083 8.125 17.5 8.33333L15 10.8333H15.4167C16.7083 10.8333 17.9167 11.875 17.9167 13.3333C17.9167 14.7917 16.7083 15.8333 15.4167 15.8333H14.5833C14.1667 15.8333 13.75 15.4583 13.75 15"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 불릿 리스트 아이콘
+export const ListBulletIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M7.5 5H17.5M7.5 10H17.5M7.5 15H17.5"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle cx="3.33" cy="5" r="1" fill="currentColor" />
+    <circle cx="3.33" cy="10" r="1" fill="currentColor" />
+    <circle cx="3.33" cy="15" r="1" fill="currentColor" />
+  </svg>
+);
+
+// 숫자 리스트 아이콘
+export const ListOrderedIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M8.33333 5H17.5M8.33333 10H17.5M8.33333 15H17.5"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33333 4.16667H4.16667V6.66667M3.33333 6.66667H5"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33333 9.16667C3.33333 8.70833 3.75 8.33333 4.16667 8.33333C4.58333 8.33333 5 8.70833 5 9.16667C5 9.58333 4.79167 9.83333 4.58333 10.0833L3.33333 11.4583V11.6667H5"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33333 13.75C3.33333 13.4167 3.66667 13.3333 3.95833 13.3333H4.58333C4.875 13.3333 5 13.5417 5 13.75C5 13.9583 4.875 14.1667 4.58333 14.1667H4.16667M4.16667 14.1667H4.58333C4.875 14.1667 5 14.375 5 14.5833V15.4167C5 15.625 4.875 15.8333 4.58333 15.8333H3.95833C3.66667 15.8333 3.33333 15.75 3.33333 15.4167"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 인용구 아이콘
+export const QuoteIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M2.5 17.5C5 17.5 8.33333 16.6667 8.33333 10.8333V5.83333C8.33333 4.91667 7.58333 4.16667 6.66667 4.16667H4.16667C3.25 4.16667 2.5 4.91667 2.5 5.83333V9.16667C2.5 10.0833 3.25 10.8333 4.16667 10.8333H5.83333C5.83333 12.5 5 14.1667 2.5 14.1667"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M11.6667 17.5C14.1667 17.5 17.5 16.6667 17.5 10.8333V5.83333C17.5 4.91667 16.75 4.16667 15.8333 4.16667H13.3333C12.4167 4.16667 11.6667 4.91667 11.6667 5.83333V9.16667C11.6667 10.0833 12.4167 10.8333 13.3333 10.8333H15C15 12.5 14.1667 14.1667 11.6667 14.1667"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 코드 블록 아이콘
+export const CodeIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M13.3333 15L17.5 10L13.3333 5M6.66667 5L2.5 10L6.66667 15"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);

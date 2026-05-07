@@ -18,3 +18,6 @@ export * from "./file-uploader";
 export * from "./modal";
 export { Tabs } from "./tabs/tabs";
 export type { TabsProps, TabItem, TabVariant } from "./tabs/tabs";
+
+// RichEditor component
+export * from "./rich-editor";
