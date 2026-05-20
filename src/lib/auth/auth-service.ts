@@ -21,6 +21,30 @@ type SessionResponse = {
   backendUser: BackendUser;
 };
 
+const BACKEND_USER_KEY = "aim_backend_user";
+
+export const storeBackendUser = (user: BackendUser): void => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(BACKEND_USER_KEY, JSON.stringify(user));
+  }
+};
+
+export const clearBackendUser = (): void => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(BACKEND_USER_KEY);
+  }
+};
+
+export const getStoredBackendUser = (): BackendUser | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(BACKEND_USER_KEY);
+    return stored ? (JSON.parse(stored) as BackendUser) : null;
+  } catch {
+    return null;
+  }
+};
+
 const googleProvider = new GoogleAuthProvider();
 GOOGLE_PROFILE_SCOPES.forEach((scope) => googleProvider.addScope(scope));
 
@@ -36,6 +60,8 @@ const createSession = async (
     await firebaseSignOut(auth).catch(() => undefined);
     throw error;
   }
+
+  storeBackendUser(backendUser);
 
   return {
     uid: auth.currentUser?.uid ?? "",
@@ -82,5 +108,6 @@ export const signInWithEmail = async (
 };
 
 export const signOut = async (): Promise<void> => {
+  clearBackendUser();
   await firebaseSignOut(auth);
 };

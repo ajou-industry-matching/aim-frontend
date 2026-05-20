@@ -35,7 +35,7 @@ export const LoginPage = () => {
 
     try {
       await signInWithGoogle();
-      router.replace("/home");
+      router.replace("/portfolio");
     } catch (error) {
       console.error("[auth] Google login failed", error);
       setErrorMessage(getAuthErrorMessage(error));
