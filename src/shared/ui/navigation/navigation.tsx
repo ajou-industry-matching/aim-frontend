@@ -121,17 +121,14 @@ export const Navigation = ({
     <header className={headerClasses}>
       <div className="mx-auto max-w-[1440px] h-full flex items-center justify-between">
         {/* Logo Section */}
-        <a href={logoHref} className="flex items-center gap-[6px] shrink-0">
-          <div className="relative h-8 w-8">
+        <a href={logoHref} className="flex items-center shrink-0">
+          <div className="relative h-12 w-12">
             <img
-              src="/assets/ajou-logo.svg"
-              alt="AJOU Logo"
+              src="/assets/aim-ajou-logo_text.svg"
+              alt="AIM AJOU"
               className="w-full h-full object-contain"
             />
           </div>
-          <span className="font-semibold text-2xl text-[var(--color-gray-900,#111)] tracking-[-0.6px] leading-[1.33]">
-            AIM AJOU
-          </span>
         </a>
 
         {/* Navigation Menu */}
