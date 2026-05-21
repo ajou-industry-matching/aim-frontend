@@ -1,5 +1,11 @@
 import { BackendLoginError, GoogleProfileRoleError } from "@/api/auth";
 
+const hasServerMessage = (message: string): boolean => {
+  const trimmedMessage = message.trim();
+
+  return Boolean(trimmedMessage) && !trimmedMessage.startsWith("Backend login failed.");
+};
+
 export const getAuthErrorMessage = (error: unknown): string => {
   if (typeof error === "object" && error !== null && "code" in error) {
     const code = String(error.code);
@@ -25,12 +31,16 @@ export const getAuthErrorMessage = (error: unknown): string => {
   }
 
   if (error instanceof BackendLoginError) {
+    if (error.status === 400 && hasServerMessage(error.message)) {
+      return error.message;
+    }
+
     if (!error.status) {
       return "백엔드 서버에 연결할 수 없습니다. 서버 실행 상태와 CORS 설정을 확인해주세요.";
     }
 
     if (error.status === 401 || error.status === 403) {
-      return "백엔드에서 로그인 권한을 확인하지 못했습니다.";
+      return "로그인 인증을 확인하지 못했습니다. 다시 시도해주세요.";
     }
 
     return `백엔드 로그인 처리 중 문제가 발생했습니다. (${error.status})`;
