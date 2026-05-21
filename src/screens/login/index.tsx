@@ -2,9 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuthErrorMessage, signInWithEmail, signInWithGoogle } from "@/lib/auth";
+import {
+  getAuthErrorMessage,
+  signInWithEmail,
+  signInWithGoogle,
+  signUpCompanyWithEmail,
+} from "@/lib/auth";
+import type { BackendUser } from "@/api/auth";
 import { Navigation, Tabs, type NavItem, type TabItem } from "@/shared/ui";
-import { CompanyLoginForm } from "./company-login-form";
+import {
+  CompanyLoginForm,
+  type CompanyAuthMode,
+  type CompanySignupValues,
+} from "./company-login-form";
 import { StudentLoginPanel } from "./student-login-panel";
 import styles from "./login.module.css";
 
@@ -19,18 +29,57 @@ const loginTabs: TabItem[] = [
   { id: "company", label: "기업" },
 ];
 
+const initialCompanySignupValues: CompanySignupValues = {
+  companyName: "",
+  name: "",
+  username: "",
+  email: "",
+  password: "",
+  passwordConfirm: "",
+};
+
+const getCompanySignupStatusMessage = (status: BackendUser["status"]): string => {
+  switch (status) {
+    case "ACTIVE":
+      return "회원가입이 완료되었습니다.";
+    case "PENDING":
+      return "회원가입 요청이 완료되었습니다. 관리자 승인 후 이용할 수 있습니다.";
+    case "BLOCKED":
+      return "가입은 완료되었지만 차단된 계정입니다. 관리자에게 문의해주세요.";
+    case "SUSPENDED":
+      return "가입은 완료되었지만 정지된 계정입니다. 관리자에게 문의해주세요.";
+  }
+};
+
 export const LoginPage = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("student");
+  const [companyMode, setCompanyMode] = useState<CompanyAuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [signupValues, setSignupValues] = useState<CompanySignupValues>(initialCompanySignupValues);
   const [errorMessage, setErrorMessage] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isStudent = activeTab === "student";
 
+  const handleCompanyModeChange = (nextMode: CompanyAuthMode) => {
+    setCompanyMode(nextMode);
+    setErrorMessage("");
+    setStatusMessage("");
+  };
+
+  const handleSignupValueChange = (name: keyof CompanySignupValues, value: string) => {
+    setSignupValues((currentValues) => ({
+      ...currentValues,
+      [name]: value,
+    }));
+  };
+
   const handleGoogleLoginClick = async () => {
     setErrorMessage("");
+    setStatusMessage("");
     setIsSubmitting(true);
 
     try {
@@ -55,6 +104,7 @@ export const LoginPage = () => {
     }
 
     setErrorMessage("");
+    setStatusMessage("");
     setIsSubmitting(true);
 
     try {
@@ -62,6 +112,58 @@ export const LoginPage = () => {
       router.replace("/home");
     } catch (error) {
       console.error("[auth] Company login failed", error);
+      setErrorMessage(getAuthErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCompanySignupSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const companyName = signupValues.companyName.trim();
+    const name = signupValues.name.trim();
+    const username = signupValues.username.trim();
+    const signupEmail = signupValues.email.trim();
+    const signupPassword = signupValues.password;
+    const passwordConfirm = signupValues.passwordConfirm;
+
+    if (!companyName || !name || !username || !signupEmail || !signupPassword || !passwordConfirm) {
+      setErrorMessage("모든 정보를 입력해주세요.");
+      return;
+    }
+
+    if (signupPassword.length < 6) {
+      setErrorMessage("비밀번호는 6자 이상으로 입력해주세요.");
+      return;
+    }
+
+    if (signupPassword !== passwordConfirm) {
+      setErrorMessage("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      return;
+    }
+
+    setErrorMessage("");
+    setStatusMessage("");
+    setIsSubmitting(true);
+
+    try {
+      const session = await signUpCompanyWithEmail(signupEmail, signupPassword, {
+        companyName,
+        name,
+      });
+      const nextMessage = getCompanySignupStatusMessage(session.backendUser.status);
+
+      setSignupValues(initialCompanySignupValues);
+      setEmail(signupEmail);
+      setPassword("");
+      setStatusMessage(nextMessage);
+
+      if (session.backendUser.status === "ACTIVE") {
+        router.replace("/home");
+      }
+    } catch (error) {
+      console.error("[auth] Company signup failed", error);
       setErrorMessage(getAuthErrorMessage(error));
     } finally {
       setIsSubmitting(false);
@@ -100,6 +202,7 @@ export const LoginPage = () => {
                     onChange={(nextTab) => {
                       setActiveTab(nextTab);
                       setErrorMessage("");
+                      setStatusMessage("");
                     }}
                     variant="horizontal"
                     isAnimated
@@ -109,7 +212,7 @@ export const LoginPage = () => {
 
                 <div className="login-page__body px-4 pb-8 pt-7 md:px-6 md:pb-[40px] md:pt-7">
                   <div
-                    key={activeTab}
+                    key={`${activeTab}-${companyMode}`}
                     className={[
                       "login-page__panel mx-auto flex w-full flex-col md:max-w-[672px]",
                       styles.panelAnimated,
@@ -123,13 +226,26 @@ export const LoginPage = () => {
                       />
                     ) : (
                       <CompanyLoginForm
+                        mode={companyMode}
                         email={email}
                         password={password}
+                        signupValues={signupValues}
                         isSubmitting={isSubmitting}
                         onEmailChange={setEmail}
                         onPasswordChange={setPassword}
-                        onSubmit={handleCompanyLoginSubmit}
+                        onSignupValueChange={handleSignupValueChange}
+                        onModeChange={handleCompanyModeChange}
+                        onLoginSubmit={handleCompanyLoginSubmit}
+                        onSignupSubmit={handleCompanySignupSubmit}
                       />
+                    )}
+                    {statusMessage && (
+                      <p
+                        role="status"
+                        className="mt-4 text-center text-[14px] font-medium leading-5 text-[var(--color-primary-800)]"
+                      >
+                        {statusMessage}
+                      </p>
                     )}
                     {errorMessage && (
                       <p

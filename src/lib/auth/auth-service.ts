@@ -1,10 +1,12 @@
 "use client";
 
 import {
+  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
+  updateProfile,
 } from "firebase/auth";
 import {
   fetchGoogleProfile,
@@ -19,6 +21,11 @@ type SessionResponse = {
   uid: string;
   email: string | null;
   backendUser: BackendUser;
+};
+
+type CompanySignupProfile = {
+  companyName: string;
+  name: string;
 };
 
 const googleProvider = new GoogleAuthProvider();
@@ -78,6 +85,26 @@ export const signInWithEmail = async (
     role: "COMPANY",
     name: credential.user.displayName ?? credential.user.email ?? email,
     department: "",
+  });
+};
+
+export const signUpCompanyWithEmail = async (
+  email: string,
+  password: string,
+  profile: CompanySignupProfile,
+): Promise<SessionResponse> => {
+  const credential = await createUserWithEmailAndPassword(auth, email, password);
+
+  await updateProfile(credential.user, {
+    displayName: profile.name,
+  });
+
+  const idToken = await credential.user.getIdToken();
+
+  return createSession(idToken, {
+    role: "COMPANY",
+    name: profile.name,
+    department: profile.companyName,
   });
 };
 

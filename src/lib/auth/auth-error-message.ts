@@ -7,6 +7,10 @@ export const getAuthErrorMessage = (error: unknown): string => {
     switch (code) {
       case "auth/invalid-email":
         return "이메일 형식이 올바르지 않습니다.";
+      case "auth/email-already-in-use":
+        return "이미 가입된 이메일입니다.";
+      case "auth/weak-password":
+        return "비밀번호는 6자 이상으로 입력해주세요.";
       case "auth/user-not-found":
       case "auth/wrong-password":
       case "auth/invalid-credential":
