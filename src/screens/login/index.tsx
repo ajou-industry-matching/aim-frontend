@@ -9,7 +9,17 @@ import {
   signUpCompanyWithEmail,
 } from "@/lib/auth";
 import type { BackendUser } from "@/api/auth";
-import { Navigation, Tabs, type NavItem, type TabItem } from "@/shared/ui";
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Navigation,
+  Tabs,
+  type NavItem,
+  type TabItem,
+} from "@/shared/ui";
 import {
   CompanyLoginForm,
   type CompanyAuthMode,
@@ -38,6 +48,11 @@ const initialCompanySignupValues: CompanySignupValues = {
   passwordConfirm: "",
 };
 
+type ErrorModalState = {
+  title: string;
+  message: string;
+};
+
 const getCompanySignupStatusMessage = (status: BackendUser["status"]): string => {
   switch (status) {
     case "ACTIVE":
@@ -58,16 +73,24 @@ export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signupValues, setSignupValues] = useState<CompanySignupValues>(initialCompanySignupValues);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorModal, setErrorModal] = useState<ErrorModalState | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isStudent = activeTab === "student";
 
+  const showErrorModal = (message: string, title = "로그인 실패") => {
+    setErrorModal({ title, message });
+  };
+
+  const clearFeedback = () => {
+    setErrorModal(null);
+    setStatusMessage("");
+  };
+
   const handleCompanyModeChange = (nextMode: CompanyAuthMode) => {
     setCompanyMode(nextMode);
-    setErrorMessage("");
-    setStatusMessage("");
+    clearFeedback();
   };
 
   const handleSignupValueChange = (name: keyof CompanySignupValues, value: string) => {
@@ -78,8 +101,7 @@ export const LoginPage = () => {
   };
 
   const handleGoogleLoginClick = async () => {
-    setErrorMessage("");
-    setStatusMessage("");
+    clearFeedback();
     setIsSubmitting(true);
 
     try {
@@ -87,7 +109,7 @@ export const LoginPage = () => {
       router.replace("/home");
     } catch (error) {
       console.error("[auth] Google login failed", error);
-      setErrorMessage(getAuthErrorMessage(error));
+      showErrorModal(getAuthErrorMessage(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -99,12 +121,11 @@ export const LoginPage = () => {
     const trimmedEmail = email.trim();
 
     if (!trimmedEmail || !password) {
-      setErrorMessage("이메일과 비밀번호를 입력해주세요.");
+      showErrorModal("이메일과 비밀번호를 입력해주세요.", "입력 오류");
       return;
     }
 
-    setErrorMessage("");
-    setStatusMessage("");
+    clearFeedback();
     setIsSubmitting(true);
 
     try {
@@ -112,7 +133,7 @@ export const LoginPage = () => {
       router.replace("/home");
     } catch (error) {
       console.error("[auth] Company login failed", error);
-      setErrorMessage(getAuthErrorMessage(error));
+      showErrorModal(getAuthErrorMessage(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -129,22 +150,21 @@ export const LoginPage = () => {
     const passwordConfirm = signupValues.passwordConfirm;
 
     if (!companyName || !name || !username || !signupEmail || !signupPassword || !passwordConfirm) {
-      setErrorMessage("모든 정보를 입력해주세요.");
+      showErrorModal("모든 정보를 입력해주세요.", "입력 오류");
       return;
     }
 
     if (signupPassword.length < 6) {
-      setErrorMessage("비밀번호는 6자 이상으로 입력해주세요.");
+      showErrorModal("비밀번호는 6자 이상으로 입력해주세요.", "입력 오류");
       return;
     }
 
     if (signupPassword !== passwordConfirm) {
-      setErrorMessage("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      showErrorModal("비밀번호와 비밀번호 확인이 일치하지 않습니다.", "입력 오류");
       return;
     }
 
-    setErrorMessage("");
-    setStatusMessage("");
+    clearFeedback();
     setIsSubmitting(true);
 
     try {
@@ -164,7 +184,7 @@ export const LoginPage = () => {
       }
     } catch (error) {
       console.error("[auth] Company signup failed", error);
-      setErrorMessage(getAuthErrorMessage(error));
+      showErrorModal(getAuthErrorMessage(error), "회원가입 실패");
     } finally {
       setIsSubmitting(false);
     }
@@ -201,8 +221,7 @@ export const LoginPage = () => {
                     value={activeTab}
                     onChange={(nextTab) => {
                       setActiveTab(nextTab);
-                      setErrorMessage("");
-                      setStatusMessage("");
+                      clearFeedback();
                     }}
                     variant="horizontal"
                     isAnimated
@@ -247,14 +266,6 @@ export const LoginPage = () => {
                         {statusMessage}
                       </p>
                     )}
-                    {errorMessage && (
-                      <p
-                        role="alert"
-                        className="mt-4 text-center text-[14px] font-medium leading-5 text-[var(--color-error-500)]"
-                      >
-                        {errorMessage}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -262,6 +273,29 @@ export const LoginPage = () => {
           </section>
         </div>
       </main>
+
+      <Modal
+        isOpen={errorModal !== null}
+        onClose={() => setErrorModal(null)}
+        className="max-w-[420px]"
+      >
+        <ModalHeader title={errorModal?.title ?? "오류"} onClose={() => setErrorModal(null)} />
+        <ModalContent>
+          <p className="text-[15px] font-medium leading-6 text-[var(--color-gray-700)]">
+            {errorModal?.message}
+          </p>
+        </ModalContent>
+        <ModalFooter>
+          <Button
+            type="button"
+            size="medium"
+            onClick={() => setErrorModal(null)}
+            className="rounded-[4px] hover:scale-100 active:scale-100"
+          >
+            확인
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };
