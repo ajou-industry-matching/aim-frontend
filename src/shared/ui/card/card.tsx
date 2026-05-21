@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Button } from "../button";
 
 export type CardVariant = "post" | "profile" | "simple" | "featured";
@@ -8,11 +9,6 @@ export type SimpleCardVariant = "default" | "bordered" | "elevated";
 interface BaseCardProps {
   className?: string;
   onClick?: () => void;
-}
-
-interface CategoryBadge {
-  label: string;
-  color?: string;
 }
 
 interface Author {
@@ -34,14 +30,14 @@ interface ProfileStats {
 // 개별 카드 타입 정의
 interface PostCardSpecificProps {
   variant: "post";
-  thumbnail?: string;
-  category?: CategoryBadge;
+  href?: string;
+  thumbnail?: string | { src: string };
+  tags?: string[];
   title: string;
   description: string;
   author: Author;
   date: string;
   stats: PostStats;
-  isSelected?: boolean;
 }
 
 interface ProfileCardSpecificProps {
@@ -101,26 +97,21 @@ Card.displayName = "Card";
 const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { variant: "post" }>>(
   (props, ref) => {
     const {
+      href,
       thumbnail,
-      category,
+      tags,
       title,
       description,
       author,
       date,
       stats,
-      isSelected = false,
       className = "",
       onClick,
     } = props;
 
-    const baseClasses =
-      "w-full min-w-[280px] max-w-[360px] p-6 bg-white border rounded-xl transition-all duration-200 ease-out";
-
-    const stateClasses = isSelected
-      ? "bg-[var(--color-primary-50)] border-[var(--color-primary-800)] shadow-[0_4px_12px_rgba(0,74,156,0.12)]"
-      : "border-[var(--color-gray-200)] shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-[var(--color-primary-200)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:-translate-y-0.5";
-
-    const cursorClass = onClick ? "cursor-pointer" : "";
+    const wrapperClasses = `flex w-full min-w-[280px] max-w-[360px] flex-col group ${
+      href || onClick ? "cursor-pointer" : ""
+    } ${className}`;
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (!onClick) return;
@@ -130,61 +121,77 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
       }
     };
 
+    const content = (
+      <>
+        {thumbnail && (
+          <div className="relative aspect-[360/203] w-full border border-[color:var(--color-gray-200,#e5e5e5)] border-b-0 rounded-t-xl overflow-hidden">
+            <img
+              src={typeof thumbnail === "string" ? thumbnail : thumbnail.src}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        )}
+
+        <div className="bg-white border border-[color:var(--color-gray-200,#e5e5e5)] flex flex-col gap-4 p-6 rounded-b-xl">
+          {tags && tags.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              {tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="border border-[color:var(--color-primary-800,#003876)] text-[color:var(--color-primary-800,#003876)] text-[12px] font-medium leading-[1.33] tracking-[-0.3px] px-3 py-1 rounded-xl"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <h3 className="text-[color:var(--color-gray-800,#333)] text-[20px] font-semibold leading-[1.4] tracking-[-0.5px] line-clamp-1">
+            {title}
+          </h3>
+
+          <p className="text-[color:var(--color-gray-600,#666)] text-[14px] leading-[1.43] tracking-[-0.35px] line-clamp-1">
+            {description}
+          </p>
+
+          <div className="flex items-center gap-1">
+            <span className="text-[color:var(--color-gray-500,#808080)] text-[12px] leading-[1.33] tracking-[-0.3px]">
+              {author.name}
+            </span>
+            <div className="w-[2px] h-[2px] bg-[color:var(--color-gray-500,#808080)] rounded-full" />
+            <span className="text-[color:var(--color-gray-500,#808080)] text-[12px] leading-[1.33] tracking-[-0.3px]">
+              {date}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <StatItem icon="heart" count={stats.likes} />
+            <StatItem icon="comment" count={stats.comments} />
+            <StatItem icon="view" count={stats.views} />
+          </div>
+        </div>
+      </>
+    );
+
+    if (href) {
+      return (
+        <Link href={href} className={wrapperClasses} onClick={onClick}>
+          {content}
+        </Link>
+      );
+    }
+
     return (
       <div
         ref={ref}
-        className={`${baseClasses} ${stateClasses} ${cursorClass} ${className}`}
+        className={wrapperClasses}
         onClick={onClick}
         role={onClick ? "button" : undefined}
         tabIndex={onClick ? 0 : undefined}
         onKeyDown={handleKeyDown}
       >
-        {/* 썸네일 */}
-        {thumbnail && (
-          <div className="w-full aspect-video mb-4 rounded-lg overflow-hidden">
-            <img src={thumbnail} alt={title} className="w-full h-full object-cover" />
-          </div>
-        )}
-
-        {/* 카테고리 뱃지 */}
-        {category && (
-          <div className="mb-4">
-            <span
-              className="inline-flex items-center h-6 px-3 rounded-full text-xs font-medium border"
-              style={{
-                backgroundColor: "#FFFFFF",
-                color: category.color || "var(--color-primary-800)",
-                borderColor: category.color || "var(--color-primary-800)",
-              }}
-            >
-              {category.label}
-            </span>
-          </div>
-        )}
-
-        {/* 제목 */}
-        <h3 className="mb-3 text-xl font-semibold leading-7 text-[var(--color-gray-800)] line-clamp-1">
-          {title}
-        </h3>
-
-        {/* 설명 */}
-        <p className="mb-4 text-sm leading-5 text-[var(--color-gray-600)] line-clamp-3">
-          {description}
-        </p>
-
-        {/* 작성자 정보 */}
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-xs text-[var(--color-gray-500)]">{author.name}</span>
-          <span className="text-xs text-[var(--color-gray-400)]">·</span>
-          <span className="text-xs text-[var(--color-gray-500)]">{date}</span>
-        </div>
-
-        {/* 통계 */}
-        <div className="flex items-center gap-4">
-          <StatItem icon="heart" count={stats.likes} />
-          <StatItem icon="comment" count={stats.comments} />
-          <StatItem icon="view" count={stats.views} />
-        </div>
+        {content}
       </div>
     );
   },
@@ -397,29 +404,36 @@ const StatItem: React.FC<{ icon: "heart" | "comment" | "view"; count: number }> 
 }) => {
   const icons = {
     heart: (
-      <path d="M8 14L7.05 13.15C3.4 9.86 1 7.69 1 5.05C1 2.88 2.68 1.2 4.85 1.2C6.04 1.2 7.19 1.76 8 2.64C8.81 1.76 9.96 1.2 11.15 1.2C13.32 1.2 15 2.88 15 5.05C15 7.69 12.6 9.86 8.95 13.15L8 14Z" />
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     ),
-    comment: (
-      <path d="M14 2H2C1.45 2 1 2.45 1 3V11C1 11.55 1.45 12 2 12H12L15 15V3C15 2.45 14.55 2 14 2Z" />
-    ),
+    comment: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
     view: (
-      <path d="M8 3C4.5 3 1.73 5.61 1 9C1.73 12.39 4.5 15 8 15C11.5 15 14.27 12.39 15 9C14.27 5.61 11.5 3 8 3ZM8 13C6.34 13 5 11.66 5 10C5 8.34 6.34 7 8 7C9.66 7 11 8.34 11 10C11 11.66 9.66 13 8 13ZM8 8.5C7.17 8.5 6.5 9.17 6.5 10C6.5 10.83 7.17 11.5 8 11.5C8.83 11.5 9.5 10.83 9.5 10C9.5 9.17 8.83 8.5 8 8.5Z" />
+      <>
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+        <circle cx="12" cy="12" r="3" />
+      </>
     ),
   };
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1">
       <svg
         width="16"
         height="16"
-        viewBox="0 0 16 16"
-        fill="currentColor"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         xmlns="http://www.w3.org/2000/svg"
-        className="text-[var(--color-gray-500)]"
+        className="text-[color:var(--color-gray-500,#808080)]"
       >
         {icons[icon]}
       </svg>
-      <span className="text-xs font-medium text-[var(--color-gray-500)]">{count}</span>
+      <span className="text-[12px] font-medium leading-[1.33] tracking-[-0.3px] text-[color:var(--color-gray-500,#808080)]">
+        {count}
+      </span>
     </div>
   );
 };

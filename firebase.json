@@ -6,12 +6,15 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "public",
+    "public": "out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/api/**",
+        "run": {
+          "serviceId": "aim-be-prod",
+          "region": "us-central1"
+        }
       }
     ]
   },

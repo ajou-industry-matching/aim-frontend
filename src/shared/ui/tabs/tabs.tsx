@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 // ----------------------------------------------------------------------
@@ -18,6 +20,7 @@ export type TabsProps = {
   value: string;
   onChange: (id: string) => void;
   variant?: TabVariant;
+  isAnimated?: boolean;
   className?: string;
 };
 
@@ -46,9 +49,17 @@ const itemVariantClasses: Record<TabVariant, string> = {
 // ----------------------------------------------------------------------
 // 3. 헬퍼 함수 (클래스 조립)
 // ----------------------------------------------------------------------
-const getTabItemClasses = (variant: TabVariant, isActive: boolean, isDisabled: boolean): string => {
+const getTabItemClasses = (
+  variant: TabVariant,
+  isActive: boolean,
+  isDisabled: boolean,
+  isAnimated: boolean,
+): string => {
   const base = itemBaseClasses;
   const variantClasses = itemVariantClasses[variant];
+  const motionClasses = isAnimated
+    ? "transition-[color,background-color,transform] duration-300 ease-out"
+    : "";
   let stateClasses = "";
 
   if (isDisabled) {
@@ -73,7 +84,23 @@ const getTabItemClasses = (variant: TabVariant, isActive: boolean, isDisabled: b
     }
   }
 
-  return [base, variantClasses, stateClasses].filter(Boolean).join(" ");
+  return [base, variantClasses, motionClasses, stateClasses].filter(Boolean).join(" ");
+};
+
+const getHorizontalIndicatorClasses = (isActive: boolean, isAnimated: boolean): string => {
+  const baseClasses =
+    "absolute bottom-0 left-0 h-[2px] w-full bg-[color:var(--color-primary-800,#004A9C)]";
+
+  const stateClasses = isAnimated
+    ? [
+        "origin-center transition-transform duration-300 ease-out",
+        isActive ? "scale-x-100" : "scale-x-0",
+      ].join(" ")
+    : isActive
+      ? "transition-all duration-200"
+      : "hidden";
+
+  return [baseClasses, stateClasses].filter(Boolean).join(" ");
 };
 
 // ----------------------------------------------------------------------
@@ -84,6 +111,7 @@ export const Tabs = ({
   value,
   onChange,
   variant = "horizontal",
+  isAnimated = false,
   className = "",
 }: TabsProps): React.ReactElement => {
   const containerClasses = [containerBaseClasses, containerVariantClasses[variant], className].join(
@@ -98,19 +126,20 @@ export const Tabs = ({
 
         return (
           <button
+            key={item.id}
             type="button"
             role="tab"
             aria-selected={isActive}
             disabled={isDisabled}
             onClick={() => !isDisabled && onChange(item.id)}
-            className={getTabItemClasses(variant, isActive, isDisabled)}
+            className={getTabItemClasses(variant, isActive, isDisabled, isAnimated)}
           >
             <span>{item.label}</span>
             {item.badge && (
               <span className="ml-[6px] inline-flex items-center justify-center">{item.badge}</span>
             )}
-            {variant === "horizontal" && isActive && !isDisabled && (
-              <div className="absolute bottom-0 left-0 w-full h-[2px] bg-[color:var(--color-primary-800,#004A9C)] transition-all duration-200" />
+            {variant === "horizontal" && !isDisabled && (
+              <div className={getHorizontalIndicatorClasses(isActive, isAnimated)} />
             )}
           </button>
         );

@@ -375,115 +375,211 @@ export const LockIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   </svg>
 );
 
-// Inbox 아이콘 (Lists 컴포넌트 사용)
-export const InboxIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+// User Solid 아이콘
+export const UserSolidIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   <svg
     width={size}
     height={size}
-    viewBox="0 0 24 24"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path d="M10 9.16667C11.8409 9.16667 13.3333 7.67428 13.3333 5.83333C13.3333 3.99238 11.8409 2.5 10 2.5C8.15906 2.5 6.66667 3.99238 6.66667 5.83333C6.66667 7.67428 8.15906 9.16667 10 9.16667Z" />
+    <path d="M3.33334 16.6667C3.33334 13.9052 6.31811 11.6667 10 11.6667C13.6819 11.6667 16.6667 13.9052 16.6667 16.6667V17.5H3.33334V16.6667Z" />
+  </svg>
+);
+
+// File Text 아이콘
+export const FileTextAltIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
     <path
-      d="M22 12H16L14 15H10L8 12H2V5C2 3.89543 2.89543 3 4 3H20C21.1046 3 22 3.89543 22 5V12Z"
+      d="M6.66667 2.5H11.6667L15.8333 6.66667V15.8333C15.8333 16.7538 15.0871 17.5 14.1667 17.5H6.66667C5.74619 17.5 5 16.7538 5 15.8333V4.16667C5 3.24619 5.74619 2.5 6.66667 2.5Z"
       stroke="currentColor"
       strokeWidth="2"
+      strokeLinecap="round"
       strokeLinejoin="round"
     />
+    <path d="M11.6667 2.5V6.66667H15.8333" stroke="currentColor" strokeWidth="2" />
+    <path d="M7.5 10H12.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path d="M7.5 13.3333H12.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+// Bell 아이콘
+export const BellIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
     <path
-      d="M2 12V19C2 20.1046 2.89543 21 4 21H20C21.1046 21 22 20.1046 22 19V12"
+      d="M10 17.5C10.9205 17.5 11.6667 16.7538 11.6667 15.8333H8.33333C8.33333 16.7538 9.07953 17.5 10 17.5Z"
       stroke="currentColor"
       strokeWidth="2"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-// User Solid 아이콘 (Avatars 컴포넌트 사용)
-export const UserSolidIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
-    <path
-      d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"
-      fill="currentColor"
-    />
-  </svg>
-);
-
-// File Text 아이콘 (Empty States 컴포넌트 사용)
-export const FileTextIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    {...props}
-  >
-    <path
-      d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z"
-      stroke="currentColor"
-      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M14 2V8H20"
+      d="M13.3333 7.5C13.3333 5.65905 11.8409 4.16667 10 4.16667C8.15906 4.16667 6.66667 5.65905 6.66667 7.5V9.16667C6.66667 10.0507 6.31548 10.8986 5.69036 11.5237L5 12.214V13.3333H15V12.214L14.3097 11.5237C13.6845 10.8986 13.3333 10.0507 13.3333 9.16667V7.5Z"
       stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M16 13H8"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M16 17H8"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M10 9H8"
-      stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
   </svg>
 );
 
-// Bell 아이콘 (Empty States 컴포넌트 사용)
-export const BellIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+// Alert Circle 아이콘
+export const AlertCircleIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   <svg
     width={size}
     height={size}
-    viewBox="0 0 24 24"
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="2" />
+    <path d="M10 6.66667V10.8333" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <circle cx="10" cy="13.75" r="1" fill="currentColor" />
+  </svg>
+);
+
+// Clock 아이콘
+export const ClockIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="2" />
+    <path
+      d="M10 5.83333V10L12.5 11.6667"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Image 아이콘
+export const ImageIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <rect
+      x="2.5"
+      y="3.33333"
+      width="15"
+      height="13.3333"
+      rx="1.66667"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+    <circle cx="7.08333" cy="8.33333" r="1.25" fill="currentColor" />
+    <path
+      d="M17.5 13.3333L13.6904 9.52369C13.365 9.19825 12.8373 9.19825 12.5118 9.52369L6.66667 15.3689"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Upload 아이콘
+export const UploadIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
     <path
-      d="M18 8A6 6 0 0 0 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z"
+      d="M10 12.5V4.16667M10 4.16667L6.66667 7.5M10 4.16667L13.3333 7.5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M4.16667 12.5V14.1667C4.16667 15.0871 4.91286 15.8333 5.83333 15.8333H14.1667C15.0871 15.8333 15.8333 15.0871 15.8333 14.1667V12.5"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Inbox 아이콘
+export const InboxIcon: React.FC<IconProps> = ({ size = 20, strokeWidth = 2, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M3.33333 4.16667H16.6667L15 15.8333H5L3.33333 4.16667Z"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33333 11.6667H7.5L8.75 13.3333H11.25L12.5 11.6667H16.6667"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// Heading 1 아이콘
+export const Heading1Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M3.33333 4.16667V15.8333M3.33333 10H10M10 4.16667V15.8333"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21"
+      d="M14.1667 7.5L16.6667 6.66667V15.8333"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
@@ -492,34 +588,26 @@ export const BellIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
   </svg>
 );
 
-// Alert Circle 아이콘 (Empty States 컴포넌트 사용)
-export const AlertCircleIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+// Heading 2 아이콘
+export const Heading2Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   <svg
     width={size}
     height={size}
-    viewBox="0 0 24 24"
+    viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
-    <circle
-      cx="12"
-      cy="12"
-      r="10"
+    <path
+      d="M3.33333 4.16667V15.8333M3.33333 10H10M10 4.16667V15.8333"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M12 8V12"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M12 16H12.01"
+      d="M13.75 8.33333C13.75 7.41286 14.4961 6.66667 15.4167 6.66667H15.8333C16.7538 6.66667 17.5 7.41286 17.5 8.33333C17.5 9.25381 16.9583 9.79167 16.25 10.4167L13.75 12.9167V15.8333H17.5"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
@@ -528,29 +616,143 @@ export const AlertCircleIcon: React.FC<IconProps> = ({ size = 24, ...props }) =>
   </svg>
 );
 
-// Clock 아이콘 (Empty States 컴포넌트 사용)
-export const ClockIcon: React.FC<IconProps> = ({ size = 24, ...props }) => (
+// Heading 3 아이콘
+export const Heading3Icon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   <svg
     width={size}
     height={size}
-    viewBox="0 0 24 24"
+    viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
     {...props}
   >
-    <circle
-      cx="12"
-      cy="12"
-      r="10"
+    <path
+      d="M3.33333 4.16667V15.8333M3.33333 10H10M10 4.16667V15.8333"
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
-      d="M12 6V12L16 14"
+      d="M13.75 7.5C13.75 7.04167 14.1667 6.66667 14.5833 6.66667H17.0833C17.5 6.66667 17.9167 7.04167 17.9167 7.5C17.9167 7.95833 17.7083 8.125 17.5 8.33333L15 10.8333H15.4167C16.7083 10.8333 17.9167 11.875 17.9167 13.3333C17.9167 14.7917 16.7083 15.8333 15.4167 15.8333H14.5833C14.1667 15.8333 13.75 15.4583 13.75 15"
       stroke="currentColor"
       strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 불릿 리스트 아이콘
+export const ListBulletIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M7.5 5H17.5M7.5 10H17.5M7.5 15H17.5"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle cx="3.33" cy="5" r="1" fill="currentColor" />
+    <circle cx="3.33" cy="10" r="1" fill="currentColor" />
+    <circle cx="3.33" cy="15" r="1" fill="currentColor" />
+  </svg>
+);
+
+// 숫자 리스트 아이콘
+export const ListOrderedIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M8.33333 5H17.5M8.33333 10H17.5M8.33333 15H17.5"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33333 4.16667H4.16667V6.66667M3.33333 6.66667H5"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33333 9.16667C3.33333 8.70833 3.75 8.33333 4.16667 8.33333C4.58333 8.33333 5 8.70833 5 9.16667C5 9.58333 4.79167 9.83333 4.58333 10.0833L3.33333 11.4583V11.6667H5"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M3.33333 13.75C3.33333 13.4167 3.66667 13.3333 3.95833 13.3333H4.58333C4.875 13.3333 5 13.5417 5 13.75C5 13.9583 4.875 14.1667 4.58333 14.1667H4.16667M4.16667 14.1667H4.58333C4.875 14.1667 5 14.375 5 14.5833V15.4167C5 15.625 4.875 15.8333 4.58333 15.8333H3.95833C3.66667 15.8333 3.33333 15.75 3.33333 15.4167"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 인용구 아이콘
+export const QuoteIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M2.5 17.5C5 17.5 8.33333 16.6667 8.33333 10.8333V5.83333C8.33333 4.91667 7.58333 4.16667 6.66667 4.16667H4.16667C3.25 4.16667 2.5 4.91667 2.5 5.83333V9.16667C2.5 10.0833 3.25 10.8333 4.16667 10.8333H5.83333C5.83333 12.5 5 14.1667 2.5 14.1667"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M11.6667 17.5C14.1667 17.5 17.5 16.6667 17.5 10.8333V5.83333C17.5 4.91667 16.75 4.16667 15.8333 4.16667H13.3333C12.4167 4.16667 11.6667 4.91667 11.6667 5.83333V9.16667C11.6667 10.0833 12.4167 10.8333 13.3333 10.8333H15C15 12.5 14.1667 14.1667 11.6667 14.1667"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 코드 블록 아이콘
+export const CodeIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M13.3333 15L17.5 10L13.3333 5M6.66667 5L2.5 10L6.66667 15"
+      stroke="currentColor"
+      strokeWidth="1.75"
       strokeLinecap="round"
       strokeLinejoin="round"
     />

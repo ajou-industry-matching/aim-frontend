@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/nextjs";
 import { ListItem, Table, type TableColumn, type TableRowData } from "./lists";
 
 const meta = {
   title: "Shared/UI/Lists & Tables",
-  // Storybook Meta는 하나의 메인 컴포넌트를 필요로 하지만, 두 개를 문서화하기 위해 Wrapper 활용
+  component: ListItem,
   parameters: {
     layout: "padded",
     componentSubtitle: "디자인 시스템에 정의된 List Item 및 Table 컴포넌트",
   },
   tags: ["autodocs"],
-} satisfies Meta;
+} satisfies Meta<typeof ListItem>;
 
 export default meta;
 
@@ -155,8 +155,7 @@ const InteractiveTable = (): React.ReactElement => {
   const [data, setData] = useState<TableRowData[]>(initialTableData);
 
   const selectableRows = data.filter((r) => !r.isDisabled);
-  const isAllChecked =
-    selectableRows.length > 0 && selectableRows.every((r) => r.isSelected);
+  const isAllChecked = selectableRows.length > 0 && selectableRows.every((r) => r.isSelected);
 
   const handleRowCheck = (id: string, isChecked: boolean) => {
     setData((prev) => prev.map((row) => (row.id === id ? { ...row, isSelected: isChecked } : row)));
