@@ -16,17 +16,9 @@ const navigationItems: NavItem[] = [
 
 const headerlessRoutes = new Set(["/"]);
 
-const normalizePathname = (pathname: string | null): string => {
-  if (!pathname || pathname === "/") {
-    return "/";
-  }
-
-  return pathname.replace(/\/+$/, "");
-};
-
 export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
   const router = useRouter();
-  const pathname = normalizePathname(usePathname());
+  const pathname = usePathname();
   const shouldRenderNavigation = !headerlessRoutes.has(pathname);
 
   const handleLoginClick = () => {
