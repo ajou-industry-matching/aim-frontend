@@ -15,9 +15,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Navigation,
   Tabs,
-  type NavItem,
   type TabItem,
 } from "@/shared/ui";
 import {
@@ -27,12 +25,6 @@ import {
 } from "./company-login-form";
 import { StudentLoginPanel } from "./student-login-panel";
 import styles from "./login.module.css";
-
-const navItems: NavItem[] = [
-  { label: "포트폴리오", href: "#portfolio" },
-  { label: "소개", href: "#about" },
-  { label: "공지사항", href: "#notice" },
-];
 
 const loginTabs: TabItem[] = [
   { id: "student", label: "학생/교수" },
@@ -191,15 +183,8 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="login-page flex min-h-screen flex-col bg-white text-[var(--color-gray-900)]">
-      <Navigation
-        items={navItems}
-        onLogin={() => undefined}
-        onSignup={() => undefined}
-        className="login-page__nav"
-      />
-
-      <main className="login-page__main flex min-h-[calc(100vh-80px)] flex-1 justify-center px-2 pb-5 pt-[10vh] md:px-8 md:pb-10 md:pt-[8vh]">
+    <div className="login-page flex min-h-[calc(100vh-80px)] flex-col bg-white text-[var(--color-gray-900)]">
+      <main className="login-page__main flex flex-1 justify-center px-2 pb-5 pt-[10vh] md:px-8 md:pb-10 md:pt-[8vh]">
         <div className="flex w-full justify-center">
           <section className="login-page__surface w-full rounded-[24px] bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_100%)] py-0">
             <div className="login-page__content flex flex-col items-center">

@@ -1,6 +1,6 @@
 export const HomePage: React.FC = () => {
   return (
-    <main className="min-h-screen bg-white px-6 py-10 text-[var(--color-gray-900)]">
+    <main className="min-h-[calc(100vh-80px)] bg-white px-6 py-10 text-[var(--color-gray-900)]">
       <section className="mx-auto flex max-w-[720px] flex-col gap-4">
         <p className="text-[14px] font-medium text-[var(--color-primary-800)]">로그인 완료</p>
         <h1 className="text-[32px] font-bold leading-tight text-black">AIM AJOU Home</h1>
