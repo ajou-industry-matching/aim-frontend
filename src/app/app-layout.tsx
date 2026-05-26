@@ -2,7 +2,8 @@
 
 import type { ReactElement, ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Navigation, type NavItem } from "@/shared/ui";
+import { signOut, useAuthSession, type AuthRole } from "@/lib/auth";
+import { Navigation, type NavItem, type NavUser } from "@/shared/ui";
 
 type AppLayoutProps = Readonly<{
   children: ReactNode;
@@ -16,10 +17,25 @@ const navigationItems: NavItem[] = [
 
 const headerlessRoutes = new Set(["/"]);
 
+const authRoleLabels: Record<AuthRole, NavUser["userType"]> = {
+  STUDENT: "학생",
+  PROFESSOR: "교수",
+  COMPANY: "기업",
+};
+
 export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
   const router = useRouter();
   const pathname = usePathname();
+  const { session, isAuthReady } = useAuthSession();
   const shouldRenderNavigation = !headerlessRoutes.has(pathname);
+  const navigationUser: NavUser | undefined = session
+    ? {
+        name: session.backendUser.name,
+        email: session.email ?? "",
+        userType: authRoleLabels[session.backendUser.role],
+        isAdmin: session.backendUser.adminRole !== "NONE",
+      }
+    : undefined;
 
   const handleLoginClick = () => {
     router.push("/login");
@@ -29,15 +45,26 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
     router.push("/login");
   };
 
+  const handleLogoutClick = async () => {
+    try {
+      await signOut();
+    } finally {
+      router.replace("/login");
+    }
+  };
+
   return (
     <>
       {shouldRenderNavigation && (
         <Navigation
           items={navigationItems}
           currentPathname={pathname}
+          user={navigationUser}
+          isAuthLoading={!isAuthReady}
           logoHref="/home"
           onLogin={handleLoginClick}
           onSignup={handleSignupClick}
+          onLogout={handleLogoutClick}
         />
       )}
       {children}

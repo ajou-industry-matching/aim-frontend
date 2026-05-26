@@ -22,6 +22,7 @@ export type NavUser = {
 export type NavigationProps = {
   items: NavItem[];
   user?: NavUser;
+  isAuthLoading?: boolean;
   isAdminMode?: boolean;
   onAdminToggle?: () => void;
   onLogin?: () => void;
@@ -125,6 +126,7 @@ const getToggleHandleClasses = (isAdminMode: boolean) => {
 export const Navigation = ({
   items,
   user,
+  isAuthLoading = false,
   isAdminMode = false,
   onAdminToggle,
   onLogin,
@@ -198,7 +200,12 @@ export const Navigation = ({
             </div>
           )}
 
-          {user ? (
+          {isAuthLoading ? (
+            <div
+              className="h-10 w-[156px] animate-pulse rounded-[4px] bg-[var(--color-gray-100)]"
+              aria-label="인증 상태 확인 중"
+            />
+          ) : user ? (
             <div className="flex items-center gap-3 relative" ref={profileRef}>
               <button
                 onClick={() => setShowProfile(!showProfile)}
