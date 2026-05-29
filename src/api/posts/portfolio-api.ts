@@ -70,24 +70,24 @@ const portfolioSortComparators: Record<
   views: (a, b) => b.viewCount - a.viewCount,
 };
 
-const buildPortfolioPageableQuery = ({
+const buildPortfolioPageableParams = ({
   page = 0,
   size = PORTFOLIO_DEFAULT_PAGE_SIZE,
   sort = "latest",
-}: PortfolioPageable): string => {
+}: PortfolioPageable): URLSearchParams => {
   const params = new URLSearchParams();
   params.set("page", String(page));
   params.set("size", String(size));
   params.set("sort", portfolioSortToQueryValue[sort]);
-  return params.toString();
+  return params;
 };
 
 const fetchSinglePortfolioPage = async (
   boardType: PortfolioBoardType,
   pageable: PortfolioPageable,
 ): Promise<PortfolioListPageResponse> => {
-  const query = buildPortfolioPageableQuery(pageable);
-  return backendJson<PortfolioListPageResponse>(`/api/posts/${boardType}?${query}`);
+  const params = buildPortfolioPageableParams(pageable);
+  return backendJson<PortfolioListPageResponse>(`/api/posts/${boardType}?${params.toString()}`);
 };
 
 const fetchSinglePortfolioSearch = async (
@@ -95,8 +95,7 @@ const fetchSinglePortfolioSearch = async (
   pageable: PortfolioPageable,
   keyword: string,
 ): Promise<PortfolioListPageResponse> => {
-  const query = buildPortfolioPageableQuery(pageable);
-  const params = new URLSearchParams(query);
+  const params = buildPortfolioPageableParams(pageable);
   params.set("boardType", boardType);
   if (keyword) {
     params.set("keyword", keyword);

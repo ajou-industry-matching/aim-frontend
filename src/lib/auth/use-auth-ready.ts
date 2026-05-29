@@ -9,13 +9,13 @@ export type AuthReadyState = {
   isAuthenticated: boolean;
 };
 
-const getInitialAuthReadyState = (): AuthReadyState => ({
-  isReady: auth.currentUser !== null,
-  isAuthenticated: auth.currentUser !== null,
-});
+const INITIAL_AUTH_READY_STATE: AuthReadyState = {
+  isReady: false,
+  isAuthenticated: false,
+};
 
 export const useAuthReady = (): AuthReadyState => {
-  const [state, setState] = useState<AuthReadyState>(getInitialAuthReadyState);
+  const [state, setState] = useState<AuthReadyState>(INITIAL_AUTH_READY_STATE);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

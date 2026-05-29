@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { SearchIcon } from "@/shared/ui/icons";
 
 export type PortfolioSearchBarProps = {
@@ -16,6 +16,10 @@ const inputClasses =
 
 export const PortfolioSearchBar = ({ initialKeyword = "", onSubmit }: PortfolioSearchBarProps) => {
   const [value, setValue] = useState(initialKeyword);
+
+  useEffect(() => {
+    setValue(initialKeyword);
+  }, [initialKeyword]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
