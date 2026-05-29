@@ -12,3 +12,4 @@ export {
   type PortfolioVisibility,
   type SearchPortfoliosParams,
 } from "./portfolio-api";
+export { togglePostLike, type PostLikeToggleResponse } from "./post-like-api";
