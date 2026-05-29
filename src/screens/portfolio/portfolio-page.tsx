@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   getPortfolioList,
   searchPortfolios,
+  type PortfolioBoardType,
   type PortfolioListPageResponse,
   type PortfolioSort,
 } from "@/api/posts";
@@ -12,6 +13,7 @@ import { Pagination } from "@/shared/ui";
 import { PortfolioList } from "./portfolio-list";
 import { PortfolioPageHeader } from "./portfolio-page-header";
 import { PortfolioSearchBar } from "./portfolio-search-bar";
+import { PortfolioTypeFilter } from "./portfolio-type-filter";
 
 const PORTFOLIO_PAGE_SIZE = 12;
 
@@ -24,6 +26,7 @@ type PortfolioQuery = {
   page: number;
   sort: PortfolioSort;
   keyword: string;
+  selectedTypes: PortfolioBoardType[];
 };
 
 type PortfolioFetchResult = {
@@ -32,8 +35,8 @@ type PortfolioFetchResult = {
   error?: string;
 };
 
-const toPortfolioQueryKey = ({ page, sort, keyword }: PortfolioQuery): string =>
-  `${page}|${sort}|${keyword}`;
+const toPortfolioQueryKey = ({ page, sort, keyword, selectedTypes }: PortfolioQuery): string =>
+  `${page}|${sort}|${keyword}|${[...selectedTypes].sort().join(",")}`;
 
 export const PortfolioListPage = () => {
   const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
@@ -41,6 +44,7 @@ export const PortfolioListPage = () => {
     page: 1,
     sort: "latest",
     keyword: "",
+    selectedTypes: [],
   });
   const [result, setResult] = useState<PortfolioFetchResult | null>(null);
 
@@ -63,6 +67,7 @@ export const PortfolioListPage = () => {
       page: query.page - 1,
       size: PORTFOLIO_PAGE_SIZE,
       sort: query.sort,
+      boardTypes: query.selectedTypes,
     };
     const request = query.keyword
       ? searchPortfolios({ ...pageable, keyword: query.keyword })
@@ -81,7 +86,15 @@ export const PortfolioListPage = () => {
     return () => {
       isCancelled = true;
     };
-  }, [isAuthReady, isAuthenticated, queryKey, query.keyword, query.page, query.sort]);
+  }, [
+    isAuthReady,
+    isAuthenticated,
+    queryKey,
+    query.keyword,
+    query.page,
+    query.sort,
+    query.selectedTypes,
+  ]);
 
   const handleSearchSubmit = (nextKeyword: string) => {
     setQuery((previous) => ({ ...previous, keyword: nextKeyword, page: 1 }));
@@ -91,6 +104,10 @@ export const PortfolioListPage = () => {
     setQuery((previous) =>
       previous.sort === nextSort ? previous : { ...previous, sort: nextSort, page: 1 },
     );
+  };
+
+  const handleTypesChange = (nextTypes: PortfolioBoardType[]) => {
+    setQuery((previous) => ({ ...previous, selectedTypes: nextTypes, page: 1 }));
   };
 
   const handlePageChange = (nextPage: number) => {
@@ -108,6 +125,10 @@ export const PortfolioListPage = () => {
       <div className="mx-auto max-w-[1440px] px-4 py-16">
         <div className="mb-8">
           <PortfolioSearchBar initialKeyword={query.keyword} onSubmit={handleSearchSubmit} />
+        </div>
+
+        <div className="mb-8">
+          <PortfolioTypeFilter selectedTypes={query.selectedTypes} onChange={handleTypesChange} />
         </div>
 
         <div className="space-y-8">
