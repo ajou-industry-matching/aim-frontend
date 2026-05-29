@@ -317,6 +317,69 @@ export const UserIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   </svg>
 );
 
+// Building 아이콘 (기업/회사 입력용)
+export const BuildingIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M3.33334 18.3333V4.99999C3.33334 4.07952 4.07953 3.33333 5 3.33333H11.6667C12.5871 3.33333 13.3333 4.07952 13.3333 4.99999V18.3333"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.3333 8.33333H15C15.9205 8.33333 16.6667 9.07952 16.6667 9.99999V18.3333"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M6.66666 6.66667H10M6.66666 10H10M6.66666 13.3333H10M1.66666 18.3333H18.3333"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// AtSign 아이콘 (아이디 입력용)
+export const AtSignIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <circle
+      cx="10"
+      cy="10"
+      r="3.33333"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.3333 10V11.25C13.3333 12.4006 14.2661 13.3333 15.4167 13.3333C16.5673 13.3333 17.5 12.4006 17.5 11.25V10C17.5 5.85786 14.1421 2.5 10 2.5C5.85787 2.5 2.5 5.85786 2.5 10C2.5 14.1421 5.85787 17.5 10 17.5H13.3333"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 // Mail 아이콘 (예제용)
 export const MailIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   <svg

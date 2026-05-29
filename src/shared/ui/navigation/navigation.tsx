@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/shared/ui/button/button";
 import { UserIcon, LogOutIcon } from "@/shared/ui/icons";
 
@@ -29,6 +30,7 @@ export type NavigationProps = {
   onProfileClick?: () => void;
   onAdminDashboardClick?: () => void;
   logoHref?: string;
+  currentPathname?: string;
   className?: string;
 };
 
@@ -56,6 +58,39 @@ const getNavLinkClasses = (isActive?: boolean) => {
     navLinkBaseClasses,
     isActive ? navLinkStatusClasses.active : navLinkStatusClasses.inactive,
   ].join(" ");
+};
+
+const normalizePathname = (href: string): string => {
+  const pathname = href.split(/[?#]/)[0] ?? "/";
+
+  if (!pathname.startsWith("/")) {
+    return pathname;
+  }
+
+  if (pathname === "/") {
+    return "/";
+  }
+
+  return pathname.replace(/\/+$/, "");
+};
+
+const getIsNavItemActive = (item: NavItem, currentPathname?: string): boolean => {
+  if (!currentPathname) {
+    return Boolean(item.isActive);
+  }
+
+  const itemPathname = normalizePathname(item.href);
+
+  if (!itemPathname.startsWith("/")) {
+    return Boolean(item.isActive);
+  }
+
+  const normalizedCurrentPathname = normalizePathname(currentPathname);
+
+  return (
+    normalizedCurrentPathname === itemPathname ||
+    normalizedCurrentPathname.startsWith(`${itemPathname}/`)
+  );
 };
 
 // 3. Admin Toggle Styles
@@ -98,6 +133,7 @@ export const Navigation = ({
   onProfileClick,
   onAdminDashboardClick,
   logoHref = "/",
+  currentPathname,
   className = "",
 }: NavigationProps) => {
   const [showProfile, setShowProfile] = useState(false);
@@ -121,25 +157,26 @@ export const Navigation = ({
     <header className={headerClasses}>
       <div className="mx-auto max-w-[1440px] h-full flex items-center justify-between">
         {/* Logo Section */}
-        <a href={logoHref} className="flex items-center gap-[6px] shrink-0">
-          <div className="relative h-8 w-8">
+        <Link href={logoHref} className="flex items-center shrink-0">
+          <div className="relative h-12 w-12">
             <img
-              src="/assets/ajou-logo.svg"
-              alt="AJOU Logo"
+              src="/assets/aim-ajou-logo_text.svg"
+              alt="AIM AJOU"
               className="w-full h-full object-contain"
             />
           </div>
-          <span className="font-semibold text-2xl text-[var(--color-gray-900,#111)] tracking-[-0.6px] leading-[1.33]">
-            AIM AJOU
-          </span>
-        </a>
+        </Link>
 
         {/* Navigation Menu */}
         <nav className="flex items-center gap-12 h-full">
           {items.map((item) => (
-            <a key={item.href} href={item.href} className={getNavLinkClasses(item.isActive)}>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={getNavLinkClasses(getIsNavItemActive(item, currentPathname))}
+            >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
