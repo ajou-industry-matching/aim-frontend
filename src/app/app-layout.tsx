@@ -31,7 +31,7 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
   const shouldRenderNavigation = !headerlessRoutes.has(pathname);
   const navigationUser: NavUser | undefined = session
     ? {
-        name: session.name,
+        name: session.name ?? session.email ?? "",
         email: session.email,
         userType: authRoleLabels[session.role],
         isAdmin: session.adminRole !== "NONE",

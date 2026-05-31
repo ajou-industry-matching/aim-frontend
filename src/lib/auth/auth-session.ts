@@ -14,7 +14,7 @@ export type AuthSession = {
 export type StoredSession = {
   uid: string;
   email: string | null;
-  name: string;
+  name: string | null;
   role: BackendUser["role"];
   adminRole: BackendUser["adminRole"];
 };
@@ -32,7 +32,6 @@ const normalizeStoredSession = (value: unknown): StoredSession | null => {
 
   if (
     typeof s.uid === "string" &&
-    typeof s.name === "string" &&
     authRoles.has(s.role as BackendUser["role"]) &&
     adminRoles.has(s.adminRole as BackendUser["adminRole"]) &&
     (typeof s.email === "string" || s.email === null)
@@ -40,7 +39,7 @@ const normalizeStoredSession = (value: unknown): StoredSession | null => {
     return {
       uid: s.uid,
       email: s.email,
-      name: s.name,
+      name: typeof s.name === "string" ? s.name : null,
       role: s.role as BackendUser["role"],
       adminRole: s.adminRole as BackendUser["adminRole"],
     };
@@ -77,7 +76,7 @@ export const saveAuthSession = (session: AuthSession): void => {
   const toStore: StoredSession = {
     uid: session.uid,
     email: session.email,
-    name: session.backendUser.name,
+    name: session.backendUser.name ?? null,
     role: session.backendUser.role,
     adminRole: session.backendUser.adminRole,
   };
