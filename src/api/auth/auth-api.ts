@@ -10,7 +10,7 @@ export type BackendUser = {
   userId: number;
   role: AuthRole;
   status: "ACTIVE" | "BLOCKED" | "SUSPENDED" | "PENDING";
-  adminRole: "NONE" | "ADMIN" | "SUPER_ADMIN";
+  adminRole: "NONE" | "ADMIN" | "SUPER_ADMIN" | null;
   name: string | null;
   department: string | null;
 };

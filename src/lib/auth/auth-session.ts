@@ -33,7 +33,6 @@ const normalizeStoredSession = (value: unknown): StoredSession | null => {
   if (
     typeof s.uid === "string" &&
     authRoles.has(s.role as BackendUser["role"]) &&
-    adminRoles.has(s.adminRole as BackendUser["adminRole"]) &&
     (typeof s.email === "string" || s.email === null)
   ) {
     return {
@@ -41,7 +40,9 @@ const normalizeStoredSession = (value: unknown): StoredSession | null => {
       email: s.email,
       name: typeof s.name === "string" ? s.name : null,
       role: s.role as BackendUser["role"],
-      adminRole: s.adminRole as BackendUser["adminRole"],
+      adminRole: adminRoles.has(s.adminRole as BackendUser["adminRole"])
+        ? (s.adminRole as BackendUser["adminRole"])
+        : "NONE",
     };
   }
 
@@ -78,7 +79,7 @@ export const saveAuthSession = (session: AuthSession): void => {
     email: session.email,
     name: session.backendUser.name ?? null,
     role: session.backendUser.role,
-    adminRole: session.backendUser.adminRole,
+    adminRole: session.backendUser.adminRole ?? "NONE",
   };
 
   window.localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(toStore));
