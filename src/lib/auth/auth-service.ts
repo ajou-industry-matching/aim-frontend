@@ -78,7 +78,6 @@ export const signInWithGoogle = async (): Promise<SessionResponse> => {
     return await createSession(credential.user, idToken, profile);
   } catch (error) {
     await firebaseSignOut(auth).catch(() => undefined);
-    clearAuthSession();
     throw error;
   }
 };

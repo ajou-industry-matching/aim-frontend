@@ -14,7 +14,7 @@ export type NavItem = {
 
 export type NavUser = {
   name: string;
-  email: string;
+  email: string | null;
   userType: "학생" | "기업" | "교수";
   isAdmin?: boolean;
 };
@@ -231,9 +231,11 @@ export const Navigation = ({
                       <h3 className="text-[16px] font-bold text-[var(--color-gray-900,#111)] mb-1">
                         {user.name}
                       </h3>
-                      <p className="text-[14px] text-[var(--color-gray-600,#666)] mb-3">
-                        {user.email}
-                      </p>
+                      {user.email && (
+                        <p className="text-[14px] text-[var(--color-gray-600,#666)] mb-3">
+                          {user.email}
+                        </p>
+                      )}
                       <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-800,#004a9c)] text-[12px] font-semibold">
                         {user.userType}
                       </div>

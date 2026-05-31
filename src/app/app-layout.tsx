@@ -2,7 +2,8 @@
 
 import type { ReactElement, ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, useAuthSession, type AuthRole } from "@/lib/auth";
+import { signOut, useAuthSession } from "@/lib/auth";
+import type { BackendUser } from "@/api/auth";
 import { Navigation, type NavItem, type NavUser } from "@/shared/ui";
 
 type AppLayoutProps = Readonly<{
@@ -17,7 +18,7 @@ const navigationItems: NavItem[] = [
 
 const headerlessRoutes = new Set(["/"]);
 
-const authRoleLabels: Record<AuthRole, NavUser["userType"]> = {
+const authRoleLabels: Record<BackendUser["role"], NavUser["userType"]> = {
   STUDENT: "학생",
   PROFESSOR: "교수",
   COMPANY: "기업",
@@ -30,10 +31,10 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
   const shouldRenderNavigation = !headerlessRoutes.has(pathname);
   const navigationUser: NavUser | undefined = session
     ? {
-        name: session.backendUser.name,
-        email: session.email ?? "",
-        userType: authRoleLabels[session.backendUser.role],
-        isAdmin: session.backendUser.adminRole !== "NONE",
+        name: session.name,
+        email: session.email,
+        userType: authRoleLabels[session.role],
+        isAdmin: session.adminRole !== "NONE",
       }
     : undefined;
 
