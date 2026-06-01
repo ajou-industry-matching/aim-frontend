@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/assets/ajou-logo.svg", type: "image/svg+xml" },
+      { url: "/assets/aim-logo.svg", type: "image/svg+xml" },
     ],
     shortcut: "/favicon.ico",
-    apple: "/assets/ajou-logo.svg",
+    apple: "/assets/aim-logo.svg",
   },
 };
 
