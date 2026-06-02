@@ -8,6 +8,7 @@ import { auth } from "@/shared/config/firebase";
 export type AuthSession = {
   uid: string;
   email: string | null;
+  displayName: string | null;
   backendUser: BackendUser;
 };
 
@@ -25,6 +26,16 @@ const AUTH_SESSION_EVENT = "aim-auth-session-changed";
 const authRoles: ReadonlySet<BackendUser["role"]> = new Set(["STUDENT", "PROFESSOR", "COMPANY"]);
 const adminRoles: ReadonlySet<BackendUser["adminRole"]> = new Set(["NONE", "ADMIN", "SUPER_ADMIN"]);
 
+// 빈 문자열/공백 이름은 "없음"으로 취급해 이메일 fallback이 정상 동작하도록 정규화한다.
+// localStorage에서 온 unknown 값도 안전하게 처리한다(문자열이 아니면 null).
+const toDisplayName = (value: unknown): string | null => {
+  if (typeof value !== "string") return null;
+
+  const trimmed = value.trim();
+
+  return trimmed ? trimmed : null;
+};
+
 const normalizeStoredSession = (value: unknown): StoredSession | null => {
   if (!value || typeof value !== "object") return null;
 
@@ -38,7 +49,7 @@ const normalizeStoredSession = (value: unknown): StoredSession | null => {
     return {
       uid: s.uid,
       email: s.email,
-      name: typeof s.name === "string" ? s.name : null,
+      name: toDisplayName(s.name),
       role: s.role as BackendUser["role"],
       adminRole: adminRoles.has(s.adminRole as BackendUser["adminRole"])
         ? (s.adminRole as BackendUser["adminRole"])
@@ -77,7 +88,7 @@ export const saveAuthSession = (session: AuthSession): void => {
   const toStore: StoredSession = {
     uid: session.uid,
     email: session.email,
-    name: session.backendUser.name ?? null,
+    name: toDisplayName(session.backendUser.name) ?? toDisplayName(session.displayName),
     role: session.backendUser.role,
     adminRole: session.backendUser.adminRole ?? "NONE",
   };
@@ -98,6 +109,7 @@ const getStoredSessionForUser = (firebaseUser: User): StoredSession | null => {
   return {
     ...stored,
     email: stored.email ?? firebaseUser.email,
+    name: stored.name ?? toDisplayName(firebaseUser.displayName),
   };
 };
 

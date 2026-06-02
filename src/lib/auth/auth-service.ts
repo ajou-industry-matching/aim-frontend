@@ -22,6 +22,7 @@ import { clearAuthSession, saveAuthSession } from "./auth-session";
 type SessionResponse = {
   uid: string;
   email: string | null;
+  displayName: string | null;
   backendUser: BackendUser;
 };
 
@@ -51,6 +52,7 @@ const createSession = async (
   const session = {
     uid: firebaseUser.uid,
     email: firebaseUser.email,
+    displayName: firebaseUser.displayName,
     backendUser,
   };
 

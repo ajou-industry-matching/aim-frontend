@@ -15,7 +15,7 @@ export type NavItem = {
 export type NavUser = {
   name: string;
   email: string | null;
-  userType: "학생" | "기업" | "교수" | "사용자";
+  userType: "학생" | "기업" | "교수";
   isAdmin?: boolean;
 };
 
@@ -29,6 +29,7 @@ export type NavigationProps = {
   onSignup?: () => void;
   onLogout?: () => void;
   onProfileClick?: () => void;
+  onAccountSettingsClick?: () => void;
   onAdminDashboardClick?: () => void;
   logoHref?: string;
   currentPathname?: string;
@@ -133,6 +134,7 @@ export const Navigation = ({
   onSignup,
   onLogout,
   onProfileClick,
+  onAccountSettingsClick,
   onAdminDashboardClick,
   logoHref = "/",
   currentPathname,
@@ -267,6 +269,15 @@ export const Navigation = ({
                         className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
                       >
                         내 포트폴리오
+                      </button>
+                      <button
+                        onClick={() => {
+                          onAccountSettingsClick?.();
+                          setShowProfile(false);
+                        }}
+                        className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
+                      >
+                        계정 설정
                       </button>
                     </div>
                   </div>
