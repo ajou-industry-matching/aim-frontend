@@ -18,10 +18,18 @@ const navigationItems: NavItem[] = [
 
 const headerlessRoutes = new Set(["/"]);
 
-const authRoleLabels: Record<BackendUser["role"], NavUser["userType"]> = {
+const authRoleLabels: Partial<Record<string, NavUser["userType"]>> = {
   STUDENT: "학생",
   PROFESSOR: "교수",
   COMPANY: "기업",
+};
+
+const getAuthRoleLabel = (
+  role: BackendUser["role"] | string | null | undefined,
+): NavUser["userType"] => {
+  if (!role) return "사용자";
+
+  return authRoleLabels[role] ?? "사용자";
 };
 
 export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
@@ -33,7 +41,7 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
     ? {
         name: session.name ?? session.email ?? "",
         email: session.email,
-        userType: authRoleLabels[session.role],
+        userType: getAuthRoleLabel(session.role),
         isAdmin: session.adminRole !== "NONE",
       }
     : undefined;

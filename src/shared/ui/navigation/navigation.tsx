@@ -15,7 +15,7 @@ export type NavItem = {
 export type NavUser = {
   name: string;
   email: string | null;
-  userType: "학생" | "기업" | "교수";
+  userType: "학생" | "기업" | "교수" | "사용자";
   isAdmin?: boolean;
 };
 
