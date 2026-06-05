@@ -20,38 +20,35 @@ const navItems: NavItem[] = [
 const HERO_CARDS = [
   {
     badge: "PORTFOLIO",
-    badgeColor: "bg-[#1a6ef5]",
     title: "아주인의 성장을 기록하는\n공식 포트폴리오 플랫폼",
     subtitle: "AJOU Portfolio Service",
-    description:
-      "실습, 프로젝트, 학과활동 등 아주대학교 학생들의 모든 성장을 하나의 플랫폼에서 관리합니다.",
-    bg: "from-[#0f2550] to-[#1a3a6e]",
+    description: "수업, 프로젝트, 비교과 활동까지 아주대 학생의 모든 성과를 하나로 관리합니다.",
+    bg: "bg-[#1e3a8a]",
+    icon: "/assets/hero-card-2.png",
   },
   {
     badge: "FEATURE",
-    badgeColor: "bg-[#e8734a]",
     title: "활동은 자유롭게,\n정리는 체계적으로",
-    subtitle: "",
-    description:
-      "성과 목록, 포트폴리오 카드로 기억하기 어려운 나의 활동을 체계적인 포트폴리오 플랫폼으로 관리하세요.",
-    bg: "from-[#1a3a6e] to-[#1e4d8c]",
+    subtitle: "성과 중심 포트폴리오 관리",
+    description: "활동을 입력하면 역할과 기여도가 정리되어 읽기 쉬운 포트폴리오로 구성됩니다.",
+    bg: "bg-[#4f46e5]",
+    icon: "/assets/hero-card-1.png",
   },
   {
     badge: "FOR ACADEMIC",
-    badgeColor: "bg-[#004a9c]",
     title: "교수에게는 한눈에,\n기업에게는 명확하게",
-    subtitle: "",
-    description:
-      "학생 목록, 포트폴리오 카드로 학생의 역량을 기업에 명확하게 포트폴리오를 공유하세요.",
-    bg: "from-[#1e4d8c] to-[#2460b0]",
+    subtitle: "제출·검토·공유를 위한 포트폴리오",
+    description: "과제 제출, 추천, 채용 활용까지 목적에 맞게 포트폴리오를 공유하세요.",
+    bg: "bg-[#334155]",
+    icon: "/assets/hero-card-3.png",
   },
   {
     badge: "FOR CAREER",
-    badgeColor: "bg-[#0f2550]",
     title: "나의 성과를\n진로와 연결하세요",
-    subtitle: "",
-    description: "인턴십, 공모전, 대외활동 등 다양한 도전을 포트폴리오로 정리하세요.",
-    bg: "from-[#122040] to-[#0f2550]",
+    subtitle: "대외 제출용 포트폴리오",
+    description: "인턴십, 공모전, 채용 지원 시 신뢰도 있는 포트폴리오로 활용할 수 있습니다.",
+    bg: "bg-[#2563eb]",
+    icon: "/assets/hero-card-4.png",
   },
 ];
 
@@ -179,26 +176,29 @@ export const HomePage: React.FC = () => {
       />
 
       {/* Hero Banner */}
-      <section className="bg-linear-to-b from-[#0f2550] to-[#1a3a6e] px-6 pb-0 pt-10 md:px-16 md:pt-14">
+      <section className="bg-white px-6 pb-0 pt-10 md:px-16 md:pt-14">
         <div className="mx-auto max-w-360">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {HERO_CARDS.map((card, i) => (
               <div
                 key={i}
-                className={`relative overflow-hidden rounded-t-2xl bg-linear-to-br ${card.bg} p-6 text-white`}
+                className={`relative flex flex-col overflow-hidden rounded-3xl ${card.bg} text-[#f9f9f9]`}
               >
-                <span
-                  className={`mb-3 inline-block rounded-full px-3 py-1 text-[11px] font-semibold text-white ${card.badgeColor}`}
-                >
-                  {card.badge}
-                </span>
-                <h3 className="mb-1 whitespace-pre-line text-[17px] font-bold leading-snug tracking-[-0.4px]">
-                  {card.title}
-                </h3>
-                {card.subtitle && (
-                  <p className="mb-2 text-[12px] font-medium text-white/60">{card.subtitle}</p>
-                )}
-                <p className="text-[13px] leading-relaxed text-white/70">{card.description}</p>
+                <div className="flex flex-col gap-2 p-6">
+                  <span className="inline-block w-fit rounded-xl border border-[#f9f9f9]/70 px-3 py-1 text-[12px] font-medium tracking-[-0.3px]">
+                    {card.badge}
+                  </span>
+                  <h3 className="whitespace-pre-line text-2xl font-semibold leading-snug tracking-[-0.6px]">
+                    {card.title}
+                  </h3>
+                  <p className="text-lg font-semibold tracking-[-0.45px]">{card.subtitle}</p>
+                  <p className="text-base font-normal leading-relaxed tracking-[-0.4px]">
+                    {card.description}
+                  </p>
+                </div>
+                <div className="flex flex-1 items-end justify-end px-6 pb-5">
+                  <img src={card.icon} alt="" className="h-35 w-auto object-contain" />
+                </div>
               </div>
             ))}
           </div>
@@ -206,7 +206,7 @@ export const HomePage: React.FC = () => {
           {/* Hero Search Bar */}
           <form
             onSubmit={handleHeroSearch}
-            className="mt-4 flex items-center gap-3 rounded-xl bg-white/10 px-5 py-3 backdrop-blur-sm"
+            className="mt-4 flex items-center gap-3 rounded-xl bg-[#0056b3] px-5 py-3"
           >
             <svg
               width="18"
