@@ -40,7 +40,23 @@ export type GetPostsParams = {
   keyword?: string;
 };
 
-export const getPosts = (boardType: BoardType, params?: GetPostsParams) => {
+type RawKeyword = { keywordId?: number; keywordName?: string } | string;
+
+const normalizeKeyword = (k: RawKeyword): string =>
+  typeof k === "string" ? k : (k.keywordName ?? "");
+
+const normalizePosts = (res: PostListResponse): PostListResponse => ({
+  ...res,
+  content: res.content.map((post) => ({
+    ...post,
+    keywords: ((post.keywords as unknown as RawKeyword[]) ?? []).map(normalizeKeyword),
+  })),
+});
+
+export const getPosts = async (
+  boardType: BoardType,
+  params?: GetPostsParams,
+): Promise<PostListResponse> => {
   const searchParams = new URLSearchParams();
   if (params?.page !== undefined) searchParams.set("page", String(params.page));
   if (params?.size !== undefined) searchParams.set("size", String(params.size));
@@ -50,5 +66,6 @@ export const getPosts = (boardType: BoardType, params?: GetPostsParams) => {
   const query = searchParams.toString();
   const path = `/api/posts/${boardType}${query ? `?${query}` : ""}`;
 
-  return backendJson<PostListResponse>(path);
+  const res = await backendJson<PostListResponse>(path);
+  return normalizePosts(res);
 };
