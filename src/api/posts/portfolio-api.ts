@@ -56,9 +56,9 @@ export const PORTFOLIO_BOARD_TYPES_ALL: PortfolioBoardType[] = [
 const PORTFOLIO_DEFAULT_PAGE_SIZE = 12;
 
 const portfolioSortToQueryValue: Record<PortfolioSort, string> = {
-  latest: "createdAt,desc",
-  popular: "likeCount,desc",
-  views: "viewCount,desc",
+  latest: "LATEST",
+  popular: "POPULAR",
+  views: "VIEWS",
 };
 
 const portfolioSortComparators: Record<
@@ -78,7 +78,7 @@ const buildPortfolioPageableParams = ({
   const params = new URLSearchParams();
   params.set("page", String(page));
   params.set("size", String(size));
-  params.set("sort", portfolioSortToQueryValue[sort]);
+  params.set("sortType", portfolioSortToQueryValue[sort]);
   return params;
 };
 
