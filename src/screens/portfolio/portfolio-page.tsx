@@ -86,8 +86,6 @@ export const PortfolioListPage = () => {
     return () => {
       isCancelled = true;
     };
-    // queryKey가 keyword/page/sort/selectedTypes를 직렬화해 인코딩하므로 deps에서 생략
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthReady, isAuthenticated, queryKey]);
 
   const handleSearchSubmit = (nextKeyword: string) => {
