@@ -152,8 +152,11 @@ export const searchPortfolios = async ({
   size = PORTFOLIO_DEFAULT_PAGE_SIZE,
   sort = "latest",
 }: SearchPortfoliosParams): Promise<PortfolioListPageResponse> => {
-  const resolved = resolveBoardTypes(boardTypes);
   const trimmedKeyword = keyword.trim();
+  if (!trimmedKeyword) {
+    return getPortfolioList({ boardTypes, page, size, sort });
+  }
+  const resolved = resolveBoardTypes(boardTypes);
   if (resolved.length === 1) {
     return fetchSinglePortfolioSearch(resolved[0], { page, size, sort }, trimmedKeyword);
   }
