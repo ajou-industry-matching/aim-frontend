@@ -123,7 +123,7 @@ const mergePortfolioPages = (
 
 const resolveBoardTypes = (boardTypes?: PortfolioBoardType[]): PortfolioBoardType[] => {
   if (!boardTypes || boardTypes.length === 0) return PORTFOLIO_BOARD_TYPES_ALL;
-  return boardTypes;
+  return Array.from(new Set(boardTypes));
 };
 
 export const getPortfolioList = async ({
