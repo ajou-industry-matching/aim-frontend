@@ -2,7 +2,7 @@ import { backendJson } from "@/api/client";
 
 export type PortfolioBoardType = "PORTFOLIO" | "COMPANY_PROJECT" | "LAB_INTERN";
 export type PortfolioVisibility = "PUBLIC" | "PRIVATE";
-export type PortfolioSort = "latest" | "popular" | "views";
+export type PortfolioSort = "LATEST" | "POPULAR" | "VIEWS";
 
 export type PortfolioKeyword = {
   keywordId: number;
@@ -55,30 +55,24 @@ export const PORTFOLIO_BOARD_TYPES_ALL: PortfolioBoardType[] = [
 
 const PORTFOLIO_DEFAULT_PAGE_SIZE = 12;
 
-const portfolioSortToQueryValue: Record<PortfolioSort, string> = {
-  latest: "LATEST",
-  popular: "POPULAR",
-  views: "VIEWS",
-};
-
 const portfolioSortComparators: Record<
   PortfolioSort,
   (a: PortfolioListItem, b: PortfolioListItem) => number
 > = {
-  latest: (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  popular: (a, b) => b.likeCount - a.likeCount,
-  views: (a, b) => b.viewCount - a.viewCount,
+  LATEST: (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  POPULAR: (a, b) => b.likeCount - a.likeCount,
+  VIEWS: (a, b) => b.viewCount - a.viewCount,
 };
 
 const buildPortfolioPageableParams = ({
   page = 0,
   size = PORTFOLIO_DEFAULT_PAGE_SIZE,
-  sort = "latest",
+  sort = "LATEST",
 }: PortfolioPageable): URLSearchParams => {
   const params = new URLSearchParams();
   params.set("page", String(page));
   params.set("size", String(size));
-  params.set("sortType", portfolioSortToQueryValue[sort]);
+  params.set("sortType", sort);
   return params;
 };
 
@@ -130,7 +124,7 @@ export const getPortfolioList = async ({
   boardTypes,
   page = 0,
   size = PORTFOLIO_DEFAULT_PAGE_SIZE,
-  sort = "latest",
+  sort = "LATEST",
 }: GetPortfolioListParams = {}): Promise<PortfolioListPageResponse> => {
   const resolved = resolveBoardTypes(boardTypes);
   if (resolved.length === 1) {
@@ -150,7 +144,7 @@ export const searchPortfolios = async ({
   keyword,
   page = 0,
   size = PORTFOLIO_DEFAULT_PAGE_SIZE,
-  sort = "latest",
+  sort = "LATEST",
 }: SearchPortfoliosParams): Promise<PortfolioListPageResponse> => {
   const trimmedKeyword = keyword.trim();
   if (!trimmedKeyword) {

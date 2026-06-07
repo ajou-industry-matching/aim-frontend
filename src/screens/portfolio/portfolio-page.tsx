@@ -42,7 +42,7 @@ export const PortfolioListPage = () => {
   const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
   const [query, setQuery] = useState<PortfolioQuery>({
     page: 1,
-    sort: "latest",
+    sort: "LATEST",
     keyword: "",
     selectedTypes: [],
   });
