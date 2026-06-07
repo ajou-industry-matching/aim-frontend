@@ -1,6 +1,6 @@
 "use client";
 
-import type { PortfolioBoardType } from "@/api/posts";
+import { PORTFOLIO_BOARD_TYPES_ALL, type PortfolioBoardType } from "@/api/posts";
 
 export type PortfolioTypeFilterProps = {
   selectedTypes: PortfolioBoardType[];
@@ -14,11 +14,18 @@ type PortfolioTypeChip = {
   value: PortfolioTypeChipValue;
 };
 
+const PORTFOLIO_BOARD_LABELS: Record<PortfolioBoardType, string> = {
+  PORTFOLIO: "개인",
+  COMPANY_PROJECT: "기업",
+  LAB_INTERN: "연구실",
+};
+
 const portfolioTypeChips: PortfolioTypeChip[] = [
   { label: "전체", value: "ALL" },
-  { label: "개인", value: "PORTFOLIO" },
-  { label: "기업", value: "COMPANY_PROJECT" },
-  { label: "연구실", value: "LAB_INTERN" },
+  ...PORTFOLIO_BOARD_TYPES_ALL.map((value) => ({
+    label: PORTFOLIO_BOARD_LABELS[value],
+    value,
+  })),
 ];
 
 const filterLabelClasses =
