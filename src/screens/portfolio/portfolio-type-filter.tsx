@@ -7,12 +7,15 @@ export type PortfolioTypeFilterProps = {
   onChange: (next: PortfolioBoardType[]) => void;
 };
 
+type PortfolioTypeChipValue = PortfolioBoardType | "ALL";
+
 type PortfolioTypeChip = {
   label: string;
-  value: PortfolioBoardType;
+  value: PortfolioTypeChipValue;
 };
 
 const portfolioTypeChips: PortfolioTypeChip[] = [
+  { label: "전체", value: "ALL" },
   { label: "개인", value: "PORTFOLIO" },
   { label: "기업", value: "COMPANY_PROJECT" },
   { label: "연구실", value: "LAB_INTERN" },
@@ -33,13 +36,28 @@ const chipInactiveClasses =
 const getChipClasses = (isActive: boolean): string =>
   [chipBaseClasses, isActive ? chipActiveClasses : chipInactiveClasses].join(" ");
 
-const toggleType = (
+const toggleBoardType = (
   current: PortfolioBoardType[],
   target: PortfolioBoardType,
 ): PortfolioBoardType[] =>
   current.includes(target) ? current.filter((type) => type !== target) : [...current, target];
 
 export const PortfolioTypeFilter = ({ selectedTypes, onChange }: PortfolioTypeFilterProps) => {
+  const isAllActive = selectedTypes.length === 0;
+
+  const handleChipClick = (value: PortfolioTypeChipValue) => {
+    if (value === "ALL") {
+      if (!isAllActive) onChange([]);
+      return;
+    }
+    onChange(toggleBoardType(selectedTypes, value));
+  };
+
+  const isChipActive = (value: PortfolioTypeChipValue): boolean => {
+    if (value === "ALL") return isAllActive;
+    return selectedTypes.includes(value);
+  };
+
   return (
     <div
       className="flex flex-wrap items-center gap-3"
@@ -49,14 +67,14 @@ export const PortfolioTypeFilter = ({ selectedTypes, onChange }: PortfolioTypeFi
       <span className={filterLabelClasses}>유형:</span>
       <div className="flex flex-wrap items-center gap-2">
         {portfolioTypeChips.map((chip) => {
-          const isActive = selectedTypes.includes(chip.value);
+          const active = isChipActive(chip.value);
           return (
             <button
               key={chip.value}
               type="button"
-              onClick={() => onChange(toggleType(selectedTypes, chip.value))}
-              className={getChipClasses(isActive)}
-              aria-pressed={isActive}
+              onClick={() => handleChipClick(chip.value)}
+              className={getChipClasses(active)}
+              aria-pressed={active}
             >
               {chip.label}
             </button>
