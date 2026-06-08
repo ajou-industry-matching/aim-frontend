@@ -10,9 +10,9 @@ export type BackendUser = {
   userId: number;
   role: AuthRole;
   status: "ACTIVE" | "BLOCKED" | "SUSPENDED" | "PENDING";
-  adminRole: "NONE" | "ADMIN" | "SUPER_ADMIN";
-  name: string;
-  department: string;
+  adminRole: "NONE" | "ADMIN" | "SUPER_ADMIN" | null;
+  name: string | null;
+  department: string | null;
 };
 
 type BackendLoginErrorOptions = {
