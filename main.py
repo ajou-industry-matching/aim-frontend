@@ -1,6 +1,6 @@
 import os
 import datetime
-from github import Github
+from github import Github, Auth
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from dotenv import load_dotenv
@@ -14,7 +14,8 @@ SLACK_CHANNEL_ID = os.getenv("SLACK_CHANNEL_ID")
 GITHUB_REPOS = os.getenv("MONITOR_REPOS", "")
 
 def get_daily_summary():
-    g = Github(GITHUB_TOKEN)
+    auth = Auth.Token(GITHUB_TOKEN)
+    g = Github(auth=auth)
     now = datetime.datetime.now(datetime.timezone.utc)
     since = now - datetime.timedelta(days=1)
     
@@ -144,13 +145,13 @@ def format_slack_message(summary_data):
             }
         })
 
-        # 1. New Code (Commits)
+        # 1. Merged Changes (Commits)
         if repo["commits"]:
-            commit_text = "📝 *주요 변경 사항 (Commits)*\n"
+            commit_text = "✅ *반영된 작업 (Merges)*\n"
             for c in repo["commits"][:10]:
                 commit_text += f"• {c['msg']} (@{c['author']})\n"
             if len(repo["commits"]) > 10:
-                commit_text += f"• _외 {len(repo['commits'])-10}개의 커밋 더보기..._\n"
+                commit_text += f"• _외 {len(repo['commits'])-10}개의 작업 더보기..._\n"
             
             blocks.append({
                 "type": "section",
@@ -160,12 +161,12 @@ def format_slack_message(summary_data):
                 }
             })
 
-        # 2. Pull Requests
-        if repo["prs"]:
-            pr_text = "📂 *진행 중인 작업 (Pull Requests)*\n"
-            for pr in repo["prs"]:
-                status = "✅ [Merged/Closed]" if pr["state"] == "closed" else "🏗️ [Open]"
-                pr_text += f"• {status} <{pr['url']}|#{pr['number']} {pr['title']}>\n"
+        # 2. Work in Progress (Open Pull Requests)
+        open_prs = [pr for pr in repo["prs"] if pr["state"] == "open"]
+        if open_prs:
+            pr_text = "📂 *진행 중인 작업 (Open PRs)*\n"
+            for pr in open_prs:
+                pr_text += f"• 🏗️ <{pr['url']}|#{pr['number']} {pr['title']}>\n"
             
             blocks.append({
                 "type": "section",
