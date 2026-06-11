@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AppLayout } from "./app-layout";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,7 +22,9 @@ type RootLayoutProps = Readonly<{
 export default function RootLayout({ children }: RootLayoutProps): React.ReactElement {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <AppLayout>{children}</AppLayout>
+      </body>
     </html>
   );
 }

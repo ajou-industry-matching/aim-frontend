@@ -3,19 +3,10 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signOut, useAuthUser } from "@/lib/auth";
 import { Card } from "@/shared/ui/card";
-import { Navigation } from "@/shared/ui";
-import type { NavItem } from "@/shared/ui";
 import { useHomeStore, type SectionFilter } from "./home-store";
 
 // --- Constants ---
-
-const navItems: NavItem[] = [
-  { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "#about" },
-  { label: "공지사항", href: "#notice" },
-];
 
 const HERO_CARDS = [
   {
@@ -131,7 +122,6 @@ const PostGrid = ({
 
 export const HomePage: React.FC = () => {
   const router = useRouter();
-  const authUser = useAuthUser();
   const searchRef = useRef<HTMLInputElement>(null);
   const {
     newPosts,
@@ -153,11 +143,6 @@ export const HomePage: React.FC = () => {
     void fetchNoticePosts();
   }, [fetchNewPosts, fetchSectionPosts, fetchNoticePosts]);
 
-  const handleLogout = async () => {
-    await signOut();
-    router.replace("/login");
-  };
-
   const handleHeroSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const q = searchRef.current?.value.trim();
@@ -166,15 +151,7 @@ export const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-gray-900">
-      <Navigation
-        items={navItems}
-        user={authUser ?? undefined}
-        onLogin={() => router.push("/login")}
-        onSignup={() => router.push("/login")}
-        onLogout={() => void handleLogout()}
-      />
-
+    <div className="flex min-h-[calc(100vh-80px)] flex-col bg-white text-gray-900">
       {/* Hero Banner */}
       <section className="bg-white px-6 pb-0 pt-10 md:px-16 md:pt-14">
         <div className="mx-auto max-w-360">

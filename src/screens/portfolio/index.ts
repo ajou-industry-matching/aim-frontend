@@ -1,1 +1,1 @@
-export { PortfolioPage } from "./portfolio";
+export { PortfolioListPage } from "./portfolio-page";
