@@ -2,8 +2,8 @@ name: Daily GitHub Activity Summary
 
 on:
   schedule:
-    # 6 PM KST is 9 AM UTC
-    - cron: '0 9 * * *'
+    # 3 PM KST is 6 AM UTC
+    - cron: '0 6 * * *'
   workflow_dispatch: # Allows manual triggering
 
 jobs:
