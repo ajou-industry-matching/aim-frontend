@@ -24,15 +24,14 @@ def get_daily_summary():
     repo_names = [r.strip() for r in GITHUB_REPOS.split(",") if r.strip()]
     
     if not repo_names:
-        # If no repos specified, fetch all repos of the authenticated user
         repos = g.get_user().get_repos(sort="updated", direction="desc")
     else:
         repos = [g.get_repo(name) for name in repo_names]
 
     for repo in repos:
-        # Check if repo was updated in last 24h to avoid unnecessary API calls
+        # Check if repo was updated in last 24h
         if repo.updated_at < since:
-            if not repo_names: # If scanning all, we can break early if sorted by updated
+            if not repo_names:
                 break
             continue
             
@@ -43,38 +42,61 @@ def get_daily_summary():
             "issues": []
         }
         
-        # Fetch Commits
+        # Fetch Commits from 'dev' branch
         try:
-            commits = repo.get_commits(since=since)
+            # Try to get commits from 'dev' branch specifically
+            commits = repo.get_commits(sha='dev', since=since)
             for commit in commits:
+                msg = commit.commit.message.split('\n')[0]
+                # Filter out merge commits if they are too noisy
+                if msg.startswith("Merge pull request") or msg.startswith("Merge branch"):
+                    continue
                 repo_summary["commits"].append({
-                    "msg": commit.commit.message.split('\n')[0],
+                    "msg": msg,
                     "author": commit.commit.author.name,
                     "url": commit.html_url
                 })
         except Exception:
-            pass
+            # Fallback to default branch if 'dev' doesn't exist
+            try:
+                commits = repo.get_commits(since=since)
+                for commit in commits:
+                    msg = commit.commit.message.split('\n')[0]
+                    if msg.startswith("Merge pull request") or msg.startswith("Merge branch"):
+                        continue
+                    repo_summary["commits"].append({
+                        "msg": msg,
+                        "author": commit.commit.author.name,
+                        "url": commit.html_url
+                    })
+            except Exception:
+                pass
             
         # Fetch PRs (opened or updated)
         pulls = repo.get_pulls(state='all', sort='updated', direction='desc')
         for pr in pulls:
             if pr.updated_at < since:
                 break
+            # Skip the bot's own PR to reduce noise
+            if "github-slack-summary-bot" in pr.head.ref:
+                continue
             repo_summary["prs"].append({
                 "title": pr.title,
                 "state": pr.state,
-                "url": pr.html_url
+                "url": pr.html_url,
+                "number": pr.number
             })
             
         # Fetch Issues (opened or updated)
         issues = repo.get_issues(state='all', since=since)
         for issue in issues:
-            if issue.pull_request: # Skip PRs which are also returned as issues
+            if issue.pull_request:
                 continue
             repo_summary["issues"].append({
                 "title": issue.title,
                 "state": issue.state,
-                "url": issue.html_url
+                "url": issue.html_url,
+                "number": issue.number
             })
             
         if repo_summary["commits"] or repo_summary["prs"] or repo_summary["issues"]:
@@ -88,7 +110,7 @@ def format_slack_message(summary_data):
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": "📅 오늘의 깃허브 작업 요약",
+                "text": "🚀 AIM 프로젝트 일일 작업 리포트",
                 "emoji": True
             }
         },
@@ -96,7 +118,7 @@ def format_slack_message(summary_data):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": f"*리포트 생성 시간:* {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}"
+                "text": f"*생성 일시:* {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}\n*대상 브랜치:* `dev`"
             }
         },
         {"type": "divider"}
@@ -107,40 +129,67 @@ def format_slack_message(summary_data):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "지난 24시간 동안 새로운 활동이 없습니다. 😴"
+                "text": "✅ 지난 24시간 동안 새로운 작업 내역이 없습니다."
             }
         })
         return blocks
 
     for repo in summary_data:
-        text = f"*<{f'https://github.com/{repo['name']}'}|{repo['name']}>*\n"
-        
-        if repo["commits"]:
-            text += "• *Commits*\n"
-            for c in repo["commits"][:5]: # Limit to 5 per repo
-                text += f"  - {c['msg']} ({c['author']})\n"
-            if len(repo["commits"]) > 5:
-                text += f"  - ...외 {len(repo['commits'])-5}개의 커밋\n"
-                
-        if repo["prs"]:
-            text += "• *PRs*\n"
-            for pr in repo["prs"]:
-                state_emoji = "✅" if pr["state"] == "closed" else "🏗️"
-                text += f"  - {state_emoji} {pr['title']}\n"
-                
-        if repo["issues"]:
-            text += "• *Issues*\n"
-            for issue in repo["issues"]:
-                state_emoji = "🟣" if issue["state"] == "closed" else "🔴"
-                text += f"  - {state_emoji} {issue['title']}\n"
-                
+        # Header for the repository
         blocks.append({
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": text
+                "text": f"*📍 <https://github.com/{repo['name']}|{repo['name']}>*"
             }
         })
+
+        # 1. New Code (Commits)
+        if repo["commits"]:
+            commit_text = "📝 *주요 변경 사항 (Commits)*\n"
+            for c in repo["commits"][:10]:
+                commit_text += f"• {c['msg']} (@{c['author']})\n"
+            if len(repo["commits"]) > 10:
+                commit_text += f"• _외 {len(repo['commits'])-10}개의 커밋 더보기..._\n"
+            
+            blocks.append({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": commit_text
+                }
+            })
+
+        # 2. Pull Requests
+        if repo["prs"]:
+            pr_text = "📂 *진행 중인 작업 (Pull Requests)*\n"
+            for pr in repo["prs"]:
+                status = "✅ [Merged/Closed]" if pr["state"] == "closed" else "🏗️ [Open]"
+                pr_text += f"• {status} <{pr['url']}|#{pr['number']} {pr['title']}>\n"
+            
+            blocks.append({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": pr_text
+                }
+            })
+
+        # 3. Issues
+        if repo["issues"]:
+            issue_text = "🚩 *이슈 및 알림 (Issues)*\n"
+            for issue in repo["issues"]:
+                status = "🟣 [Closed]" if issue["state"] == "closed" else "🔴 [Open]"
+                issue_text += f"• {status} <{issue['url']}|#{issue['number']} {issue['title']}>\n"
+            
+            blocks.append({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": issue_text
+                }
+            })
+
         blocks.append({"type": "divider"})
         
     return blocks
