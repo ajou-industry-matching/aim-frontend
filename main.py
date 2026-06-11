@@ -106,6 +106,9 @@ def get_daily_summary():
     return summary_data
 
 def format_slack_message(summary_data):
+    if not summary_data:
+        return []
+
     blocks = [
         {
             "type": "header",
@@ -124,16 +127,6 @@ def format_slack_message(summary_data):
         },
         {"type": "divider"}
     ]
-    
-    if not summary_data:
-        blocks.append({
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": "✅ 지난 24시간 동안 새로운 작업 내역이 없습니다."
-            }
-        })
-        return blocks
 
     for repo in summary_data:
         # Header for the repository
@@ -212,5 +205,8 @@ if __name__ == "__main__":
     data = get_daily_summary()
     print("Formatting message...")
     slack_blocks = format_slack_message(data)
-    print("Sending to Slack...")
-    send_to_slack(slack_blocks)
+    if slack_blocks:
+        print("Sending to Slack...")
+        send_to_slack(slack_blocks)
+    else:
+        print("No activity found. Skipping Slack notification.")
