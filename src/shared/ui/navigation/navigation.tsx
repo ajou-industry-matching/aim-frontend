@@ -44,11 +44,11 @@ const getHeaderClasses = (className?: string) => {
 
 // 2. NavLink Styles
 const navLinkBaseClasses =
-  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-900,#1a1a1a)] transition-all duration-200 border-b-2 h-full font-medium";
+  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-(--color-gray-900,#1a1a1a) transition-all duration-200 border-b-2 h-full font-medium";
 
 const navLinkStatusClasses = {
-  active: "border-[var(--color-primary-800,#004a9c)]",
-  inactive: "border-transparent hover:border-[var(--color-primary-800,#004a9c)]/50",
+  active: "border-(--color-primary-800,#004a9c)",
+  inactive: "border-transparent hover:border-(--color-primary-800,#004a9c)/50",
 };
 
 const getNavLinkClasses = (isActive?: boolean) => {
@@ -62,8 +62,8 @@ const getNavLinkClasses = (isActive?: boolean) => {
 const toggleBaseClasses =
   "relative inline-flex h-[24px] w-[44px] items-center rounded-full transition-colors duration-300 ease-in-out";
 const toggleBgClasses = {
-  active: "bg-[var(--color-primary-800,#004a9c)]",
-  inactive: "bg-[var(--color-gray-200,#e5e5ec)]",
+  active: "bg-(--color-primary-800,#004a9c)",
+  inactive: "bg-(--color-gray-200,#e5e5ec)",
 };
 
 const getToggleClasses = (isAdminMode: boolean) => {
@@ -174,12 +174,12 @@ export const Navigation = ({
               {showProfile && (
                 <div className="absolute top-13.75 right-0 w-70 bg-white border border-(--color-gray-200,#e5e5ec) rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-100 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="p-5">
-                    <div className="mb-4 pb-4 border-b border-[var(--color-gray-100,#f2f2f2)]">
-                      <h3 className="text-[16px] font-bold text-[var(--color-gray-900,#111)] mb-1">
+                    <div className="mb-4 pb-4 border-b border-(--color-gray-100,#f2f2f2)">
+                      <h3 className="text-[16px] font-bold text-(--color-gray-900,#111) mb-1">
                         {user.name}
                       </h3>
                       <p className="text-[14px] text-(--color-gray-600,#666) mb-3">{user.email}</p>
-                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-primary-50)] text-(--color-primary-800,#004a9c) text-[12px] font-semibold">
+                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-(--color-primary-50) text-(--color-primary-800,#004a9c) text-[12px] font-semibold">
                         {user.userType}
                       </div>
                     </div>
