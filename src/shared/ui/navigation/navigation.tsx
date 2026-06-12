@@ -40,7 +40,7 @@ export type NavigationProps = {
 
 // 1. Header Styles
 const headerBaseClasses =
-  "sticky top-0 z-50 h-[80px] bg-white/95 backdrop-blur-[6px] border-b border-[var(--color-gray-200,#e5e5ec)] w-full";
+  "sticky top-0 z-50 h-[80px] bg-white/95 backdrop-blur-[6px] border-b border-(--color-gray-200,#e5e5ec) w-full";
 
 const getHeaderClasses = (className?: string) => {
   return [headerBaseClasses, className].filter(Boolean).join(" ");
@@ -48,11 +48,11 @@ const getHeaderClasses = (className?: string) => {
 
 // 2. NavLink Styles
 const navLinkBaseClasses =
-  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-900,#1a1a1a)] transition-all duration-200 border-b-2 h-full font-medium";
+  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-(--color-gray-900,#1a1a1a) transition-all duration-200 border-b-2 h-full font-medium";
 
 const navLinkStatusClasses = {
-  active: "border-[var(--color-primary-800,#004a9c)]",
-  inactive: "border-transparent hover:border-[var(--color-primary-800,#004a9c)]/50",
+  active: "border-(--color-primary-800,#004a9c)",
+  inactive: "border-transparent hover:border-(--color-primary-800,#004a9c)/50",
 };
 
 const getNavLinkClasses = (isActive?: boolean) => {
@@ -99,8 +99,8 @@ const getIsNavItemActive = (item: NavItem, currentPathname?: string): boolean =>
 const toggleBaseClasses =
   "relative inline-flex h-[24px] w-[44px] items-center rounded-full transition-colors duration-300 ease-in-out";
 const toggleBgClasses = {
-  active: "bg-[var(--color-primary-800,#004a9c)]",
-  inactive: "bg-[var(--color-gray-200,#e5e5ec)]",
+  active: "bg-(--color-primary-800,#004a9c)",
+  inactive: "bg-(--color-gray-200,#e5e5ec)",
 };
 
 const getToggleClasses = (isAdminMode: boolean) => {
@@ -159,7 +159,7 @@ export const Navigation = ({
 
   return (
     <header className={headerClasses}>
-      <div className="mx-auto max-w-[1440px] h-full flex items-center justify-between">
+      <div className="mx-auto max-w-360 h-full flex items-center justify-between">
         {/* Logo Section */}
         <Link href={logoHref} className="flex items-center shrink-0">
           <div className="relative h-12 w-12">
@@ -189,7 +189,7 @@ export const Navigation = ({
           {/* Admin Mode Toggle */}
           {user?.isAdmin && onAdminToggle && (
             <div className="flex items-center gap-3">
-              <span className="text-[12px] text-[var(--color-gray-600,#666)] font-medium">
+              <span className="text-[12px] text-(--color-gray-600,#666) font-medium">
                 {isAdminMode ? "관리 모드" : "일반 모드"}
               </span>
               <button
@@ -204,14 +204,14 @@ export const Navigation = ({
 
           {isAuthLoading ? (
             <div
-              className="h-10 w-[156px] animate-pulse rounded-[4px] bg-[var(--color-gray-100)]"
+              className="h-10 w-39 animate-pulse rounded-sm bg-gray-100"
               aria-label="인증 상태 확인 중"
             />
           ) : user ? (
             <div className="flex items-center gap-3 relative" ref={profileRef}>
               <button
                 onClick={() => setShowProfile(!showProfile)}
-                className="flex items-center justify-center h-10 w-10 text-[var(--color-primary-800,#004a9c)] hover:bg-[var(--color-primary-50)] rounded-full transition-all duration-200"
+                className="flex items-center justify-center h-10 w-10 text-(--color-primary-800,#004a9c) hover:bg-(--color-primary-50) rounded-full transition-all duration-200"
                 aria-label="사용자 프로필"
               >
                 <UserIcon size={24} />
@@ -219,7 +219,7 @@ export const Navigation = ({
 
               <button
                 onClick={onLogout}
-                className="flex items-center justify-center h-10 w-10 text-[var(--color-primary-800,#004a9c)] hover:bg-[var(--color-primary-50)] rounded-full transition-all duration-200"
+                className="flex items-center justify-center h-10 w-10 text-(--color-primary-800,#004a9c) hover:bg-(--color-primary-50) rounded-full transition-all duration-200"
                 aria-label="로그아웃"
               >
                 <LogOutIcon size={24} />
@@ -227,18 +227,18 @@ export const Navigation = ({
 
               {/* Profile Dropdown */}
               {showProfile && (
-                <div className="absolute top-[55px] right-0 w-[280px] bg-white border border-[var(--color-gray-200,#e5e5ec)] rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-[100] animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute top-13.75 right-0 w-70 bg-white border border-(--color-gray-200,#e5e5ec) rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-100 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="p-5">
-                    <div className="mb-4 pb-4 border-b border-[var(--color-gray-100,#f2f2f2)]">
-                      <h3 className="text-[16px] font-bold text-[var(--color-gray-900,#111)] mb-1">
+                    <div className="mb-4 pb-4 border-b border-(--color-gray-100,#f2f2f2)">
+                      <h3 className="text-[16px] font-bold text-(--color-gray-900,#111) mb-1">
                         {user.name}
                       </h3>
                       {user.email && (
-                        <p className="text-[14px] text-[var(--color-gray-600,#666)] mb-3">
+                        <p className="text-[14px] text-(--color-gray-600,#666) mb-3">
                           {user.email}
                         </p>
                       )}
-                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-800,#004a9c)] text-[12px] font-semibold">
+                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-(--color-primary-50) text-(--color-primary-800,#004a9c) text-[12px] font-semibold">
                         {user.userType}
                       </div>
                     </div>
@@ -250,7 +250,7 @@ export const Navigation = ({
                             onAdminDashboardClick();
                             setShowProfile(false);
                           }}
-                          className="text-left px-3 py-2.5 text-[14px] text-[var(--color-primary-800,#004a9c)] font-medium hover:bg-[var(--color-primary-50)] rounded-md transition-colors"
+                          className="text-left px-3 py-2.5 text-[14px] text-(--color-primary-800,#004a9c) font-medium hover:bg-(--color-primary-50) rounded-md transition-colors"
                         >
                           관리자 대시보드
                         </button>
@@ -260,13 +260,13 @@ export const Navigation = ({
                           onProfileClick?.();
                           setShowProfile(false);
                         }}
-                        className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
+                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
                       >
                         내 프로필
                       </button>
                       <button
                         onClick={() => setShowProfile(false)}
-                        className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
+                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
                       >
                         내 포트폴리오
                       </button>
@@ -275,7 +275,7 @@ export const Navigation = ({
                           onAccountSettingsClick?.();
                           setShowProfile(false);
                         }}
-                        className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
+                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
                       >
                         계정 설정
                       </button>

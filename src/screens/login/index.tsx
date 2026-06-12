@@ -98,7 +98,7 @@ export const LoginPage = () => {
 
     try {
       await signInWithGoogle();
-      router.replace("/home");
+      router.replace("/portfolio");
     } catch (error) {
       console.error("[auth] Google login failed", error);
       showErrorModal(getAuthErrorMessage(error));
@@ -183,18 +183,22 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="login-page flex min-h-[calc(100vh-80px)] flex-col bg-white text-[var(--color-gray-900)]">
+    <div className="login-page flex min-h-screen flex-col bg-white text-(--color-gray-900)">
       <main className="login-page__main flex flex-1 justify-center px-2 pb-5 pt-[10vh] md:px-8 md:pb-10 md:pt-[8vh]">
         <div className="flex w-full justify-center">
-          <section className="login-page__surface w-full rounded-[24px] bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_100%)] py-0">
+          <section className="login-page__surface w-full rounded-3xl bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_100%)] py-0">
             <div className="login-page__content flex flex-col items-center">
-              <h1 className="login-page__title mb-8 text-center text-[36px] font-bold leading-[1.3] tracking-[-1px] text-black md:mb-14 md:text-[40px]">
-                AIM AJOU
-              </h1>
+              <div className="login-page__title mb-8 md:mb-14">
+                <img
+                  src="/assets/aim-logo.svg"
+                  alt="AIM AJOU"
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
 
               <div
                 className={[
-                  "login-page__card w-full max-w-[720px] overflow-hidden rounded-[12px] border border-[var(--color-gray-200)] bg-white md:min-h-[300px]",
+                  "login-page__card w-full max-w-180 overflow-hidden rounded-xl border border-gray-200 bg-white md:min-h-75",
                   isStudent
                     ? "shadow-[0_8px_24px_rgba(15,23,42,0.06)]"
                     : "shadow-[0_0_4px_4px_rgba(0,74,156,0.25)]",
@@ -214,11 +218,11 @@ export const LoginPage = () => {
                   />
                 </div>
 
-                <div className="login-page__body px-4 pb-8 pt-7 md:px-6 md:pb-[40px] md:pt-7">
+                <div className="login-page__body px-4 pb-8 pt-7 md:px-6 md:pb-10 md:pt-7">
                   <div
                     key={`${activeTab}-${companyMode}`}
                     className={[
-                      "login-page__panel mx-auto flex w-full flex-col md:max-w-[672px]",
+                      "login-page__panel mx-auto flex w-full flex-col md:max-w-2xl",
                       styles.panelAnimated,
                       isStudent ? "items-center text-center" : "gap-2 text-left",
                     ].join(" ")}
@@ -246,7 +250,7 @@ export const LoginPage = () => {
                     {statusMessage && (
                       <p
                         role="status"
-                        className="mt-4 text-center text-[14px] font-medium leading-5 text-[var(--color-primary-800)]"
+                        className="mt-4 text-center text-[14px] font-medium leading-5 text-(--color-primary-800)"
                       >
                         {statusMessage}
                       </p>
@@ -259,6 +263,105 @@ export const LoginPage = () => {
         </div>
       </main>
 
+      <footer className="mt-auto border-t border-gray-200 bg-white px-6 py-10 md:px-16">
+        <div className="mx-auto max-w-360">
+          <div className="mb-6 flex justify-center gap-6 text-[13px] text-gray-500">
+            <a href="/terms" className="transition-colors hover:text-gray-900">
+              이용약관
+            </a>
+            <a href="/privacy" className="transition-colors hover:text-gray-900">
+              개인정보처리방침
+            </a>
+            <a href="/sitemap" className="transition-colors hover:text-gray-900">
+              사이트맵
+            </a>
+          </div>
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-3">
+              <img
+                src="/assets/ajou-logo.svg"
+                alt="Ajou University"
+                className="h-10 w-10 object-contain"
+              />
+              <div>
+                <p className="text-[14px] font-bold text-gray-900">아주대학교</p>
+                <p className="text-[11px] text-gray-400">AJOU University</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1 text-[12px] text-gray-500 md:text-center">
+              <p>16499 경기도 수원시 영통구 월드컵로 206 아주대학교</p>
+              <p>T. 031-219-2114</p>
+              <p>Copyright © 2026 Ajou University. All Rights Reserved.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-colors hover:border-(--color-primary-800) hover:text-(--color-primary-800)"
+                aria-label="인스타그램"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </a>
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-colors hover:border-(--color-primary-800) hover:text-(--color-primary-800)"
+                aria-label="페이스북"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                </svg>
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-colors hover:border-(--color-primary-800) hover:text-(--color-primary-800)"
+                aria-label="유튜브"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
+                  <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
       <Modal
         isOpen={errorModal !== null}
         onClose={() => setErrorModal(null)}
@@ -266,9 +369,7 @@ export const LoginPage = () => {
       >
         <ModalHeader title={errorModal?.title ?? "오류"} onClose={() => setErrorModal(null)} />
         <ModalContent>
-          <p className="text-[15px] font-medium leading-6 text-[var(--color-gray-700)]">
-            {errorModal?.message}
-          </p>
+          <p className="text-[15px] font-medium leading-6 text-gray-700">{errorModal?.message}</p>
         </ModalContent>
         <ModalFooter>
           <Button
