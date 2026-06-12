@@ -1,4 +1,7 @@
-export { signInWithEmail, signInWithGoogle, signOut } from "./auth-service";
+export { signInWithEmail, signInWithGoogle, signOut, signUpCompanyWithEmail } from "./auth-service";
+export { clearAuthSession, saveAuthSession, useAuthSession } from "./auth-session";
+export type { AuthSession, StoredSession } from "./auth-session";
 export { getAuthErrorMessage } from "./auth-error-message";
 export { useAuthUser } from "./use-auth-user";
+export { useAuthReady, type AuthReadyState } from "./use-auth-ready";
 export type { AuthRole, BackendLoginRequest, BackendUser } from "@/api/auth";

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/shared/ui/button/button";
 import { UserIcon, LogOutIcon } from "@/shared/ui/icons";
 
@@ -13,7 +14,7 @@ export type NavItem = {
 
 export type NavUser = {
   name: string;
-  email: string;
+  email: string | null;
   userType: "학생" | "기업" | "교수";
   isAdmin?: boolean;
 };
@@ -21,14 +22,17 @@ export type NavUser = {
 export type NavigationProps = {
   items: NavItem[];
   user?: NavUser;
+  isAuthLoading?: boolean;
   isAdminMode?: boolean;
   onAdminToggle?: () => void;
   onLogin?: () => void;
   onSignup?: () => void;
   onLogout?: () => void;
   onProfileClick?: () => void;
+  onAccountSettingsClick?: () => void;
   onAdminDashboardClick?: () => void;
   logoHref?: string;
+  currentPathname?: string;
   className?: string;
 };
 
@@ -56,6 +60,39 @@ const getNavLinkClasses = (isActive?: boolean) => {
     navLinkBaseClasses,
     isActive ? navLinkStatusClasses.active : navLinkStatusClasses.inactive,
   ].join(" ");
+};
+
+const normalizePathname = (href: string): string => {
+  const pathname = href.split(/[?#]/)[0] ?? "/";
+
+  if (!pathname.startsWith("/")) {
+    return pathname;
+  }
+
+  if (pathname === "/") {
+    return "/";
+  }
+
+  return pathname.replace(/\/+$/, "");
+};
+
+const getIsNavItemActive = (item: NavItem, currentPathname?: string): boolean => {
+  if (!currentPathname) {
+    return Boolean(item.isActive);
+  }
+
+  const itemPathname = normalizePathname(item.href);
+
+  if (!itemPathname.startsWith("/")) {
+    return Boolean(item.isActive);
+  }
+
+  const normalizedCurrentPathname = normalizePathname(currentPathname);
+
+  return (
+    normalizedCurrentPathname === itemPathname ||
+    normalizedCurrentPathname.startsWith(`${itemPathname}/`)
+  );
 };
 
 // 3. Admin Toggle Styles
@@ -90,14 +127,17 @@ const getToggleHandleClasses = (isAdminMode: boolean) => {
 export const Navigation = ({
   items,
   user,
+  isAuthLoading = false,
   isAdminMode = false,
   onAdminToggle,
   onLogin,
   onSignup,
   onLogout,
   onProfileClick,
+  onAccountSettingsClick,
   onAdminDashboardClick,
   logoHref = "/",
+  currentPathname,
   className = "",
 }: NavigationProps) => {
   const [showProfile, setShowProfile] = useState(false);
@@ -119,18 +159,28 @@ export const Navigation = ({
 
   return (
     <header className={headerClasses}>
-      <div className="mx-auto max-w-[1440px] h-full flex items-center justify-between">
+      <div className="mx-auto max-w-360 h-full flex items-center justify-between">
         {/* Logo Section */}
-        <a href={logoHref} className="flex items-center shrink-0">
-          <img src="/assets/aim-logo.svg" alt="AIM AJOU" className="h-12 w-auto object-contain" />
-        </a>
+        <Link href={logoHref} className="flex items-center shrink-0">
+          <div className="relative h-12 w-12">
+            <img
+              src="/assets/aim-ajou-logo_text.svg"
+              alt="AIM AJOU"
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </Link>
 
         {/* Navigation Menu */}
         <nav className="flex items-center gap-12 h-full">
           {items.map((item) => (
-            <a key={item.href} href={item.href} className={getNavLinkClasses(item.isActive)}>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={getNavLinkClasses(getIsNavItemActive(item, currentPathname))}
+            >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -152,7 +202,12 @@ export const Navigation = ({
             </div>
           )}
 
-          {user ? (
+          {isAuthLoading ? (
+            <div
+              className="h-10 w-39 animate-pulse rounded-sm bg-gray-100"
+              aria-label="인증 상태 확인 중"
+            />
+          ) : user ? (
             <div className="flex items-center gap-3 relative" ref={profileRef}>
               <button
                 onClick={() => setShowProfile(!showProfile)}
@@ -178,7 +233,11 @@ export const Navigation = ({
                       <h3 className="text-[16px] font-bold text-(--color-gray-900,#111) mb-1">
                         {user.name}
                       </h3>
-                      <p className="text-[14px] text-(--color-gray-600,#666) mb-3">{user.email}</p>
+                      {user.email && (
+                        <p className="text-[14px] text-(--color-gray-600,#666) mb-3">
+                          {user.email}
+                        </p>
+                      )}
                       <div className="inline-flex items-center px-3 py-1 rounded-full bg-(--color-primary-50) text-(--color-primary-800,#004a9c) text-[12px] font-semibold">
                         {user.userType}
                       </div>
@@ -201,15 +260,24 @@ export const Navigation = ({
                           onProfileClick?.();
                           setShowProfile(false);
                         }}
-                        className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
+                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
                       >
                         내 프로필
                       </button>
                       <button
                         onClick={() => setShowProfile(false)}
-                        className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
+                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
                       >
                         내 포트폴리오
+                      </button>
+                      <button
+                        onClick={() => {
+                          onAccountSettingsClick?.();
+                          setShowProfile(false);
+                        }}
+                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
+                      >
+                        계정 설정
                       </button>
                     </div>
                   </div>

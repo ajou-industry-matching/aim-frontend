@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { Modal, ModalHeader, ModalContent, ModalFooter } from "./modal";
 import { Button } from "@/shared/ui/button/button";
@@ -26,19 +26,27 @@ const FilterModalExample = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const isControlled = propsIsOpen !== undefined;
-  const isOpen = isControlled ? propsIsOpen : internalIsOpen;
-  const onClose = propsOnClose ?? (() => setInternalIsOpen(false));
+  const [isOpen, setIsOpen] = useState(propsIsOpen);
+
+  // 스토리북 args(propsIsOpen)가 변경될 때 내부 상태 동기화
+  useEffect(() => {
+    setIsOpen(propsIsOpen);
+  }, [propsIsOpen]);
+
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => {
+    setIsOpen(false);
+    propsOnClose(); // 스토리북 상태에도 알림
+  };
 
   const categories = ["웹 개발", "모바일 앱", "UI/UX 디자인", "데이터 분석", "AI/ML", "게임 개발"];
   const departments = ["소프트웨어학과", "미디어학과", "산업공학과", "경영학과"];
 
   return (
     <>
-      {!isControlled && <Button onClick={() => setInternalIsOpen(true)}>필터 모달 열기</Button>}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalHeader title="필터 선택" onClose={onClose} />
+      <Button onClick={handleOpen}>필터 모달 열기</Button>
+      <Modal isOpen={isOpen} onClose={handleClose}>
+        <ModalHeader title="필터 선택" onClose={handleClose} />
         <ModalContent className="space-y-8">
           <div className="space-y-4">
             <h3 className="text-[16px] font-semibold text-[var(--color-gray-800,#333)]">
@@ -65,13 +73,13 @@ const FilterModalExample = ({
           </div>
         </ModalContent>
         <ModalFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={handleClose}>
             초기화
           </Button>
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={handleClose}>
             취소
           </Button>
-          <Button variant="primary" onClick={onClose} className="px-8">
+          <Button variant="primary" onClick={handleClose} className="px-8">
             적용
           </Button>
         </ModalFooter>
@@ -83,7 +91,9 @@ const FilterModalExample = ({
 export const FilterModal: Story = {
   render: (args) => <FilterModalExample {...args} />,
   args: {
-    children: null, // 필수 속성 추가
+    isOpen: false,
+    onClose: () => {},
+    children: null,
   },
 };
 
@@ -95,20 +105,25 @@ const ProfileEditModalExample = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const isControlled = propsIsOpen !== undefined;
-  const isOpen = isControlled ? propsIsOpen : internalIsOpen;
-  const onClose = propsOnClose ?? (() => setInternalIsOpen(false));
+  const [isOpen, setIsOpen] = useState(propsIsOpen);
+
+  useEffect(() => {
+    setIsOpen(propsIsOpen);
+  }, [propsIsOpen]);
+
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => {
+    setIsOpen(false);
+    propsOnClose();
+  };
 
   return (
     <>
-      {!isControlled && (
-        <Button variant="secondary" onClick={() => setInternalIsOpen(true)}>
-          프로필 편집 열기
-        </Button>
-      )}
-      <Modal isOpen={isOpen} onClose={onClose} className="max-w-[500px]">
-        <ModalHeader title="프로필 편집" onClose={onClose} />
+      <Button variant="secondary" onClick={handleOpen}>
+        프로필 편집 열기
+      </Button>
+      <Modal isOpen={isOpen} onClose={handleClose} className="max-w-[500px]">
+        <ModalHeader title="프로필 편집" onClose={handleClose} />
         <ModalContent className="space-y-5">
           <FormField>
             <FormLabel>이름</FormLabel>
@@ -143,10 +158,10 @@ const ProfileEditModalExample = ({
           </FormField>
         </ModalContent>
         <ModalFooter>
-          <Button variant="secondary" onClick={onClose}>
+          <Button variant="secondary" onClick={handleClose}>
             취소
           </Button>
-          <Button variant="primary" onClick={onClose} className="px-8">
+          <Button variant="primary" onClick={handleClose} className="px-8">
             저장
           </Button>
         </ModalFooter>
@@ -158,6 +173,8 @@ const ProfileEditModalExample = ({
 export const ProfileEditModal: Story = {
   render: (args) => <ProfileEditModalExample {...args} />,
   args: {
-    children: null, // 필수 속성 추가
+    isOpen: false,
+    onClose: () => {},
+    children: null,
   },
 };
