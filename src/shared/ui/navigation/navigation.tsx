@@ -14,7 +14,7 @@ export type NavItem = {
 
 export type NavUser = {
   name: string;
-  email: string;
+  email: string | null;
   userType: "학생" | "기업" | "교수";
   isAdmin?: boolean;
 };
@@ -22,12 +22,14 @@ export type NavUser = {
 export type NavigationProps = {
   items: NavItem[];
   user?: NavUser;
+  isAuthLoading?: boolean;
   isAdminMode?: boolean;
   onAdminToggle?: () => void;
   onLogin?: () => void;
   onSignup?: () => void;
   onLogout?: () => void;
   onProfileClick?: () => void;
+  onAccountSettingsClick?: () => void;
   onAdminDashboardClick?: () => void;
   logoHref?: string;
   currentPathname?: string;
@@ -125,12 +127,14 @@ const getToggleHandleClasses = (isAdminMode: boolean) => {
 export const Navigation = ({
   items,
   user,
+  isAuthLoading = false,
   isAdminMode = false,
   onAdminToggle,
   onLogin,
   onSignup,
   onLogout,
   onProfileClick,
+  onAccountSettingsClick,
   onAdminDashboardClick,
   logoHref = "/",
   currentPathname,
@@ -198,7 +202,12 @@ export const Navigation = ({
             </div>
           )}
 
-          {user ? (
+          {isAuthLoading ? (
+            <div
+              className="h-10 w-[156px] animate-pulse rounded-[4px] bg-[var(--color-gray-100)]"
+              aria-label="인증 상태 확인 중"
+            />
+          ) : user ? (
             <div className="flex items-center gap-3 relative" ref={profileRef}>
               <button
                 onClick={() => setShowProfile(!showProfile)}
@@ -224,9 +233,11 @@ export const Navigation = ({
                       <h3 className="text-[16px] font-bold text-[var(--color-gray-900,#111)] mb-1">
                         {user.name}
                       </h3>
-                      <p className="text-[14px] text-[var(--color-gray-600,#666)] mb-3">
-                        {user.email}
-                      </p>
+                      {user.email && (
+                        <p className="text-[14px] text-[var(--color-gray-600,#666)] mb-3">
+                          {user.email}
+                        </p>
+                      )}
                       <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-800,#004a9c)] text-[12px] font-semibold">
                         {user.userType}
                       </div>
@@ -258,6 +269,15 @@ export const Navigation = ({
                         className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
                       >
                         내 포트폴리오
+                      </button>
+                      <button
+                        onClick={() => {
+                          onAccountSettingsClick?.();
+                          setShowProfile(false);
+                        }}
+                        className="text-left px-3 py-2.5 text-[14px] text-[var(--color-gray-900,#1a1a1a)] hover:bg-[var(--color-gray-100)] rounded-md transition-colors"
+                      >
+                        계정 설정
                       </button>
                     </div>
                   </div>
