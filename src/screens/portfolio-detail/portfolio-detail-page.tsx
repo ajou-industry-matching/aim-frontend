@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { useRouter } from "next/navigation";
 import { getPortfolioDetail, type PortfolioBoardType, type PortfolioDetail } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
@@ -20,6 +20,22 @@ export type PortfolioDetailPageProps = {
 
 const sectionTitleClasses =
   "text-[24px] font-semibold leading-[1.33] tracking-[-0.6px] text-[var(--color-gray-900,#1a1a1a)]";
+
+// 글로벌 Navigation 높이(sticky top-0 h-[80px])만큼 탭바를 아래에 고정한다.
+const NAV_HEIGHT = 80;
+
+type DetailTab = "intro" | "files" | "comments";
+
+const tabBaseClasses =
+  "flex flex-1 items-center justify-center px-6 py-3 text-[16px] font-medium leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-600,#666)] transition-colors";
+
+const getTabClasses = (isActive: boolean): string =>
+  [
+    tabBaseClasses,
+    isActive
+      ? "border-b-2 border-[var(--color-primary-800,#004a9c)]"
+      : "border-b-2 border-[var(--color-gray-200,#e5e5e5)]",
+  ].join(" ");
 
 const getErrorMessage = (cause: unknown): string => {
   if (cause instanceof Error && cause.message) return cause.message;
@@ -72,142 +88,220 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
     };
   }, [isAuthReady, isAuthenticated, boardType, postId, fetchKey]);
 
+  const [activeTab, setActiveTab] = useState<DetailTab>("intro");
+  const tabBarRef = useRef<HTMLDivElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
+  const filesRef = useRef<HTMLDivElement>(null);
+  const commentsRef = useRef<HTMLDivElement>(null);
+
+  const scrollToSection = (tab: DetailTab) => {
+    setActiveTab(tab);
+    const sectionRefs: Record<DetailTab, RefObject<HTMLDivElement | null>> = {
+      intro: introRef,
+      files: filesRef,
+      comments: commentsRef,
+    };
+    const target = sectionRefs[tab].current;
+    if (!target) return;
+    const tabBarHeight = tabBarRef.current?.offsetHeight ?? 56;
+    const top =
+      target.getBoundingClientRect().top + window.scrollY - NAV_HEIGHT - tabBarHeight - 16;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   const renderBody = () => {
     if (isLoading) {
       return (
-        <div
-          className="flex items-center justify-center py-24"
-          role="status"
-          aria-label="불러오는 중"
-        >
-          <Spinner size="large" />
+        <div className="mx-auto max-w-[1440px] px-6 py-20">
+          <div
+            className="flex items-center justify-center py-24"
+            role="status"
+            aria-label="불러오는 중"
+          >
+            <Spinner size="large" />
+          </div>
         </div>
       );
     }
 
     if (isUnauthorizedSession) {
       return (
-        <EmptyState
-          variant="access-denied"
-          title="로그인이 필요합니다"
-          description="로그인 후 다시 시도해주세요."
-          hasBackground
-        />
+        <div className="mx-auto max-w-[1440px] px-6 py-20">
+          <EmptyState
+            variant="access-denied"
+            title="로그인이 필요합니다"
+            description="로그인 후 다시 시도해주세요."
+            hasBackground
+          />
+        </div>
       );
     }
 
     if (errorMessage) {
       return (
-        <EmptyState
-          variant="error"
-          title="포트폴리오를 불러오지 못했습니다"
-          description={errorMessage}
-          hasBackground
-        />
+        <div className="mx-auto max-w-[1440px] px-6 py-20">
+          <EmptyState
+            variant="error"
+            title="포트폴리오를 불러오지 못했습니다"
+            description={errorMessage}
+            hasBackground
+          />
+        </div>
       );
     }
 
     if (!detail) return null;
 
     return (
-      <div className="flex flex-col gap-12">
-        {/* 좋아요 */}
-        <div className="flex justify-end">
-          <PortfolioLikeButton
-            postId={detail.postId}
-            initialLiked={Boolean(detail.liked)}
-            initialLikeCount={detail.likeCount}
-          />
-        </div>
-
-        {/* 헤더: 썸네일 + 상세 정보 */}
-        <div className="flex flex-col gap-10 lg:flex-row">
-          <div className="relative aspect-[680/383] w-full flex-shrink-0 overflow-hidden rounded-xl bg-[var(--color-gray-100,#f2f2f2)] lg:w-[680px]">
-            {detail.thumbnailImage && (
-              <img
-                src={detail.thumbnailImage}
-                alt={detail.title}
-                className="h-full w-full object-cover"
+      <>
+        {/* 헤더: 좋아요 + 썸네일/상세 정보 */}
+        <div className="mx-auto max-w-[1440px] px-6 py-20">
+          <div className="flex flex-col gap-10">
+            {/* 좋아요 */}
+            <div className="flex justify-end">
+              <PortfolioLikeButton
+                postId={detail.postId}
+                initialLiked={Boolean(detail.liked)}
+                initialLikeCount={detail.likeCount}
               />
-            )}
-          </div>
-
-          <div className="flex flex-1 flex-col justify-between gap-6">
-            <div className="flex flex-col gap-5">
-              <h1 className="text-[40px] font-bold leading-[1.3] tracking-[-1px] text-[var(--color-gray-800,#333)]">
-                {detail.title}
-              </h1>
-              <p className="whitespace-pre-line text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-600,#666)]">
-                {detail.description}
-              </p>
             </div>
 
-            {(detail.videoLink || detail.githubLink) && (
-              <div className="flex flex-wrap items-center gap-4">
-                {detail.videoLink && (
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    iconPosition="right"
-                    icon={<ExternalLinkIcon size={16} />}
-                    onClick={() => openExternalLink(detail.videoLink as string)}
-                  >
-                    시연영상
-                  </Button>
-                )}
-                {detail.githubLink && (
-                  <Button
-                    variant="secondary"
-                    size="small"
-                    iconPosition="right"
-                    icon={<ExternalLinkIcon size={16} />}
-                    onClick={() => openExternalLink(detail.githubLink as string)}
-                  >
-                    Github
-                  </Button>
+            {/* 썸네일 + 상세 정보 */}
+            <div className="flex flex-col gap-10 lg:flex-row">
+              <div className="relative aspect-[680/383] w-full flex-shrink-0 overflow-hidden rounded-xl bg-[var(--color-gray-100,#f2f2f2)] lg:h-[383px] lg:w-[680px]">
+                {detail.thumbnailImage && (
+                  <img
+                    src={detail.thumbnailImage}
+                    alt={detail.title}
+                    className="h-full w-full object-cover"
+                  />
                 )}
               </div>
-            )}
+
+              <div className="flex flex-1 flex-col justify-between gap-6">
+                <div className="flex flex-col gap-5">
+                  <h1 className="text-[40px] font-bold leading-[1.3] tracking-[-1px] text-[var(--color-gray-800,#333)]">
+                    {detail.title}
+                  </h1>
+                  <p className="whitespace-pre-line text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-600,#666)]">
+                    {detail.description}
+                  </p>
+                </div>
+
+                {(detail.videoLink || detail.githubLink) && (
+                  <div className="flex flex-wrap items-center gap-4">
+                    {detail.videoLink && (
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        iconPosition="right"
+                        icon={<ExternalLinkIcon size={16} />}
+                        onClick={() => openExternalLink(detail.videoLink as string)}
+                      >
+                        시연영상
+                      </Button>
+                    )}
+                    {detail.githubLink && (
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        iconPosition="right"
+                        icon={<ExternalLinkIcon size={16} />}
+                        onClick={() => openExternalLink(detail.githubLink as string)}
+                      >
+                        Github
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 본문 */}
-        <section className="flex flex-col gap-5">
-          <h2 className={sectionTitleClasses}>포트폴리오</h2>
-          <RichEditor content={detail.content} isEditable={false} />
-        </section>
-
-        {/* 태그 */}
-        {detail.keywords.length > 0 && (
-          <section className="flex flex-col gap-4">
-            <h2 className={sectionTitleClasses}>태그</h2>
-            <div className="flex flex-wrap gap-2">
-              {detail.keywords.map((keyword) => (
-                <Tag key={keyword.keywordId}>{`#${keyword.keywordName}`}</Tag>
-              ))}
+        {/* 스티키 탭바 (글로벌 Navigation 80px 아래) */}
+        <div
+          className="sticky z-40 border-b border-[var(--color-gray-200,#e5e5e5)] bg-white shadow-sm"
+          style={{ top: NAV_HEIGHT }}
+        >
+          <div className="mx-auto max-w-[1440px] px-6">
+            <div ref={tabBarRef} className="flex h-14">
+              <button
+                type="button"
+                onClick={() => scrollToSection("intro")}
+                className={getTabClasses(activeTab === "intro")}
+              >
+                포트폴리오 소개
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollToSection("files")}
+                className={getTabClasses(activeTab === "files")}
+              >
+                첨부파일
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollToSection("comments")}
+                className={getTabClasses(activeTab === "comments")}
+              >
+                댓글
+              </button>
             </div>
-          </section>
-        )}
-
-        {/* 첨부파일 */}
-        <section className="flex flex-col gap-5">
-          <h2 className={sectionTitleClasses}>첨부파일</h2>
-          <PortfolioAttachments files={detail.files} />
-        </section>
-
-        {/* 목록으로 */}
-        <div className="flex justify-center pt-4">
-          <Button variant="primary" size="large" onClick={() => router.push("/portfolio")}>
-            목록
-          </Button>
+          </div>
         </div>
-      </div>
+
+        {/* 콘텐츠 섹션 */}
+        <div className="mx-auto max-w-[1440px] px-6 pb-20">
+          <div className="flex flex-col gap-20">
+            {/* 소개: 본문 + 태그 */}
+            <div ref={introRef} className="flex flex-col gap-10 pt-[60px]">
+              {/* 본문 */}
+              <section className="flex flex-col gap-5">
+                <h2 className={sectionTitleClasses}>포트폴리오</h2>
+                <RichEditor content={detail.content} isEditable={false} />
+              </section>
+
+              {/* 태그 */}
+              {detail.keywords.length > 0 && (
+                <section className="flex flex-col gap-4">
+                  <h2 className={sectionTitleClasses}>태그</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {detail.keywords.map((keyword) => (
+                      <Tag key={keyword.keywordId}>{`#${keyword.keywordName}`}</Tag>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+
+            {/* 첨부파일 */}
+            <section ref={filesRef} className="flex flex-col gap-5 pt-[60px]">
+              <h2 className={sectionTitleClasses}>첨부파일</h2>
+              <PortfolioAttachments files={detail.files} />
+            </section>
+
+            {/* 댓글 (자리만 확보 — 댓글 기능 구현 시 이 영역을 채운다) */}
+            <section ref={commentsRef} className="flex flex-col gap-5 pt-[60px]">
+              <h2 className={sectionTitleClasses}>
+                댓글 {detail.commentCount > 0 ? detail.commentCount : ""}
+              </h2>
+              <div className="rounded-lg border border-dashed border-[var(--color-gray-300,#cccccc)] p-8 text-center text-[14px] text-[var(--color-gray-500,#808080)]">
+                댓글 기능 준비 중입니다.
+              </div>
+            </section>
+
+            {/* 목록으로 */}
+            <div className="flex justify-center">
+              <Button variant="primary" size="large" onClick={() => router.push("/portfolio")}>
+                목록
+              </Button>
+            </div>
+          </div>
+        </div>
+      </>
     );
   };
 
-  return (
-    <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-[1440px] px-6 py-16">{renderBody()}</div>
-    </main>
-  );
+  return <main className="min-h-screen bg-white">{renderBody()}</main>;
 };
