@@ -63,14 +63,14 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
   const [result, setResult] = useState<DetailFetchResult | null>(null);
 
   const fetchKey = toDetailFetchKey(boardType, postId);
-  const isUnauthorizedSession = isAuthReady && !isAuthenticated;
   const hasMatchingResult = result?.fetchKey === fetchKey;
-  const isLoading = !isAuthReady || (!isUnauthorizedSession && !hasMatchingResult);
+  // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
+  const isLoading = !isAuthReady || !hasMatchingResult;
   const detail = hasMatchingResult ? result.detail : undefined;
   const errorMessage = hasMatchingResult ? (result.error ?? null) : null;
 
   useEffect(() => {
-    if (!isAuthReady || !isAuthenticated) return;
+    if (!isAuthReady) return;
 
     let isCancelled = false;
 
@@ -121,19 +121,6 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
           >
             <Spinner size="large" />
           </div>
-        </div>
-      );
-    }
-
-    if (isUnauthorizedSession) {
-      return (
-        <div className="mx-auto max-w-[1440px] px-6 py-20">
-          <EmptyState
-            variant="access-denied"
-            title="로그인이 필요합니다"
-            description="로그인 후 다시 시도해주세요."
-            hasBackground
-          />
         </div>
       );
     }

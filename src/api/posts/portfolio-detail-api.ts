@@ -39,5 +39,8 @@ export const getPortfolioDetail = async (
   boardType: PortfolioBoardType,
   postId: number,
 ): Promise<PortfolioDetail> => {
-  return backendJson<PortfolioDetail>(`/api/posts/${boardType}/${postId}`);
+  // 공개 조회: 비로그인도 접근 가능 (로그인 시 liked 등 개인화 정보 포함)
+  return backendJson<PortfolioDetail>(`/api/posts/${boardType}/${postId}`, {
+    requiresAuth: false,
+  });
 };
