@@ -821,3 +821,92 @@ export const CodeIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
     />
   </svg>
 );
+
+// 하트 아이콘 (filled로 채움 여부 토글)
+export const HeartIcon: React.FC<IconProps & { filled?: boolean }> = ({
+  size = 20,
+  filled = false,
+  ...props
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M10 17.5L8.79167 16.4C4.5 12.5083 1.66667 9.93333 1.66667 6.79167C1.66667 4.21667 3.68333 2.2 6.25833 2.2C7.71667 2.2 9.11667 2.875 10 3.93333C10.8833 2.875 12.2833 2.2 13.7417 2.2C16.3167 2.2 18.3333 4.21667 18.3333 6.79167C18.3333 9.93333 15.5 12.5083 11.2083 16.4083L10 17.5Z"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 외부 링크 아이콘
+export const ExternalLinkIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M15.8333 10.8333V15.8333C15.8333 16.2754 15.6577 16.6993 15.3452 17.0118C15.0326 17.3244 14.6087 17.5 14.1667 17.5H4.16667C3.72464 17.5 3.30072 17.3244 2.98816 17.0118C2.67559 16.6993 2.5 16.2754 2.5 15.8333V5.83333C2.5 5.39131 2.67559 4.96738 2.98816 4.65482C3.30072 4.34226 3.72464 4.16667 4.16667 4.16667H9.16667M12.5 2.5H17.5M17.5 2.5V7.5M17.5 2.5L8.33333 11.6667"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 전송(종이비행기) 아이콘 - 댓글/답글 등록
+export const SendIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// 답글 들여쓰기(꺾인 화살표) 아이콘
+export const CornerDownRightIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    {...props}
+  >
+    <path
+      d="M15 10L20 15L15 20M20 15H8C5.79086 15 4 13.2091 4 11V4"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);

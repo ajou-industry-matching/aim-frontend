@@ -86,7 +86,12 @@ const throwBackendApiError = async (response: Response): Promise<never> => {
   });
 };
 
-const appendAuthHeader = async (headers: Headers): Promise<void> => {
+// optional=true면 로그인 사용자의 토큰만 best-effort로 붙이고, 미로그인 시에도 throw하지 않는다.
+// (공개 조회 API에서 로그인 사용자에게는 liked 등 개인화 정보를 받기 위함)
+const appendAuthHeader = async (
+  headers: Headers,
+  { optional = false }: { optional?: boolean } = {},
+): Promise<void> => {
   if (headers.has("Authorization")) {
     return;
   }
@@ -94,6 +99,9 @@ const appendAuthHeader = async (headers: Headers): Promise<void> => {
   const currentUser = auth.currentUser;
 
   if (!currentUser) {
+    if (optional) {
+      return;
+    }
     throw new BackendApiError("로그인이 필요한 요청입니다.", { status: 401 });
   }
 
@@ -107,9 +115,8 @@ export const backendFetch = async (
 ): Promise<Response> => {
   const headers = new Headers(headersInit);
 
-  if (requiresAuth) {
-    await appendAuthHeader(headers);
-  }
+  // requiresAuth: false → 공개 조회. 토큰이 있으면 붙이되 없어도 진행한다.
+  await appendAuthHeader(headers, { optional: !requiresAuth });
 
   const response = await fetch(createBackendApiUrl(path), {
     ...init,
