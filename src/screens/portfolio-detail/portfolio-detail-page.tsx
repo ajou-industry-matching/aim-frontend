@@ -11,6 +11,7 @@ import { Spinner } from "@/shared/ui/spinner/spinner";
 import { Tag } from "@/shared/ui/tag/tag";
 import { ExternalLinkIcon } from "@/shared/ui/icons";
 import { PortfolioAttachments } from "./portfolio-attachments";
+import { PortfolioComments } from "./portfolio-comments";
 import { PortfolioLikeButton } from "./portfolio-like-button";
 
 export type PortfolioDetailPageProps = {
@@ -281,14 +282,9 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
               <PortfolioAttachments files={detail.files} />
             </section>
 
-            {/* 댓글 (자리만 확보 — 댓글 기능 구현 시 이 영역을 채운다) */}
-            <section ref={commentsRef} className="flex flex-col gap-5 pt-[60px]">
-              <h2 className={sectionTitleClasses}>
-                댓글 {detail.commentCount > 0 ? detail.commentCount : ""}
-              </h2>
-              <div className="rounded-lg border border-dashed border-[var(--color-gray-300,#cccccc)] p-8 text-center text-[14px] text-[var(--color-gray-500,#808080)]">
-                댓글 기능 준비 중입니다.
-              </div>
+            {/* 댓글 (백엔드 API 미구현 — 목업 데이터로 UI만 구성) */}
+            <section ref={commentsRef} className="pt-[60px]">
+              <PortfolioComments postId={detail.postId} />
             </section>
 
             {/* 목록으로 */}
