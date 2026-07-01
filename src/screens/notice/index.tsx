@@ -2,17 +2,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Navigation, type NavItem } from "@/shared/ui/navigation/navigation";
 import { Footer } from "@/shared/ui/footer";
 import { Table, type TableColumn, type TableRowData } from "@/shared/ui/lists/lists";
 import { Pagination } from "@/shared/ui/pagination/pagination";
 import type { Notice } from "@/api/notice";
-
-const navItems: NavItem[] = [
-  { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "/about" },
-  { label: "공지사항", href: "/notice", isActive: true },
-];
 
 interface NoticeScreenProps {
   notices: Notice[];
@@ -53,12 +46,6 @@ export function NoticeScreen({ notices, currentPage, totalPages }: NoticeScreenP
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      <Navigation
-        items={navItems}
-        onLogin={() => router.push("/login")}
-        onSignup={() => router.push("/signup")}
-      />
-
       <main className="mx-auto flex-1 w-full max-w-[1440px] px-4 pt-[160px] pb-[100px]">
         <h1 className="mb-12 text-center text-[40px] font-bold leading-[1.3] tracking-[-0.025em] text-gray-900">
           공지사항

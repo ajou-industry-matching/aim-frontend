@@ -3,18 +3,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Navigation, type NavItem } from "@/shared/ui/navigation/navigation";
 import { Footer } from "@/shared/ui/footer";
 import { Button } from "@/shared/ui/button/button";
 import { Input } from "@/shared/ui/input/input"; // 공통 Input 컴포넌트 임포트
 import { FileTextAltIcon } from "@/shared/ui/icons/index"; // TrashIcon 제외 후 필요한 아이콘만 유지
 import { createNotice } from "@/api/notice";
-
-const navItems: NavItem[] = [
-  { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "/about" },
-  { label: "공지사항", href: "/notice", isActive: true },
-];
 
 export function NoticeCreateScreen() {
   const router = useRouter();
@@ -52,12 +45,6 @@ export function NoticeCreateScreen() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[1920px] flex-col bg-white">
-      <Navigation
-        items={navItems}
-        onLogin={() => router.push("/login")}
-        onSignup={() => router.push("/signup")}
-      />
-
       <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-6 pt-[160px] pb-[100px] md:px-12 xl:px-24 2xl:px-0">
         {/* 1. 타이틀 영역 */}
         <div className="mb-12 border-b border-gray-900 pb-6">

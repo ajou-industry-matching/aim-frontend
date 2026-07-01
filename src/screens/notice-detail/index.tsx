@@ -2,16 +2,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Navigation, type NavItem } from "@/shared/ui/navigation/navigation";
 import { Footer } from "@/shared/ui/footer";
 import { Button } from "@/shared/ui/button/button"; // 공통 버튼 컴포넌트 임포트
 import type { Notice } from "@/api/notice";
-
-const navItems: NavItem[] = [
-  { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "/about" },
-  { label: "공지사항", href: "/notice", isActive: true },
-];
 
 interface NoticeDetailScreenProps {
   notice: Notice;
@@ -31,13 +24,6 @@ export function NoticeDetailScreen({ notice }: NoticeDetailScreenProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      {/* 상단 네비게이션 바 */}
-      <Navigation
-        items={navItems}
-        onLogin={() => router.push("/login")}
-        onSignup={() => router.push("/signup")}
-      />
-
       {/* 메인 레이아웃 (width: 1440, top: 160, gap: 40) */}
       <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-[40px] px-4 pt-[160px] pb-[100px]">
         {/* 타이틀 영역 (height: 52, font-size: 40px, line-height: 130%, tracking: -2.5%) */}
