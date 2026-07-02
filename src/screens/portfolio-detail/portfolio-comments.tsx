@@ -1,100 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { CommentResponse, CommentVisibility } from "@/api/comments";
+import { useAuthReady } from "@/lib/auth";
+import { usePortfolioComments } from "@/lib/comments";
 import { Avatar } from "@/shared/ui/avatars/avatars";
 import { Button } from "@/shared/ui/button/button";
 import { Textarea } from "@/shared/ui/input/input";
+import { Spinner } from "@/shared/ui/spinner/spinner";
 import { CornerDownRightIcon, LockIcon, SendIcon } from "@/shared/ui/icons";
-
-// ⚠️ 백엔드 댓글 API 미구현 상태. 현재는 목업 데이터 + 로컬 상태로 UI만 구성한다.
-// 추후 src/api/comments + 훅으로 교체 예정 (docs/2026-06-23-portfolio-comments-todo.md 참고).
 
 export type PortfolioCommentsProps = {
   postId: number;
 };
-
-type CommentVisibility = "PUBLIC" | "PRIVATE";
-
-type CommentAuthor = {
-  name: string;
-  department: string;
-  profileImageUrl?: string;
-};
-
-type PortfolioComment = {
-  commentId: number;
-  author: CommentAuthor;
-  content: string;
-  createdAt: string;
-  visibility: CommentVisibility;
-  // 본인이 작성한 댓글인지 (수정/삭제 노출용)
-  isMine: boolean;
-  // 비공개 댓글을 볼 수 있는지 (작성자 또는 글 주인). false면 내용 마스킹
-  canView: boolean;
-  replies: PortfolioComment[];
-};
-
-// 로그인 연동 전까지 사용하는 임시 현재 사용자
-const currentUser: CommentAuthor = {
-  name: "현재 사용자",
-  department: "소프트웨어학과",
-};
-
-// figma design 3가지 케이스를 모두 담은 목업 데이터
-const mockComments: PortfolioComment[] = [
-  {
-    commentId: 1,
-    author: { name: "이영희", department: "미디어학과" },
-    content: "정말 인상적인 프로젝트네요! 추천 알고리즘 부분이 특히 흥미롭습니다.",
-    createdAt: "2024-01-18",
-    visibility: "PUBLIC",
-    isMine: false,
-    canView: true,
-    replies: [
-      {
-        commentId: 11,
-        author: { name: "김철수", department: "소프트웨어학과" },
-        content: "저도 동의합니다! 특히 데이터 처리 방식이 효율적이네요.",
-        createdAt: "2024-01-18",
-        visibility: "PUBLIC",
-        isMine: false,
-        canView: true,
-        replies: [],
-      },
-    ],
-  },
-  {
-    commentId: 2,
-    author: { name: "김철수", department: "디자인학과" },
-    content: "비공개 피드백: 코드 리뷰 관련해서 따로 연락드릴게요.",
-    createdAt: "2024-01-20",
-    visibility: "PRIVATE",
-    isMine: false,
-    canView: true,
-    replies: [
-      {
-        commentId: 21,
-        author: currentUser,
-        content: "네, 감사합니다! 슬랙으로 연락주세요.",
-        createdAt: "2024-01-20",
-        visibility: "PRIVATE",
-        isMine: true,
-        canView: true,
-        replies: [],
-      },
-    ],
-  },
-  {
-    commentId: 3,
-    author: { name: "박민수", department: "소프트웨어학과" },
-    content: "타인에게는 보이지 않는 비공개 댓글입니다.",
-    createdAt: "2024-01-21",
-    visibility: "PRIVATE",
-    isMine: false,
-    canView: false,
-    replies: [],
-  },
-];
 
 // ----------------------------------------------------------------------
 // 스타일 토큰
@@ -120,6 +39,8 @@ const editButtonClasses =
 const deleteButtonClasses =
   "text-[12px] text-[var(--color-gray-400,#999999)] transition-colors hover:text-[var(--color-error-500,#ef4444)]";
 
+const mutedRowClasses = "text-[14px] text-[var(--color-gray-400,#999999)]";
+
 const getVisibilityToggleClasses = (isPrivate: boolean): string =>
   [
     visibilityToggleBaseClasses,
@@ -138,118 +59,96 @@ const formatDate = (value: string): string => {
   return date.toLocaleDateString("ko-KR");
 };
 
-// 댓글 + 답글 전체 개수
-const countComments = (comments: PortfolioComment[]): number =>
-  comments.reduce((total, comment) => total + 1 + countComments(comment.replies), 0);
-
-const generateId = (): number => Date.now();
-
-// 최상위/답글 모두 순회하며 content 갱신
-const mapUpdateContent = (
-  comments: PortfolioComment[],
-  targetId: number,
-  content: string,
-): PortfolioComment[] =>
-  comments.map((comment) => {
-    if (comment.commentId === targetId) return { ...comment, content };
-    if (comment.replies.length > 0) {
-      return { ...comment, replies: mapUpdateContent(comment.replies, targetId, content) };
-    }
-    return comment;
-  });
-
-// 최상위/답글 모두 순회하며 삭제
-const filterRemove = (comments: PortfolioComment[], targetId: number): PortfolioComment[] =>
-  comments
-    .filter((comment) => comment.commentId !== targetId)
-    .map((comment) => ({ ...comment, replies: filterRemove(comment.replies, targetId) }));
+// 댓글 + 답글 전체 개수 (삭제된 것 제외)
+const countComments = (comments: CommentResponse[]): number =>
+  comments.reduce(
+    (total, comment) => total + (comment.deleted ? 0 : 1) + countComments(comment.children),
+    0,
+  );
 
 // ----------------------------------------------------------------------
 // 컴포넌트
 // ----------------------------------------------------------------------
 
 export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
-  void postId; // API 연동 시 사용 예정
+  const router = useRouter();
+  const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
+  const { comments, isLoading, error, create, update, remove } = usePortfolioComments(
+    postId,
+    isAuthReady,
+  );
 
-  const [comments, setComments] = useState<PortfolioComment[]>(mockComments);
   const [newContent, setNewContent] = useState("");
   const [newVisibility, setNewVisibility] = useState<CommentVisibility>("PUBLIC");
-
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [replyContent, setReplyContent] = useState("");
-
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalComments = countComments(comments);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     const content = newContent.trim();
-    if (!content) return;
-
-    const comment: PortfolioComment = {
-      commentId: generateId(),
-      author: currentUser,
-      content,
-      createdAt: new Date().toISOString(),
-      visibility: newVisibility,
-      isMine: true,
-      canView: true,
-      replies: [],
-    };
-
-    setComments((prev) => [comment, ...prev]);
+    if (!content || isSubmitting) return;
+    setIsSubmitting(true);
+    const isSuccess = await create({ content, visibility: newVisibility });
+    setIsSubmitting(false);
+    if (!isSuccess) {
+      window.alert("댓글 등록에 실패했습니다.");
+      return;
+    }
     setNewContent("");
     setNewVisibility("PUBLIC");
   };
 
-  const handleReplySubmit = (parent: PortfolioComment) => {
+  const handleReplySubmit = async (parent: CommentResponse) => {
     const content = replyContent.trim();
-    if (!content) return;
-
-    const reply: PortfolioComment = {
-      commentId: generateId(),
-      author: currentUser,
+    if (!content || isSubmitting) return;
+    setIsSubmitting(true);
+    // ⭐ 답글의 공개/비공개는 부모 댓글을 따른다
+    const isSuccess = await create({
       content,
-      createdAt: new Date().toISOString(),
-      // ⭐ 답글의 공개/비공개는 부모 댓글을 따른다
       visibility: parent.visibility,
-      isMine: true,
-      canView: true,
-      replies: [],
-    };
-
-    setComments((prev) =>
-      prev.map((comment) =>
-        comment.commentId === parent.commentId
-          ? { ...comment, replies: [...comment.replies, reply] }
-          : comment,
-      ),
-    );
+      parentCommentId: parent.commentId,
+    });
+    setIsSubmitting(false);
+    if (!isSuccess) {
+      window.alert("답글 등록에 실패했습니다.");
+      return;
+    }
     setReplyContent("");
     setReplyingTo(null);
   };
 
-  const handleEditStart = (comment: PortfolioComment) => {
+  const handleEditStart = (comment: CommentResponse) => {
     setEditingId(comment.commentId);
     setEditContent(comment.content);
     setReplyingTo(null);
   };
 
-  const handleEditSave = (targetId: number) => {
+  const handleEditSave = async (comment: CommentResponse) => {
     const content = editContent.trim();
-    if (!content) return;
-    setComments((prev) => mapUpdateContent(prev, targetId, content));
+    if (!content || isSubmitting) return;
+    setIsSubmitting(true);
+    // 수정 시 공개/비공개는 기존 값을 유지한다
+    const isSuccess = await update(comment.commentId, { content, visibility: comment.visibility });
+    setIsSubmitting(false);
+    if (!isSuccess) {
+      window.alert("댓글 수정에 실패했습니다.");
+      return;
+    }
     setEditingId(null);
     setEditContent("");
   };
 
-  const handleDelete = (targetId: number) => {
+  const handleDelete = async (commentId: number) => {
     if (typeof window !== "undefined" && !window.confirm("댓글을 삭제할까요?")) return;
-    setComments((prev) => filterRemove(prev, targetId));
+    const isSuccess = await remove(commentId);
+    if (!isSuccess) window.alert("댓글 삭제에 실패했습니다.");
   };
 
-  const renderComment = (comment: PortfolioComment, isReply: boolean) => {
+  const renderComment = (comment: CommentResponse, isReply: boolean) => {
     const isEditing = editingId === comment.commentId;
     const isPrivate = comment.visibility === "PRIVATE";
 
@@ -266,8 +165,8 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
     return (
       <div className="flex flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className={nameClasses}>{comment.author.name}</span>
-          <span className={metaClasses}>{comment.author.department}</span>
+          <span className={nameClasses}>{comment.authorName}</span>
+          <span className={metaClasses}>{comment.department}</span>
           <span className={metaClasses}>· {formatDate(comment.createdAt)}</span>
           {isPrivate && (
             <span className={privateBadgeClasses}>
@@ -286,13 +185,19 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
               className="resize-none text-[14px]"
             />
             <div className="flex justify-end gap-2">
-              <Button variant="ghost" size="small" onClick={() => setEditingId(null)}>
+              <Button
+                variant="ghost"
+                size="small"
+                disabled={isSubmitting}
+                onClick={() => setEditingId(null)}
+              >
                 취소
               </Button>
               <Button
                 variant="primary"
                 size="small"
-                onClick={() => handleEditSave(comment.commentId)}
+                disabled={isSubmitting}
+                onClick={() => handleEditSave(comment)}
               >
                 저장
               </Button>
@@ -304,7 +209,7 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
 
         {!isEditing && (
           <div className="mt-1 flex items-center gap-3">
-            {!isReply && (
+            {!isReply && isAuthenticated && (
               <button
                 type="button"
                 className={replyWriteButtonClasses}
@@ -315,7 +220,7 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
                 답글쓰기
               </button>
             )}
-            {comment.isMine && (
+            {comment.mine && (
               <>
                 <button
                   type="button"
@@ -339,7 +244,7 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
     );
   };
 
-  const renderReplyForm = (parent: PortfolioComment) => {
+  const renderReplyForm = (parent: CommentResponse) => {
     const isPrivate = parent.visibility === "PRIVATE";
     return (
       <div className="rounded-b-lg px-4 py-3">
@@ -371,6 +276,7 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
                 <Button
                   variant="ghost"
                   size="small"
+                  disabled={isSubmitting}
                   onClick={() => {
                     setReplyingTo(null);
                     setReplyContent("");
@@ -383,6 +289,7 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
                   size="small"
                   iconPosition="left"
                   icon={<SendIcon size={14} />}
+                  disabled={isSubmitting}
                   onClick={() => handleReplySubmit(parent)}
                 >
                   답글 등록
@@ -395,118 +302,139 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
     );
   };
 
+  const renderList = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center py-12" role="status" aria-label="댓글 불러오는 중">
+          <Spinner size="medium" />
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="rounded-lg border border-dashed border-[var(--color-gray-300,#cccccc)] p-8 text-center text-[14px] text-[var(--color-error-500,#ef4444)]">
+          {error}
+        </div>
+      );
+    }
+
+    if (comments.length === 0) {
+      return (
+        <div className="rounded-lg border border-dashed border-[var(--color-gray-300,#cccccc)] p-8 text-center text-[14px] text-[var(--color-gray-500,#808080)]">
+          첫 댓글을 남겨보세요.
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col gap-4">
+        {comments.map((comment) => (
+          <div key={comment.commentId} className={cardClasses}>
+            {/* 최상위 댓글 */}
+            {comment.deleted ? (
+              <div className={`p-4 ${mutedRowClasses}`}>삭제된 댓글입니다.</div>
+            ) : (
+              <div className="flex gap-3 p-4">
+                <Avatar
+                  name={comment.authorName}
+                  src={comment.profileImageUrl || undefined}
+                  size="md"
+                />
+                {renderComment(comment, false)}
+              </div>
+            )}
+
+            {/* 답글 목록 (카드 내부) */}
+            {comment.children.map((reply) =>
+              reply.deleted ? (
+                <div
+                  key={reply.commentId}
+                  className={`ml-6 px-4 py-3 text-[13px] ${mutedRowClasses}`}
+                >
+                  삭제된 댓글입니다.
+                </div>
+              ) : (
+                <div key={reply.commentId} className="ml-6 flex gap-3 px-4 py-3">
+                  <CornerDownRightIcon
+                    size={16}
+                    className="mt-0.5 flex-shrink-0 text-[var(--color-gray-300,#cccccc)]"
+                  />
+                  <Avatar
+                    name={reply.authorName}
+                    src={reply.profileImageUrl || undefined}
+                    size="sm"
+                  />
+                  {renderComment(reply, true)}
+                </div>
+              ),
+            )}
+
+            {/* 답글 작성 폼 (카드 내부, 토글 없음) */}
+            {replyingTo === comment.commentId && renderReplyForm(comment)}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-5">
       <h2 className={sectionTitleClasses}>댓글 {totalComments > 0 ? totalComments : ""}</h2>
 
-      {/* 댓글 작성 폼 (공개/비공개 토글 포함) */}
-      <form
-        className="flex flex-col gap-3"
-        onSubmit={(event) => {
-          event.preventDefault();
-          handleCreate();
-        }}
-      >
-        <Textarea
-          value={newContent}
-          onChange={(event) => setNewContent(event.target.value)}
-          placeholder="댓글을 입력하세요..."
-          rows={3}
-          className="resize-none"
-        />
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            className={getVisibilityToggleClasses(newVisibility === "PRIVATE")}
-            onClick={() => setNewVisibility((prev) => (prev === "PRIVATE" ? "PUBLIC" : "PRIVATE"))}
+      {/* 작성 폼 (로그인 필요) */}
+      {isAuthReady &&
+        (isAuthenticated ? (
+          <form
+            className="flex flex-col gap-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleCreate();
+            }}
           >
-            <LockIcon size={12} />
-            {newVisibility === "PRIVATE" ? "비공개" : "공개"}
-          </button>
-          <Button
-            type="submit"
-            variant="primary"
-            size="medium"
-            iconPosition="left"
-            icon={<SendIcon size={16} />}
-            disabled={!newContent.trim()}
-          >
-            댓글 등록
-          </Button>
-        </div>
-      </form>
+            <Textarea
+              value={newContent}
+              onChange={(event) => setNewContent(event.target.value)}
+              placeholder="댓글을 입력하세요..."
+              rows={3}
+              className="resize-none"
+            />
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                className={getVisibilityToggleClasses(newVisibility === "PRIVATE")}
+                onClick={() =>
+                  setNewVisibility((prev) => (prev === "PRIVATE" ? "PUBLIC" : "PRIVATE"))
+                }
+              >
+                <LockIcon size={12} />
+                {newVisibility === "PRIVATE" ? "비공개" : "공개"}
+              </button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="medium"
+                iconPosition="left"
+                icon={<SendIcon size={16} />}
+                disabled={!newContent.trim() || isSubmitting}
+              >
+                댓글 등록
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <div className="rounded-lg border border-[var(--color-gray-200,#e5e5e5)] p-6 text-center">
+            <p className="mb-3 text-[14px] text-[var(--color-gray-600,#666666)]">
+              로그인 후 댓글을 작성할 수 있어요.
+            </p>
+            <Button variant="primary" size="medium" onClick={() => router.push("/login")}>
+              로그인
+            </Button>
+          </div>
+        ))}
 
       {/* 댓글 목록 */}
-      {comments.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-[var(--color-gray-300,#cccccc)] p-8 text-center text-[14px] text-[var(--color-gray-500,#808080)]">
-          첫 댓글을 남겨보세요.
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {comments.map((comment) => {
-            const isMasked = comment.visibility === "PRIVATE" && !comment.canView;
-
-            // 비공개 + 열람 불가 → 내용 마스킹 (figma Case 3)
-            if (isMasked) {
-              return (
-                <div key={comment.commentId} className={cardClasses}>
-                  <div className="flex items-center gap-2 p-4 text-[14px] text-[var(--color-gray-400,#999999)]">
-                    <LockIcon size={16} />
-                    <span>비공개 댓글입니다.</span>
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <div key={comment.commentId} className={cardClasses}>
-                {/* 최상위 댓글 */}
-                <div className="flex gap-3 p-4">
-                  <Avatar
-                    name={comment.author.name}
-                    src={comment.author.profileImageUrl}
-                    size="md"
-                  />
-                  {renderComment(comment, false)}
-                </div>
-
-                {/* 답글 목록 (카드 내부) */}
-                {comment.replies.map((reply) => {
-                  const isReplyMasked = reply.visibility === "PRIVATE" && !reply.canView;
-                  if (isReplyMasked) {
-                    return (
-                      <div
-                        key={reply.commentId}
-                        className="ml-6 flex items-center gap-2 px-4 py-3 text-[13px] text-[var(--color-gray-400,#999999)]"
-                      >
-                        <LockIcon size={14} />
-                        <span>비공개 댓글입니다.</span>
-                      </div>
-                    );
-                  }
-                  return (
-                    <div key={reply.commentId} className="ml-6 flex gap-3 px-4 py-3">
-                      <CornerDownRightIcon
-                        size={16}
-                        className="mt-0.5 flex-shrink-0 text-[var(--color-gray-300,#cccccc)]"
-                      />
-                      <Avatar
-                        name={reply.author.name}
-                        src={reply.author.profileImageUrl}
-                        size="sm"
-                      />
-                      {renderComment(reply, true)}
-                    </div>
-                  );
-                })}
-
-                {/* 답글 작성 폼 (카드 내부, 토글 없음) */}
-                {replyingTo === comment.commentId && renderReplyForm(comment)}
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {renderList()}
     </div>
   );
 };
