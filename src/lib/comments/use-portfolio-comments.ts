@@ -84,7 +84,8 @@ export const usePortfolioComments = (
         await createComment({ postId, ...input });
         refetch();
         return true;
-      } catch {
+      } catch (cause) {
+        console.error("댓글 작성에 실패했습니다.", cause);
         return false;
       }
     },
@@ -97,7 +98,8 @@ export const usePortfolioComments = (
         await updateComment(commentId, input);
         refetch();
         return true;
-      } catch {
+      } catch (cause) {
+        console.error("댓글 수정에 실패했습니다.", cause);
         return false;
       }
     },
@@ -110,7 +112,8 @@ export const usePortfolioComments = (
         await deleteComment(commentId);
         refetch();
         return true;
-      } catch {
+      } catch (cause) {
+        console.error("댓글 삭제에 실패했습니다.", cause);
         return false;
       }
     },

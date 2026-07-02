@@ -16,16 +16,11 @@ const formatFileSize = (bytes: number): string => {
   return `${value.toFixed(exponent === 0 ? 0 : 1)} ${units[exponent]}`;
 };
 
-const openAttachment = (filePath: string) => {
-  if (typeof window === "undefined") return;
-  window.open(filePath, "_blank", "noopener,noreferrer");
-};
-
-// figma design: 테두리 카드 행 (파일 아이콘 + 이름/용량 + 다운로드 버튼)
+// figma design: 테두리 카드 행 (파일 아이콘 + 이름/용량 + 다운로드 링크)
 const attachmentRowClasses =
   "flex items-center justify-between rounded-lg border border-[var(--color-gray-200,#e5e5e5)] p-4 transition-colors hover:bg-[var(--color-gray-50,#f9f9f9)]";
 
-const downloadButtonClasses =
+const downloadLinkClasses =
   "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md text-[var(--color-primary-800,#004a9c)] transition-colors hover:bg-[var(--color-primary-50,#f0f6fd)]";
 
 export const PortfolioAttachments = ({ attachments }: PortfolioAttachmentsProps) => {
@@ -55,14 +50,17 @@ export const PortfolioAttachments = ({ attachments }: PortfolioAttachmentsProps)
               </span>
             </div>
           </div>
-          <button
-            type="button"
+          {/* download 속성은 동일 출처에서 강제 다운로드. Firebase 등 교차 출처면 새 탭 열람으로 폴백 */}
+          <a
+            href={attachment.filePath}
+            download={attachment.originalFilename}
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={`${attachment.originalFilename} 다운로드`}
-            onClick={() => openAttachment(attachment.filePath)}
-            className={downloadButtonClasses}
+            className={downloadLinkClasses}
           >
             <DownloadIcon size={16} />
-          </button>
+          </a>
         </div>
       ))}
     </div>

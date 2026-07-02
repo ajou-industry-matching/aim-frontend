@@ -62,7 +62,8 @@ export type CommentPageableParams = {
   sort?: string;
 };
 
-const COMMENT_DEFAULT_PAGE_SIZE = 50;
+// 댓글 페이징 "더보기" UI는 후속 과제. 우선 큰 페이지로 단건 조회해 truncation 위험을 줄인다.
+const COMMENT_DEFAULT_PAGE_SIZE = 100;
 const COMMENT_DEFAULT_SORT = "createdAt,desc";
 
 const buildCommentPageableParams = ({
