@@ -60,7 +60,8 @@ export const PortfolioLikeButton = ({
       disabled={isPending}
       aria-pressed={isLiked}
     >
-      {likeCount}
+      {/* 문자열로 전달: 숫자 0은 Button이 icon-only로 인식해 카운트가 사라짐 */}
+      {String(likeCount)}
     </Button>
   );
 };
