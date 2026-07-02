@@ -245,7 +245,6 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
   };
 
   const renderReplyForm = (parent: CommentResponse) => {
-    const isPrivate = parent.visibility === "PRIVATE";
     return (
       <div className="rounded-b-lg px-4 py-3">
         <div className="ml-6 flex gap-3">
@@ -261,17 +260,8 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
               rows={2}
               className="resize-none text-[14px]"
             />
-            <div className="flex items-center justify-between">
-              {/* ⭐ 답글은 부모 댓글의 공개/비공개를 따른다 (토글 없음, 상태 표시만) */}
-              <div className="flex items-center gap-2">
-                <span className={`${getVisibilityToggleClasses(isPrivate)} cursor-default`}>
-                  <LockIcon size={12} />
-                  {isPrivate ? "비공개" : "공개"}
-                </span>
-                <span className="text-[11px] text-[var(--color-gray-400,#999999)]">
-                  부모 댓글 설정을 따릅니다
-                </span>
-              </div>
+            {/* 답글의 공개/비공개는 부모 댓글을 따른다 (handleReplySubmit에서 처리) */}
+            <div className="flex items-center justify-end">
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
