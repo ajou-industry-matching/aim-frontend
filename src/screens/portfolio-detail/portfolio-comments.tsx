@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import type { CommentResponse, CommentVisibility } from "@/api/comments";
 import { useAuthReady } from "@/lib/auth";
 import { usePortfolioComments } from "@/lib/comments";
@@ -71,7 +70,6 @@ const countComments = (comments: CommentResponse[]): number =>
 // ----------------------------------------------------------------------
 
 export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
-  const router = useRouter();
   const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
   const { comments, isLoading, error, create, update, remove } = usePortfolioComments(
     postId,
@@ -414,12 +412,9 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
           </form>
         ) : (
           <div className="rounded-lg border border-[var(--color-gray-200,#e5e5e5)] p-6 text-center">
-            <p className="mb-3 text-[14px] text-[var(--color-gray-600,#666666)]">
+            <p className="text-[14px] text-[var(--color-gray-600,#666666)]">
               로그인 후 댓글을 작성할 수 있어요.
             </p>
-            <Button variant="primary" size="medium" onClick={() => router.push("/login")}>
-              로그인
-            </Button>
           </div>
         ))}
 
