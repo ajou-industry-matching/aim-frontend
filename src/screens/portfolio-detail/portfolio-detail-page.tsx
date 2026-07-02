@@ -263,13 +263,17 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
               )}
             </div>
 
-            {/* 첨부파일 */}
+            {/* 첨부파일 (이미지 + 파일 첨부 모두 표시) */}
             <section ref={filesRef} className="flex flex-col gap-5 pt-[60px]">
               <h2 className={sectionTitleClasses}>첨부파일</h2>
-              <PortfolioAttachments files={detail.files} />
+              <PortfolioAttachments
+                attachments={[...detail.images, ...detail.files].sort(
+                  (a, b) => a.displayOrder - b.displayOrder,
+                )}
+              />
             </section>
 
-            {/* 댓글 (백엔드 API 미구현 — 목업 데이터로 UI만 구성) */}
+            {/* 댓글 */}
             <section ref={commentsRef} className="pt-[60px]">
               <PortfolioComments postId={detail.postId} />
             </section>
