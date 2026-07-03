@@ -50,10 +50,10 @@ export const PortfolioAttachments = ({ attachments }: PortfolioAttachmentsProps)
               </span>
             </div>
           </div>
-          {/* download 속성은 동일 출처에서 강제 다운로드. Firebase 등 교차 출처면 새 탭 열람으로 폴백 */}
+          {/* 첨부는 대부분 Firebase(교차 출처) URL이라 download 속성이 무시된다.
+              → 강제 다운로드는 백엔드 Content-Disposition 필요. 여기선 새 탭 열람으로 통일 */}
           <a
             href={attachment.filePath}
-            download={attachment.originalFilename}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${attachment.originalFilename} 다운로드`}
