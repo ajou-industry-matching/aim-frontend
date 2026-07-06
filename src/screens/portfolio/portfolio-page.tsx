@@ -49,18 +49,14 @@ export const PortfolioListPage = () => {
   const [result, setResult] = useState<PortfolioFetchResult | null>(null);
 
   const queryKey = toPortfolioQueryKey(query);
-  const isUnauthorizedSession = isAuthReady && !isAuthenticated;
   const hasMatchingResult = result?.queryKey === queryKey;
-  const isLoading = !isAuthReady || (!isUnauthorizedSession && !hasMatchingResult);
+  // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
+  const isLoading = !isAuthReady || !hasMatchingResult;
   const data = hasMatchingResult ? result.data : undefined;
-  const error = isUnauthorizedSession
-    ? "로그인이 필요합니다. 로그인 후 다시 시도해주세요."
-    : hasMatchingResult
-      ? (result.error ?? null)
-      : null;
+  const error = hasMatchingResult ? (result.error ?? null) : null;
 
   useEffect(() => {
-    if (!isAuthReady || !isAuthenticated) return;
+    if (!isAuthReady) return;
 
     let isCancelled = false;
     const pageable = {

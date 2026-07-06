@@ -47,8 +47,11 @@ const getHeaderClasses = (className?: string) => {
 };
 
 // 2. NavLink Styles
+// h-full을 주면 링크가 헤더(80px) 전체 높이로 늘어나 hover/active 밑줄(border-b-2)이
+// 텍스트가 아니라 헤더 맨 아래에 붙어 위치가 틀어진다. 콘텐츠 높이(py-[10px])로 두고
+// 상위 <nav>의 items-center로 세로 중앙 정렬한다. (design-guide app-header 기준)
 const navLinkBaseClasses =
-  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-900,#1a1a1a)] transition-all duration-200 border-b-2 h-full font-medium";
+  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-900,#1a1a1a)] transition-colors duration-200 border-b-2 font-medium";
 
 const navLinkStatusClasses = {
   active: "border-[var(--color-primary-800,#004a9c)]",

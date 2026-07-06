@@ -71,7 +71,7 @@ export const PortfolioList = ({ portfolios, isLoading, error, hasKeyword }: Port
         <Card
           key={item.postId}
           variant="post"
-          href={`/portfolio/${item.postId}`}
+          href={`/portfolio/detail?id=${item.postId}&type=${item.boardType}`}
           thumbnail={item.thumbnailImage ?? undefined}
           tags={toCardTags(item)}
           title={item.title}
