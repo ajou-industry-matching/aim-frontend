@@ -42,6 +42,7 @@ export const useUpdatePortfolio = (): UseUpdatePortfolioResult => {
       try {
         return await updatePortfolio(boardType, postId, request, files);
       } catch (cause) {
+        console.error("포트폴리오 수정에 실패했습니다.", cause);
         setError(toErrorInstance(cause));
         return null;
       } finally {

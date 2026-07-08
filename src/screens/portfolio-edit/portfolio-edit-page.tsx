@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getPortfolioDetail, type PortfolioBoardType, type PortfolioDetail } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
 import { useUpdatePortfolio } from "@/lib/posts";
-import { useCurrentUser } from "@/lib/user";
+import { useCurrentUserId } from "@/lib/user";
 import {
   PortfolioForm,
   type PortfolioFormInitialValues,
@@ -30,10 +30,16 @@ const toInitialValues = (detail: PortfolioDetail): PortfolioFormInitialValues =>
   keywordIds: detail.keywords.map((keyword) => keyword.keywordId),
 });
 
-const getErrorMessage = (cause: unknown): string => {
-  if (cause instanceof Error && cause.message) return cause.message;
-  return "포트폴리오를 불러오지 못했습니다.";
+const LOAD_ERROR_MESSAGE = "포트폴리오를 불러오지 못했습니다.";
+
+type EditFetchResult = {
+  fetchKey: string;
+  detail?: PortfolioDetail;
+  error?: string;
 };
+
+const toEditFetchKey = (boardType: PortfolioBoardType, postId: number): string =>
+  `${boardType}|${postId}`;
 
 const CenteredMain = ({ children }: { children: React.ReactNode }) => (
   <main className="min-h-screen bg-white">
@@ -44,11 +50,16 @@ const CenteredMain = ({ children }: { children: React.ReactNode }) => (
 export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps) => {
   const router = useRouter();
   const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
-  const { profile, isResolved: isProfileResolved } = useCurrentUser();
+  const { userId: currentUserId, isResolved: isProfileResolved } = useCurrentUserId();
   const { submit, isSubmitting, error: submitError } = useUpdatePortfolio();
 
-  const [detail, setDetail] = useState<PortfolioDetail | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [result, setResult] = useState<EditFetchResult | null>(null);
+
+  // 현재 파라미터와 일치하는 조회 결과만 사용한다(edit?id=1 → id=2 이동 시 이전 글 노출/제출 방지).
+  const fetchKey = toEditFetchKey(boardType, postId);
+  const hasMatchingResult = result?.fetchKey === fetchKey;
+  const detail = hasMatchingResult ? result.detail : undefined;
+  const loadError = hasMatchingResult ? (result.error ?? null) : null;
 
   // 미인증 사용자는 로그인 페이지로 보낸다(수정은 로그인 필수).
   useEffect(() => {
@@ -65,17 +76,18 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
     getPortfolioDetail(boardType, postId)
       .then((response) => {
         if (isCancelled) return;
-        setDetail(response);
+        setResult({ fetchKey, detail: response });
       })
       .catch((cause: unknown) => {
         if (isCancelled) return;
-        setLoadError(getErrorMessage(cause));
+        console.error(LOAD_ERROR_MESSAGE, cause);
+        setResult({ fetchKey, error: LOAD_ERROR_MESSAGE });
       });
 
     return () => {
       isCancelled = true;
     };
-  }, [isAuthReady, isAuthenticated, boardType, postId]);
+  }, [isAuthReady, isAuthenticated, boardType, postId, fetchKey]);
 
   const handleSubmit = async ({
     fields,
@@ -133,7 +145,7 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
     );
   }
 
-  const isOwner = profile != null && profile.userId === detail.userId;
+  const isOwner = currentUserId != null && currentUserId === detail.userId;
   if (!isOwner) {
     return (
       <CenteredMain>
@@ -158,6 +170,7 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
 
   return (
     <PortfolioForm
+      key={fetchKey}
       heading="포트폴리오 수정"
       headingDescription="프로젝트 내용을 최신 상태로 업데이트하세요"
       submitLabel="수정하기"

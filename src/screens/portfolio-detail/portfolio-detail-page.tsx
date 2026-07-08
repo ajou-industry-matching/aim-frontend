@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { useRouter } from "next/navigation";
 import { getPortfolioDetail, type PortfolioBoardType, type PortfolioDetail } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
-import { useCurrentUser } from "@/lib/user";
+import { useCurrentUserId } from "@/lib/user";
 import { Button } from "@/shared/ui/button/button";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { RichEditor } from "@/shared/ui/rich-editor";
@@ -61,7 +61,7 @@ const toDetailFetchKey = (boardType: PortfolioBoardType, postId: number): string
 export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPageProps) => {
   const router = useRouter();
   const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
-  const { profile } = useCurrentUser();
+  const { userId: currentUserId } = useCurrentUserId();
   const [result, setResult] = useState<DetailFetchResult | null>(null);
 
   const fetchKey = toDetailFetchKey(boardType, postId);
@@ -142,7 +142,7 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
 
     if (!detail) return null;
 
-    const isOwner = profile != null && profile.userId === detail.userId;
+    const isOwner = currentUserId != null && currentUserId === detail.userId;
 
     return (
       <>

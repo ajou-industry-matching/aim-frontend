@@ -126,6 +126,8 @@ export const PortfolioForm = ({
   const [githubLink, setGithubLink] = useState(initialValues.githubLink);
   const [keywordIds, setKeywordIds] = useState<number[]>(initialValues.keywordIds);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
+  // 편집 모드에서 기존 썸네일을 제거(비움)했는지. true면 existingThumbnailUrl 폴백을 막는다.
+  const [isThumbnailRemoved, setIsThumbnailRemoved] = useState(false);
   const [images, setImages] = useState<File[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [removedAttachmentIds, setRemovedAttachmentIds] = useState<number[]>([]);
@@ -147,7 +149,10 @@ export const PortfolioForm = ({
     return () => imagePreviews.forEach((url) => URL.revokeObjectURL(url));
   }, [imagePreviews]);
 
-  const thumbnailPreview = newThumbnailPreview ?? existingThumbnailUrl;
+  // 새 썸네일 > (제거됨 ? 없음 : 기존 썸네일)
+  const thumbnailPreview =
+    newThumbnailPreview ?? (isThumbnailRemoved ? null : existingThumbnailUrl);
+  const hasThumbnail = thumbnail != null || (existingThumbnailUrl != null && !isThumbnailRemoved);
 
   const visibleExistingImages = existingImages.filter(
     (attachment) => !removedAttachmentIds.includes(attachment.attachmentId),
@@ -197,7 +202,7 @@ export const PortfolioForm = ({
       errors.keywords = "태그를 1개 이상 선택해주세요.";
     }
 
-    if (!thumbnail && !existingThumbnailUrl) {
+    if (!hasThumbnail) {
       errors.thumbnail = "썸네일 이미지를 등록해주세요.";
     }
 
@@ -331,8 +336,18 @@ export const PortfolioForm = ({
             <FormLabel required>썸네일 이미지</FormLabel>
             <ThumbnailUploader
               previewUrl={thumbnailPreview ?? undefined}
-              onUpload={(file) => setThumbnail(file)}
-              onRemove={() => setThumbnail(null)}
+              onUpload={(file) => {
+                setThumbnail(file);
+                setIsThumbnailRemoved(false);
+              }}
+              onRemove={() => {
+                // 새로 고른 파일이 있으면 그것만 취소(기존으로 복귀), 없으면 기존 썸네일을 비운다.
+                if (thumbnail) {
+                  setThumbnail(null);
+                } else {
+                  setIsThumbnailRemoved(true);
+                }
+              }}
             />
             {fieldErrors.thumbnail && <FormErrorMessage>{fieldErrors.thumbnail}</FormErrorMessage>}
           </FormField>
@@ -462,7 +477,9 @@ export const PortfolioForm = ({
 
         {/* 제출 */}
         <div className="flex flex-col gap-3 border-t border-[var(--color-gray-200,#e5e5e5)] pt-6">
-          {submitError && <FormErrorMessage>{submitError.message}</FormErrorMessage>}
+          {submitError && (
+            <FormErrorMessage>저장에 실패했습니다. 잠시 후 다시 시도해주세요.</FormErrorMessage>
+          )}
           <div className="flex justify-end gap-4">
             <Button variant="secondary" size="large" onClick={onCancel} disabled={isSubmitting}>
               취소

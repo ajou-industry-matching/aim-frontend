@@ -1,1 +1,1 @@
-export { useCurrentUser, type UseCurrentUserResult } from "./use-current-user";
+export { useCurrentUserId, type UseCurrentUserIdResult } from "./use-current-user-id";

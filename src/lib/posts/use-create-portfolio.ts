@@ -40,6 +40,7 @@ export const useCreatePortfolio = (): UseCreatePortfolioResult => {
       try {
         return await createPortfolio(boardType, request, files);
       } catch (cause) {
+        console.error("포트폴리오 저장에 실패했습니다.", cause);
         setError(toErrorInstance(cause));
         return null;
       } finally {
