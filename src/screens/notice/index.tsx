@@ -39,7 +39,6 @@ export function NoticeScreen({ notices, currentPage, totalPages }: NoticeScreenP
     viewCount: notice.viewCount,
   }));
 
-  // 2. 페이지 클릭 시 URL을 이동시키는 핸들러
   const handlePageChange = (page: number) => {
     router.push(`/notice?page=${page}`);
   };
@@ -61,7 +60,6 @@ export function NoticeScreen({ notices, currentPage, totalPages }: NoticeScreenP
         </div>
 
         <div className="mt-12 flex items-center justify-center">
-          {/* 3. 전달받은 데이터와 생성한 이벤트를 Pagination 컴포넌트에 바인딩합니다. */}
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

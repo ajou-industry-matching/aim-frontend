@@ -10,17 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default async function NoticeRoute({ searchParams }: { searchParams: { page?: string } }) {
-  // URL에서 page 번호를 가져옵니다. 값이 없거나 이상하면 무조건 1페이지로 처리합니다.
   const currentPage = Number(searchParams.page) || 1;
 
-  // API 호출 시 (아직 백엔드 페이징이 안 되어 있더라도) 형식상 페이지 번호를 넘깁니다.
-  const noticesData = await getNotices();
+  const { notices, totalPages } = await getNotices(currentPage);
 
-  // 더미 총 페이지 수
-  const dummyTotalPages = 9;
-
-  return (
-    // Props를 모두 전달
-    <NoticeScreen notices={noticesData} currentPage={currentPage} totalPages={dummyTotalPages} />
-  );
+  return <NoticeScreen notices={notices} currentPage={currentPage} totalPages={totalPages} />;
 }

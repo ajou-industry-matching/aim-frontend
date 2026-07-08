@@ -1,13 +1,10 @@
 // src/app/notice/[id]/page.tsx
-import { NoticeDetailScreen } from "@/screens/notice-detail";
-import { getNotices } from "@/api/notice";
 import { notFound } from "next/navigation";
+import { NoticeDetailScreen } from "@/screens/notice-detail";
+import { getNoticeById, getNotices } from "@/api/notice";
 
-// [추가된 부분] 빌드 시점에 어떤 id 경로들을 정적 HTML로 생성할지 정의합니다.
 export async function generateStaticParams() {
-  const notices = await getNotices();
-
-  // postId를 문자열로 변환하여 { id: '1' } 형태의 배열로 반환해야 합니다.
+  const { notices } = await getNotices(1, 100);
   return notices.map((notice) => ({
     id: notice.postId.toString(),
   }));
@@ -17,8 +14,13 @@ export default async function NoticeDetailRoute({ params }: { params: Promise<{ 
   const resolvedParams = await params;
   const noticeId = Number(resolvedParams.id);
 
-  const notices = await getNotices();
-  const noticeData = notices.find((notice) => notice.postId === noticeId);
+  let noticeData;
+
+  try {
+    noticeData = await getNoticeById(noticeId);
+  } catch {
+    // 통신 에러
+  }
 
   if (!noticeData) {
     notFound();
