@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { storageAsset } from "@/shared/config/storage-asset";
 import { AppLayout } from "./app-layout";
 import "./globals.css";
 
@@ -9,12 +10,12 @@ export const metadata: Metadata = {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
       {
-        url: `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/public%2Fassets%2Faim-logo.svg?alt=media`,
+        url: storageAsset("aim-logo.svg"),
         type: "image/svg+xml",
       },
     ],
     shortcut: "/favicon.ico",
-    apple: `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/public%2Fassets%2Faim-logo.svg?alt=media`,
+    apple: storageAsset("aim-logo.svg"),
   },
 };
 

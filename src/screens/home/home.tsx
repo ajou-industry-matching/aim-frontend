@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useAuthReady, useAuthUser } from "@/lib/auth";
 import { Card } from "@/shared/ui/card";
+import { storageAsset } from "@/shared/config/storage-asset";
 import { Navigation } from "@/shared/ui";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import type { NavItem } from "@/shared/ui";
@@ -19,9 +20,6 @@ const navItems: NavItem[] = [
   { label: "공지사항", href: "#notice" },
 ];
 
-const STORAGE_ASSET = (name: string) =>
-  `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/public%2Fassets%2F${name}?alt=media`;
-
 const HERO_CARDS = [
   {
     badge: "PORTFOLIO",
@@ -29,7 +27,7 @@ const HERO_CARDS = [
     subtitle: "AJOU Portfolio Service",
     description: "수업, 프로젝트, 비교과 활동까지 아주대 학생의 모든 성과를 하나로 관리합니다.",
     bg: "bg-[#1e3a8a]",
-    icon: STORAGE_ASSET("hero-card-2.webp"),
+    icon: storageAsset("hero-card-2.webp"),
   },
   {
     badge: "FEATURE",
@@ -37,7 +35,7 @@ const HERO_CARDS = [
     subtitle: "성과 중심 포트폴리오 관리",
     description: "활동을 입력하면 역할과 기여도가 정리되어 읽기 쉬운 포트폴리오로 구성됩니다.",
     bg: "bg-[#4f46e5]",
-    icon: STORAGE_ASSET("hero-card-1.webp"),
+    icon: storageAsset("hero-card-1.webp"),
   },
   {
     badge: "FOR ACADEMIC",
@@ -45,7 +43,7 @@ const HERO_CARDS = [
     subtitle: "제출·검토·공유를 위한 포트폴리오",
     description: "과제 제출, 추천, 채용 활용까지 목적에 맞게 포트폴리오를 공유하세요.",
     bg: "bg-[#334155]",
-    icon: STORAGE_ASSET("hero-card-3.webp"),
+    icon: storageAsset("hero-card-3.webp"),
   },
   {
     badge: "FOR CAREER",
@@ -53,7 +51,7 @@ const HERO_CARDS = [
     subtitle: "대외 제출용 포트폴리오",
     description: "인턴십, 공모전, 채용 지원 시 신뢰도 있는 포트폴리오로 활용할 수 있습니다.",
     bg: "bg-[#2563eb]",
-    icon: STORAGE_ASSET("hero-card-4.webp"),
+    icon: storageAsset("hero-card-4.webp"),
   },
 ];
 
@@ -349,7 +347,7 @@ export const HomePage: React.FC = () => {
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <img
-                src="/assets/ajou-logo.svg"
+                src={storageAsset("ajou-logo.svg")}
                 alt="Ajou University"
                 className="h-10 w-10 object-contain"
               />

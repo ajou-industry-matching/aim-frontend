@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut, useAuthSession } from "@/lib/auth";
+import { storageAsset } from "@/shared/config/storage-asset";
 import { Navigation } from "@/shared/ui";
 import { AdminSidebar } from "@/screens/admin";
 import type { NavItem, NavUser } from "@/shared/ui";
@@ -94,7 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <img
-                src="/assets/ajou-logo.svg"
+                src={storageAsset("ajou-logo.svg")}
                 alt="Ajou University"
                 className="h-10 w-10 object-contain"
               />

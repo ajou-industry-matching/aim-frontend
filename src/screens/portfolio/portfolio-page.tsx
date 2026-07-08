@@ -17,11 +17,7 @@ import { PortfolioSearchBar } from "./portfolio-search-bar";
 import { PortfolioTypeFilter } from "./portfolio-type-filter";
 
 const PORTFOLIO_PAGE_SIZE = 12;
-
-const getErrorMessage = (cause: unknown): string => {
-  if (cause instanceof Error && cause.message) return cause.message;
-  return "포트폴리오를 불러오지 못했습니다.";
-};
+const GENERIC_FETCH_ERROR_MESSAGE = "잠시 후 다시 시도해주세요.";
 
 type PortfolioQuery = {
   page: number;
@@ -87,8 +83,9 @@ export const PortfolioListPage = () => {
         setResult({ queryKey, data: response });
       })
       .catch((cause: unknown) => {
+        console.error("Failed to fetch portfolios", cause);
         if (isCancelled) return;
-        setResult({ queryKey, error: getErrorMessage(cause) });
+        setResult({ queryKey, error: GENERIC_FETCH_ERROR_MESSAGE });
       });
 
     return () => {

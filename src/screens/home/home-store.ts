@@ -4,6 +4,8 @@ import type { Post, BoardType } from "@/api/posts";
 
 export type SectionFilter = "학생 포트폴리오" | "기업 모집공고" | "연구실";
 
+const GENERIC_FETCH_ERROR_MESSAGE = "잠시 후 다시 시도해주세요.";
+
 const FILTER_TO_BOARD: Record<SectionFilter, BoardType> = {
   "학생 포트폴리오": "PORTFOLIO",
   "기업 모집공고": "COMPANY_PROJECT",
@@ -52,11 +54,11 @@ export const useHomeStore = create<HomeState>((set, get) => ({
       if (requestId !== newPostsRequestId) return;
       set({ newPosts: res.content });
     } catch (cause) {
+      console.error("Failed to fetch new posts", cause);
       if (requestId !== newPostsRequestId) return;
       set({
         newPosts: [],
-        newPostsError:
-          cause instanceof Error && cause.message ? cause.message : "게시글을 불러오지 못했습니다.",
+        newPostsError: GENERIC_FETCH_ERROR_MESSAGE,
       });
     } finally {
       if (requestId === newPostsRequestId) {
@@ -74,11 +76,11 @@ export const useHomeStore = create<HomeState>((set, get) => ({
       if (requestId !== sectionPostsRequestId) return;
       set({ sectionPosts: res.content });
     } catch (cause) {
+      console.error("Failed to fetch section posts", cause);
       if (requestId !== sectionPostsRequestId) return;
       set({
         sectionPosts: [],
-        sectionPostsError:
-          cause instanceof Error && cause.message ? cause.message : "게시글을 불러오지 못했습니다.",
+        sectionPostsError: GENERIC_FETCH_ERROR_MESSAGE,
       });
     } finally {
       if (requestId === sectionPostsRequestId) {
@@ -95,13 +97,11 @@ export const useHomeStore = create<HomeState>((set, get) => ({
       if (requestId !== noticePostsRequestId) return;
       set({ noticePosts: res.content });
     } catch (cause) {
+      console.error("Failed to fetch notice posts", cause);
       if (requestId !== noticePostsRequestId) return;
       set({
         noticePosts: [],
-        noticePostsError:
-          cause instanceof Error && cause.message
-            ? cause.message
-            : "공지사항을 불러오지 못했습니다.",
+        noticePostsError: GENERIC_FETCH_ERROR_MESSAGE,
       });
     } finally {
       if (requestId === noticePostsRequestId) {

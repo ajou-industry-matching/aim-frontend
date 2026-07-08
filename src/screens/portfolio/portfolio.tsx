@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getPosts } from "@/api/posts";
 import type { Post, PostSortType, BoardType } from "@/api/posts";
 import { signOut, useAuthUser } from "@/lib/auth";
+import { storageAsset } from "@/shared/config/storage-asset";
 import { Card } from "@/shared/ui/card";
 import { Pagination, Navigation } from "@/shared/ui";
 import type { NavItem } from "@/shared/ui";
@@ -34,6 +35,7 @@ const SORT_OPTIONS: { label: string; value: PostSortType }[] = [
 ];
 
 const PAGE_SIZE = 12;
+const GENERIC_FETCH_ERROR_MESSAGE = "잠시 후 다시 시도해주세요.";
 
 // --- Helpers ---
 
@@ -83,13 +85,12 @@ const PortfolioPageContent = (): React.ReactElement => {
       setTotalPages(response.totalPages);
       setTotalElements(response.totalElements);
     } catch (cause) {
+      console.error("Failed to fetch portfolio posts", cause);
       if (requestId !== requestIdRef.current) return;
       setPosts([]);
       setTotalPages(1);
       setTotalElements(0);
-      setErrorMessage(
-        cause instanceof Error && cause.message ? cause.message : "게시글을 불러오지 못했습니다.",
-      );
+      setErrorMessage(GENERIC_FETCH_ERROR_MESSAGE);
     } finally {
       if (requestId === requestIdRef.current) {
         setIsLoading(false);
@@ -320,7 +321,7 @@ const PortfolioPageContent = (): React.ReactElement => {
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <img
-                src="/assets/ajou-logo.svg"
+                src={storageAsset("ajou-logo.svg")}
                 alt="Ajou University"
                 className="h-10 w-10 object-contain"
               />

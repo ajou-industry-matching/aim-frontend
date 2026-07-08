@@ -9,6 +9,7 @@ import {
   signUpCompanyWithEmail,
 } from "@/lib/auth";
 import type { BackendUser } from "@/api/auth";
+import { storageAsset } from "@/shared/config/storage-asset";
 import {
   Button,
   Modal,
@@ -30,9 +31,6 @@ const loginTabs: TabItem[] = [
   { id: "student", label: "학생/교수" },
   { id: "company", label: "기업" },
 ];
-
-const STORAGE_ASSET = (name: string) =>
-  `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/public%2Fassets%2F${name}?alt=media`;
 
 const initialCompanySignupValues: CompanySignupValues = {
   companyName: "",
@@ -193,7 +191,7 @@ export const LoginPage = () => {
             <div className="login-page__content flex flex-col items-center">
               <div className="login-page__title mb-8 md:mb-14">
                 <img
-                  src={STORAGE_ASSET("aim-logo.svg")}
+                  src={storageAsset("aim-logo.svg")}
                   alt="AIM AJOU"
                   className="h-10 w-auto object-contain"
                 />
@@ -282,7 +280,7 @@ export const LoginPage = () => {
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <img
-                src="/assets/ajou-logo.svg"
+                src={storageAsset("ajou-logo.svg")}
                 alt="Ajou University"
                 className="h-10 w-10 object-contain"
               />

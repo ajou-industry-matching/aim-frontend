@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { storageAsset } from "@/shared/config/storage-asset";
 import { Button } from "@/shared/ui/button/button";
 import { UserIcon, LogOutIcon } from "@/shared/ui/icons";
 
@@ -164,7 +165,7 @@ export const Navigation = ({
         <Link href={logoHref} className="flex items-center shrink-0">
           <div className="relative h-12 w-12">
             <img
-              src="/assets/aim-ajou-logo_text.svg"
+              src={storageAsset("aim-ajou-logo_text.svg")}
               alt="AIM AJOU"
               className="w-full h-full object-contain"
             />
