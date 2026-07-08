@@ -275,7 +275,7 @@ const PortfolioPageContent = (): React.ReactElement => {
               <Card
                 key={post.postId}
                 variant="post"
-                href={`/portfolio/${post.postId}`}
+                href={`/portfolio/detail?id=${post.postId}&type=${post.boardType}`}
                 thumbnail={post.thumbnailImage}
                 tags={post.keywords}
                 title={post.title}

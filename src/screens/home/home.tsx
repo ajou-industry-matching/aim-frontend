@@ -8,6 +8,7 @@ import { Card } from "@/shared/ui/card";
 import { Navigation } from "@/shared/ui";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import type { NavItem } from "@/shared/ui";
+import type { BoardType } from "@/api/posts";
 import { useHomeStore, type SectionFilter } from "./home-store";
 
 // --- Constants ---
@@ -85,6 +86,7 @@ const PostGrid = ({
 }: {
   posts: {
     postId: number;
+    boardType: BoardType;
     thumbnailImage?: string;
     keywords: string[];
     title: string;
@@ -120,7 +122,7 @@ const PostGrid = ({
         <Card
           key={post.postId}
           variant="post"
-          href={`/portfolio/${post.postId}`}
+          href={`/portfolio/detail?id=${post.postId}&type=${post.boardType}`}
           thumbnail={post.thumbnailImage}
           tags={post.keywords}
           title={post.title}
