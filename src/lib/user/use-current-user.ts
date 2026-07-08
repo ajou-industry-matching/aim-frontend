@@ -14,8 +14,8 @@ export type UseCurrentUserResult = {
 // 세션에는 백엔드 userId가 없어 소유자 판별 등에 필요하다.
 export const useCurrentUser = (): UseCurrentUserResult => {
   const { isReady, isAuthenticated } = useAuthReady();
-  const [profile, setProfile] = useState<MyProfile | null>(null);
-  const [isResolved, setIsResolved] = useState(false);
+  const [fetchedProfile, setFetchedProfile] = useState<MyProfile | null>(null);
+  const [isFetchResolved, setIsFetchResolved] = useState(false);
 
   useEffect(() => {
     if (!isReady || !isAuthenticated) return;
@@ -25,21 +25,26 @@ export const useCurrentUser = (): UseCurrentUserResult => {
     getMyProfile()
       .then((response) => {
         if (isCancelled) return;
-        setProfile(response);
+        setFetchedProfile(response);
       })
       .catch(() => {
         if (isCancelled) return;
-        setProfile(null);
+        setFetchedProfile(null);
       })
       .finally(() => {
         if (isCancelled) return;
-        setIsResolved(true);
+        setIsFetchResolved(true);
       });
 
     return () => {
       isCancelled = true;
     };
   }, [isReady, isAuthenticated]);
+
+  // 로그아웃/미인증 상태에서는 이전 조회 결과를 노출하지 않는다(스테일 데이터 방지).
+  // 미인증은 조회할 프로필이 없으므로 인증 확정(isReady) 시점에 바로 resolved 처리한다.
+  const profile = isReady && isAuthenticated ? fetchedProfile : null;
+  const isResolved = isReady && (!isAuthenticated || isFetchResolved);
 
   return { profile, isResolved };
 };
