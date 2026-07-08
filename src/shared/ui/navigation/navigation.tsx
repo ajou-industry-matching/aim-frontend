@@ -63,6 +63,16 @@ const getNavLinkClasses = (isActive?: boolean) => {
   ].join(" ");
 };
 
+const homeSectionHashes = new Set(["#about", "#notice"]);
+
+const resolveNavItemHref = (href: string): string => {
+  if (homeSectionHashes.has(href)) {
+    return `/home${href}`;
+  }
+
+  return href;
+};
+
 const normalizePathname = (href: string): string => {
   const pathname = href.split(/[?#]/)[0] ?? "/";
 
@@ -82,7 +92,7 @@ const getIsNavItemActive = (item: NavItem, currentPathname?: string): boolean =>
     return Boolean(item.isActive);
   }
 
-  const itemPathname = normalizePathname(item.href);
+  const itemPathname = normalizePathname(resolveNavItemHref(item.href));
 
   if (!itemPathname.startsWith("/")) {
     return Boolean(item.isActive);
@@ -174,15 +184,19 @@ export const Navigation = ({
 
         {/* Navigation Menu */}
         <nav className="flex items-center gap-12 h-full">
-          {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={getNavLinkClasses(getIsNavItemActive(item, currentPathname))}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {items.map((item) => {
+            const href = resolveNavItemHref(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={href}
+                className={getNavLinkClasses(getIsNavItemActive(item, currentPathname))}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right Section: Auth & User Actions */}

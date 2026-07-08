@@ -58,6 +58,9 @@ const HERO_CARDS = [
 ];
 
 const SECTION_FILTERS: SectionFilter[] = ["학생 포트폴리오", "기업 모집공고", "연구실"];
+const POST_GRID_CLASSES = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+const POST_GRID_STATE_MIN_HEIGHT = "min-h-[420px]";
+const HOME_POST_SKELETON_COUNT = 4;
 
 // --- Helpers ---
 
@@ -80,6 +83,33 @@ const SectionHeader = ({ title, href }: { title: string; href?: string }) => (
       </Link>
     )}
   </div>
+);
+
+const PostCardSkeleton = () => (
+  <div
+    className="flex w-full min-w-[280px] max-w-[360px] flex-col animate-pulse"
+    aria-hidden="true"
+  >
+    <div className="aspect-[360/203] w-full rounded-t-xl border border-b-0 border-[color:var(--color-gray-200,#e5e5e5)] bg-[var(--color-gray-100,#f5f5f5)]" />
+    <div className="flex flex-col gap-4 rounded-b-xl border border-[color:var(--color-gray-200,#e5e5e5)] bg-white p-6">
+      <div className="flex gap-2">
+        <div className="h-6 w-18 rounded-xl bg-[var(--color-gray-100,#f5f5f5)]" />
+        <div className="h-6 w-14 rounded-xl bg-[var(--color-gray-100,#f5f5f5)]" />
+      </div>
+      <div className="h-7 w-4/5 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+      <div className="h-5 w-full rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+      <div className="h-4 w-1/2 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+      <div className="flex gap-4">
+        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+      </div>
+    </div>
+  </div>
+);
+
+const PostGridState = ({ children }: { children: React.ReactNode }) => (
+  <div className={`flex ${POST_GRID_STATE_MIN_HEIGHT} items-center justify-center`}>{children}</div>
 );
 
 const PostGrid = ({
@@ -105,22 +135,32 @@ const PostGrid = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="flex min-h-48 items-center justify-center">
-        <Spinner size="large" className="text-(--color-primary-800)" />
+      <div className={POST_GRID_CLASSES} role="status" aria-label="게시글 로딩 중">
+        {Array.from({ length: HOME_POST_SKELETON_COUNT }, (_, index) => (
+          <PostCardSkeleton key={index} />
+        ))}
       </div>
     );
   }
 
   if (error) {
-    return <EmptyState variant="error" title="게시글을 불러오지 못했습니다" description={error} />;
+    return (
+      <PostGridState>
+        <EmptyState variant="error" title="게시글을 불러오지 못했습니다" description={error} />
+      </PostGridState>
+    );
   }
 
   if (posts.length === 0) {
-    return <EmptyState variant="no-content" title="게시글이 없습니다" />;
+    return (
+      <PostGridState>
+        <EmptyState variant="no-content" title="게시글이 없습니다" />
+      </PostGridState>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className={POST_GRID_CLASSES}>
       {posts.map((post) => (
         <Card
           key={post.postId}
