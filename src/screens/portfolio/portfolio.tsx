@@ -7,7 +7,11 @@ import type { Post, PostSortType, BoardType } from "@/api/posts";
 import { signOut, useAuthUser } from "@/lib/auth";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Card } from "@/shared/ui/card";
+import { EmptyState } from "@/shared/ui/empty-states/empty-states";
+import { SearchIcon } from "@/shared/ui/icons";
 import { Pagination, Navigation } from "@/shared/ui";
+import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Tag } from "@/shared/ui/tag";
 import type { NavItem } from "@/shared/ui";
 
 // --- Constants ---
@@ -155,20 +159,7 @@ const PortfolioPageContent = (): React.ReactElement => {
       <div className="bg-[#0f2550] px-6 py-5 md:px-16">
         <div className="mx-auto max-w-360">
           <form onSubmit={handleSearch} className="flex items-center gap-3">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="shrink-0 text-white/60"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            <SearchIcon size={18} className="shrink-0 text-white/60" />
             <input
               type="text"
               placeholder="포트폴리오를 검색해보세요"
@@ -202,26 +193,7 @@ const PortfolioPageContent = (): React.ReactElement => {
         {/* 선택된 키워드 칩 */}
         {keyword && (
           <div className="mb-4 flex flex-wrap gap-2">
-            <span className="flex items-center gap-1 rounded-full border border-(--color-primary-800) bg-(--color-primary-50) px-3 py-1 text-[13px] font-medium text-(--color-primary-800)">
-              {keyword}
-              <button
-                onClick={handleKeywordRemove}
-                className="ml-1 flex h-4 w-4 items-center justify-center rounded-full hover:bg-(--color-primary-800) hover:text-white transition-colors"
-              >
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </span>
+            <Tag onRemove={handleKeywordRemove}>{keyword}</Tag>
           </div>
         )}
 
@@ -258,18 +230,22 @@ const PortfolioPageContent = (): React.ReactElement => {
         {/* 포스트 그리드 */}
         {isLoading ? (
           <div className="flex min-h-100 items-center justify-center">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-(--color-primary-800)" />
+            <Spinner size="large" />
           </div>
         ) : errorMessage ? (
-          <div className="flex min-h-100 flex-col items-center justify-center gap-2 text-gray-500">
-            <p className="text-[18px] font-semibold">게시글을 불러오지 못했습니다.</p>
-            <p className="text-[14px]">{errorMessage}</p>
-          </div>
+          <EmptyState
+            variant="error"
+            title="게시글을 불러오지 못했습니다."
+            description={errorMessage}
+            className="min-h-100"
+          />
         ) : posts.length === 0 ? (
-          <div className="flex min-h-100 flex-col items-center justify-center gap-2 text-gray-500">
-            <p className="text-[18px] font-semibold">게시글이 없습니다.</p>
-            <p className="text-[14px]">다른 검색어를 시도해보세요.</p>
-          </div>
+          <EmptyState
+            variant="no-results"
+            title="게시글이 없습니다."
+            description="다른 검색어를 시도해보세요."
+            className="min-h-100"
+          />
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {posts.map((post) => (

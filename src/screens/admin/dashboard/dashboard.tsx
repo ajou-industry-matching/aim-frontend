@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 
 type StatCard = {
@@ -86,7 +87,7 @@ export const AdminDashboardPage = () => {
       {/* Stats Grid */}
       <div className="mt-8 grid grid-cols-3 gap-6">
         {STAT_CARDS.map((card) => (
-          <div key={card.label} className="rounded-lg border border-[#e5e5e5] bg-white p-6">
+          <Card key={card.label} variant="simple" className="border-[#e5e5e5] p-6 shadow-none">
             <p className="text-[14px] leading-[1.43] tracking-[-0.35px] text-[#666]">
               {card.label}
             </p>
@@ -98,7 +99,7 @@ export const AdminDashboardPage = () => {
                 {card.icon}
               </div>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
@@ -117,14 +118,14 @@ export const AdminDashboardPage = () => {
               전체보기 &gt;
             </Link>
           </div>
-          <div className="rounded-lg border border-[#e5e5e5] bg-white p-6">
+          <Card variant="simple" className="border-[#e5e5e5] p-6 shadow-none">
             <EmptyState
               variant="coming-soon"
               title="최근 가입한 사용자 데이터가 없습니다"
               description="백엔드 연동 준비 중입니다"
               className="min-h-[220px] py-8"
             />
-          </div>
+          </Card>
         </section>
 
         {/* 최근 공지사항 */}
@@ -140,14 +141,14 @@ export const AdminDashboardPage = () => {
               전체보기 &gt;
             </Link>
           </div>
-          <div className="rounded-lg border border-[#e5e5e5] bg-white p-6">
+          <Card variant="simple" className="border-[#e5e5e5] p-6 shadow-none">
             <EmptyState
               variant="coming-soon"
               title="최근 공지사항 데이터가 없습니다"
               description="백엔드 연동 준비 중입니다"
               className="min-h-[220px] py-8"
             />
-          </div>
+          </Card>
         </section>
       </div>
     </div>

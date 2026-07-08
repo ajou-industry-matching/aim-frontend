@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 
+import { Button, Pagination } from "@/shared/ui";
+import { PlusIcon, SearchIcon } from "@/shared/ui/icons";
+
 type Notice = {
   id: number;
   title: string;
@@ -17,38 +20,6 @@ const MOCK_NOTICES: Notice[] = Array.from({ length: 5 }, (_, i) => ({
   createdAt: "2025.01.20",
   views: 123,
 }));
-
-const PlusIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="12" y1="5" x2="12" y2="19" />
-    <line x1="5" y1="12" x2="19" y2="12" />
-  </svg>
-);
-
-const SearchIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
 
 const PAGE_SIZE = 5;
 
@@ -74,16 +45,15 @@ export const AdminNoticesPage = () => {
           <h1 className="text-[32px] font-bold text-[#111]">공지사항 관리</h1>
           <p className="mt-1 text-[16px] text-[#666]">공지사항을 작성하고 관리할 수 있습니다.</p>
         </div>
-        <button className="flex h-10 items-center gap-2 rounded-lg bg-[#004a9c] px-4 py-2.5 text-[14px] font-medium leading-[1.43] tracking-[-0.35px] text-white transition-colors hover:bg-[#003d8a]">
-          <PlusIcon />
+        <Button icon={<PlusIcon size={16} />} iconPosition="left">
           공지사항 작성
-        </button>
+        </Button>
       </div>
 
       {/* Search */}
       <div className="mb-4 flex items-center gap-2 rounded-md border border-[#e5e5e5] px-3 h-10 max-w-sm">
         <span className="shrink-0 text-[#999]">
-          <SearchIcon />
+          <SearchIcon size={16} />
         </span>
         <input
           type="text"
@@ -144,22 +114,12 @@ export const AdminNoticesPage = () => {
       </div>
 
       {/* Pagination */}
-      <div className="mt-6 flex items-center justify-center gap-1">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-          <button
-            key={p}
-            onClick={() => setPage(p)}
-            className={[
-              "flex h-8 w-8 items-center justify-center rounded-md text-[14px] font-medium transition-colors",
-              currentPage === p
-                ? "bg-[#004a9c] text-white"
-                : "text-[#666] hover:bg-[#004a9c]/5 hover:text-[#004a9c]",
-            ].join(" ")}
-          >
-            {p}
-          </button>
-        ))}
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        className="mt-6 justify-center"
+      />
     </div>
   );
 };

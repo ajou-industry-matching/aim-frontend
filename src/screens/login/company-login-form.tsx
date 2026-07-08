@@ -1,5 +1,4 @@
-import { Button } from "@/shared/ui/button/button";
-import { Input } from "@/shared/ui/input";
+import { Button, Input } from "@/shared/ui";
 import { AtSignIcon, BuildingIcon, LockIcon, MailIcon, UserIcon } from "@/shared/ui/icons";
 
 export type CompanyAuthMode = "login" | "signup";

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { signOut, useAuthSession } from "@/lib/auth";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Navigation } from "@/shared/ui";
+import { Spinner } from "@/shared/ui/spinner/spinner";
 import { AdminSidebar } from "@/screens/admin";
 import type { NavItem, NavUser } from "@/shared/ui";
 import type { BackendUser } from "@/api/auth";
@@ -56,11 +57,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!isAuthReady || !isAuthorizedAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div
-          className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-(--color-primary-800)"
-          role="status"
-          aria-label="관리자 권한 확인 중"
-        />
+        <span role="status" aria-label="관리자 권한 확인 중">
+          <Spinner size="large" className="text-(--color-primary-800)" />
+        </span>
       </div>
     );
   }
