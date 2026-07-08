@@ -8,10 +8,13 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/assets/aim-logo.svg", type: "image/svg+xml" },
+      {
+        url: `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/public%2Fassets%2Faim-logo.svg?alt=media`,
+        type: "image/svg+xml",
+      },
     ],
     shortcut: "/favicon.ico",
-    apple: "/assets/aim-logo.svg",
+    apple: `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/public%2Fassets%2Faim-logo.svg?alt=media`,
   },
 };
 

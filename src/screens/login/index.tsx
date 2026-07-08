@@ -31,6 +31,9 @@ const loginTabs: TabItem[] = [
   { id: "company", label: "기업" },
 ];
 
+const STORAGE_ASSET = (name: string) =>
+  `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/public%2Fassets%2F${name}?alt=media`;
+
 const initialCompanySignupValues: CompanySignupValues = {
   companyName: "",
   name: "",
@@ -190,7 +193,7 @@ export const LoginPage = () => {
             <div className="login-page__content flex flex-col items-center">
               <div className="login-page__title mb-8 md:mb-14">
                 <img
-                  src="/assets/aim-logo.svg"
+                  src={STORAGE_ASSET("aim-logo.svg")}
                   alt="AIM AJOU"
                   className="h-10 w-auto object-contain"
                 />
