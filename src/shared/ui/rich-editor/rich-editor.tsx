@@ -103,9 +103,13 @@ const slashCommandItems: SlashCommandItem[] = [
     searchTerms: ["image", "img", "이미지", "사진"],
     icon: <ImageIcon size={18} />,
     command: ({ editor, range }) => {
-      const url = promptForImageUrl();
-      if (!url) return;
-      editor.chain().focus().deleteRange(range).setImage({ src: url }).run();
+      // URL 입력이 아니라 파일을 첨부해 이미지를 삽입한다.
+      editor.chain().focus().deleteRange(range).run();
+      void pickImageFile().then((dataUrl) => {
+        if (dataUrl) {
+          editor.chain().focus().setImage({ src: dataUrl }).run();
+        }
+      });
     },
   },
 ];
@@ -124,11 +128,32 @@ const isSafeImageUrl = (raw: string): boolean => {
   }
 };
 
-const promptForImageUrl = (): string | null => {
-  if (typeof window === "undefined" || typeof window.prompt !== "function") return null;
-  const input = window.prompt("이미지 URL을 입력하세요:");
-  if (input === null) return null;
-  return isSafeImageUrl(input) ? input.trim() : null;
+// 파일 첨부로 선택한 이미지를 data URL(base64)로 읽어 반환한다.
+const pickImageFile = (): Promise<string | null> => {
+  return new Promise((resolve) => {
+    if (typeof document === "undefined") {
+      resolve(null);
+      return;
+    }
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) {
+        resolve(null);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = typeof reader.result === "string" ? reader.result : null;
+        resolve(result && isSafeImageUrl(result) ? result : null);
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  });
 };
 
 type MenuState = {
