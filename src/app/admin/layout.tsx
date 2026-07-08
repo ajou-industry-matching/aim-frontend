@@ -2,25 +2,19 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signOut, useAuthSession } from "@/lib/auth";
+import { signOut, toNavUser, useAuthSession } from "@/lib/auth";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Navigation } from "@/shared/ui";
 import { Spinner } from "@/shared/ui/spinner/spinner";
 import { AdminSidebar } from "@/screens/admin";
-import type { NavItem, NavUser } from "@/shared/ui";
+import type { NavItem } from "@/shared/ui";
 import type { BackendUser } from "@/api/auth";
 
 const navItems: NavItem[] = [
   { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "/home#about" },
-  { label: "공지사항", href: "/home#notice" },
+  { label: "소개", href: "/about" },
+  { label: "공지사항", href: "/notice" },
 ];
-
-const authRoleLabels: Record<BackendUser["role"], NavUser["userType"]> = {
-  STUDENT: "학생",
-  PROFESSOR: "교수",
-  COMPANY: "기업",
-};
 
 const isAdminRole = (adminRole: BackendUser["adminRole"]): boolean =>
   adminRole === "ADMIN" || adminRole === "SUPER_ADMIN";
@@ -29,14 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const { session, isAuthReady } = useAuthSession();
   const isAuthorizedAdmin = Boolean(session && isAdminRole(session.adminRole));
-  const authUser: NavUser | undefined = session
-    ? {
-        name: session.name ?? session.email ?? "사용자",
-        email: session.email,
-        userType: authRoleLabels[session.role],
-        isAdmin: isAdminRole(session.adminRole),
-      }
-    : undefined;
+  const authUser = toNavUser(session) ?? undefined;
 
   useEffect(() => {
     if (!isAuthReady) return;
@@ -66,13 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
-      <Navigation
-        items={navItems}
-        user={authUser}
-        onLogin={() => router.push("/login")}
-        onSignup={() => router.push("/login")}
-        onLogout={() => void handleLogout()}
-      />
+      <Navigation items={navItems} user={authUser} onLogout={() => void handleLogout()} />
       <div className="mx-auto flex min-h-[calc(100vh-80px)] w-full max-w-360 border-x border-neutral-200 bg-neutral-50">
         <AdminSidebar />
         <main className="flex flex-1 overflow-auto">{children}</main>

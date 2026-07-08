@@ -11,8 +11,8 @@ type AppLayoutProps = Readonly<{
 
 const navigationItems: NavItem[] = [
   { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "/home#about" },
-  { label: "공지사항", href: "/home#notice" },
+  { label: "소개", href: "/about" },
+  { label: "공지사항", href: "/notice" },
 ];
 
 const headerlessRoutes = new Set(["/"]);

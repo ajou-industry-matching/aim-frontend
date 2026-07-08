@@ -18,8 +18,8 @@ import { useHomeStore, type SectionFilter } from "./home-store";
 
 const navItems: NavItem[] = [
   { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "#about" },
-  { label: "공지사항", href: "#notice" },
+  { label: "소개", href: "/about" },
+  { label: "공지사항", href: "/notice" },
 ];
 
 const HERO_CARDS = [
@@ -190,22 +190,20 @@ export const HomePage: React.FC = () => {
   const authUser = useAuthUser();
   const { isReady: isAuthReady } = useAuthReady();
   const searchRef = useRef<HTMLInputElement>(null);
-  const {
-    newPosts,
-    sectionPosts,
-    noticePosts,
-    sectionFilter,
-    isLoadingNew,
-    isLoadingSection,
-    isLoadingNotice,
-    newPostsError,
-    sectionPostsError,
-    noticePostsError,
-    fetchNewPosts,
-    fetchSectionPosts,
-    fetchNoticePosts,
-    setSectionFilter,
-  } = useHomeStore();
+  const newPosts = useHomeStore((state) => state.newPosts);
+  const sectionPosts = useHomeStore((state) => state.sectionPosts);
+  const noticePosts = useHomeStore((state) => state.noticePosts);
+  const sectionFilter = useHomeStore((state) => state.sectionFilter);
+  const isLoadingNew = useHomeStore((state) => state.isLoadingNew);
+  const isLoadingSection = useHomeStore((state) => state.isLoadingSection);
+  const isLoadingNotice = useHomeStore((state) => state.isLoadingNotice);
+  const newPostsError = useHomeStore((state) => state.newPostsError);
+  const sectionPostsError = useHomeStore((state) => state.sectionPostsError);
+  const noticePostsError = useHomeStore((state) => state.noticePostsError);
+  const fetchNewPosts = useHomeStore((state) => state.fetchNewPosts);
+  const fetchSectionPosts = useHomeStore((state) => state.fetchSectionPosts);
+  const fetchNoticePosts = useHomeStore((state) => state.fetchNoticePosts);
+  const setSectionFilter = useHomeStore((state) => state.setSectionFilter);
 
   useEffect(() => {
     void fetchNewPosts();
