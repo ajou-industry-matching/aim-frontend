@@ -12,10 +12,6 @@ const FILTER_TO_BOARD: Record<SectionFilter, BoardType> = {
   연구실: "LAB_INTERN",
 };
 
-let newPostsRequestId = 0;
-let sectionPostsRequestId = 0;
-let noticePostsRequestId = 0;
-
 interface HomeState {
   newPosts: Post[];
   sectionPosts: Post[];
@@ -34,84 +30,106 @@ interface HomeState {
   setSectionFilter: (filter: SectionFilter) => void;
 }
 
-export const useHomeStore = create<HomeState>((set, get) => ({
-  newPosts: [],
-  sectionPosts: [],
-  noticePosts: [],
-  sectionFilter: "학생 포트폴리오",
-  isLoadingNew: true,
-  isLoadingSection: true,
-  isLoadingNotice: true,
-  newPostsError: null,
-  sectionPostsError: null,
-  noticePostsError: null,
+type PostsKey = "newPosts" | "sectionPosts" | "noticePosts";
+type LoadingKey = "isLoadingNew" | "isLoadingSection" | "isLoadingNotice";
+type ErrorKey = "newPostsError" | "sectionPostsError" | "noticePostsError";
 
-  fetchNewPosts: async () => {
-    const requestId = ++newPostsRequestId;
-    set({ isLoadingNew: true, newPostsError: null });
+interface LatestPostsRequest {
+  boardType: BoardType;
+  pageSize: number;
+  postsKey: PostsKey;
+  loadingKey: LoadingKey;
+  errorKey: ErrorKey;
+  errorMessage: string;
+}
+
+const createLatestPostsFetcher = (set: (state: Partial<HomeState>) => void) => {
+  let latestRequestId = 0;
+
+  return async ({
+    boardType,
+    pageSize,
+    postsKey,
+    loadingKey,
+    errorKey,
+    errorMessage,
+  }: LatestPostsRequest) => {
+    const requestId = ++latestRequestId;
+    set({ [loadingKey]: true, [errorKey]: null } as Partial<HomeState>);
     try {
-      const res = await getPosts("PORTFOLIO", { sort: "LATEST", size: 4, page: 0 });
-      if (requestId !== newPostsRequestId) return;
-      set({ newPosts: res.content });
+      const res = await getPosts(boardType, { sort: "LATEST", size: pageSize, page: 0 });
+      if (requestId !== latestRequestId) return;
+      set({ [postsKey]: res.content } as Partial<HomeState>);
     } catch (cause) {
-      console.error("Failed to fetch new posts", cause);
-      if (requestId !== newPostsRequestId) return;
+      console.error(errorMessage, cause);
+      if (requestId !== latestRequestId) return;
       set({
-        newPosts: [],
-        newPostsError: GENERIC_FETCH_ERROR_MESSAGE,
-      });
+        [postsKey]: [],
+        [errorKey]: GENERIC_FETCH_ERROR_MESSAGE,
+      } as Partial<HomeState>);
     } finally {
-      if (requestId === newPostsRequestId) {
-        set({ isLoadingNew: false });
+      if (requestId === latestRequestId) {
+        set({ [loadingKey]: false } as Partial<HomeState>);
       }
     }
-  },
+  };
+};
 
-  fetchSectionPosts: async (filter?: SectionFilter) => {
-    const active = filter ?? get().sectionFilter;
-    const requestId = ++sectionPostsRequestId;
-    set({ isLoadingSection: true, sectionPostsError: null });
-    try {
-      const res = await getPosts(FILTER_TO_BOARD[active], { sort: "LATEST", size: 12, page: 0 });
-      if (requestId !== sectionPostsRequestId) return;
-      set({ sectionPosts: res.content });
-    } catch (cause) {
-      console.error("Failed to fetch section posts", cause);
-      if (requestId !== sectionPostsRequestId) return;
-      set({
-        sectionPosts: [],
-        sectionPostsError: GENERIC_FETCH_ERROR_MESSAGE,
+export const useHomeStore = create<HomeState>((set, get) => {
+  const fetchNewPosts = createLatestPostsFetcher(set);
+  const fetchSectionPosts = createLatestPostsFetcher(set);
+  const fetchNoticePosts = createLatestPostsFetcher(set);
+
+  return {
+    newPosts: [],
+    sectionPosts: [],
+    noticePosts: [],
+    sectionFilter: "학생 포트폴리오",
+    isLoadingNew: true,
+    isLoadingSection: true,
+    isLoadingNotice: true,
+    newPostsError: null,
+    sectionPostsError: null,
+    noticePostsError: null,
+
+    fetchNewPosts: async () => {
+      await fetchNewPosts({
+        boardType: "PORTFOLIO",
+        pageSize: 4,
+        postsKey: "newPosts",
+        loadingKey: "isLoadingNew",
+        errorKey: "newPostsError",
+        errorMessage: "Failed to fetch new posts",
       });
-    } finally {
-      if (requestId === sectionPostsRequestId) {
-        set({ isLoadingSection: false });
-      }
-    }
-  },
+    },
 
-  fetchNoticePosts: async () => {
-    const requestId = ++noticePostsRequestId;
-    set({ isLoadingNotice: true, noticePostsError: null });
-    try {
-      const res = await getPosts("NOTICE", { sort: "LATEST", size: 4, page: 0 });
-      if (requestId !== noticePostsRequestId) return;
-      set({ noticePosts: res.content });
-    } catch (cause) {
-      console.error("Failed to fetch notice posts", cause);
-      if (requestId !== noticePostsRequestId) return;
-      set({
-        noticePosts: [],
-        noticePostsError: GENERIC_FETCH_ERROR_MESSAGE,
+    fetchSectionPosts: async (filter?: SectionFilter) => {
+      const active = filter ?? get().sectionFilter;
+      await fetchSectionPosts({
+        boardType: FILTER_TO_BOARD[active],
+        pageSize: 12,
+        postsKey: "sectionPosts",
+        loadingKey: "isLoadingSection",
+        errorKey: "sectionPostsError",
+        errorMessage: "Failed to fetch section posts",
       });
-    } finally {
-      if (requestId === noticePostsRequestId) {
-        set({ isLoadingNotice: false });
-      }
-    }
-  },
+    },
 
-  setSectionFilter: (filter: SectionFilter) => {
-    set({ sectionFilter: filter });
-    void get().fetchSectionPosts(filter);
-  },
-}));
+    fetchNoticePosts: async () => {
+      await fetchNoticePosts({
+        boardType: "NOTICE",
+        pageSize: 4,
+        postsKey: "noticePosts",
+        loadingKey: "isLoadingNotice",
+        errorKey: "noticePostsError",
+        errorMessage: "Failed to fetch notice posts",
+      });
+    },
+
+    setSectionFilter: (filter: SectionFilter) => {
+      if (get().sectionFilter === filter) return;
+      set({ sectionFilter: filter });
+      void get().fetchSectionPosts(filter);
+    },
+  };
+});

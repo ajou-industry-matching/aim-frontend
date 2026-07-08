@@ -2,6 +2,7 @@ import { backendJson } from "@/api/client";
 import {
   buildPortfolioPageableParams,
   getPortfolioList,
+  PORTFOLIO_BOARD_TYPES_ALL,
   searchPortfolios,
   type PortfolioBoardType,
   type PortfolioKeyword,
@@ -48,19 +49,25 @@ export type GetPostsParams = {
   keyword?: string;
 };
 
-type RawKeyword = { keywordId?: number; keywordName?: string } | string;
+type RawPostKeyword = {
+  keywordId: number;
+  keywordName: string;
+};
 
-const portfolioBoardTypes: ReadonlySet<BoardType> = new Set([
-  "PORTFOLIO",
-  "LAB_INTERN",
-  "COMPANY_PROJECT",
-]);
+type RawPost = Omit<Post, "keywords"> & {
+  keywords?: RawPostKeyword[] | null;
+};
+
+type RawPostListResponse = Omit<PostListResponse, "content"> & {
+  content: RawPost[];
+};
+
+const portfolioBoardTypes: ReadonlySet<BoardType> = new Set(PORTFOLIO_BOARD_TYPES_ALL);
 
 const isPortfolioBoardType = (boardType: BoardType): boardType is PortfolioBoardType =>
   portfolioBoardTypes.has(boardType);
 
-const normalizeKeyword = (k: RawKeyword): string =>
-  typeof k === "string" ? k : (k.keywordName ?? "");
+const normalizeKeyword = (keyword: RawPostKeyword): string => keyword.keywordName;
 
 const mapPortfolioItemToPost = (item: PortfolioListItem): Post => ({
   ...item,
@@ -80,11 +87,11 @@ const mapPortfolioResponseToPosts = (res: {
   content: res.content.map(mapPortfolioItemToPost),
 });
 
-const normalizePosts = (res: PostListResponse): PostListResponse => ({
+const normalizePosts = (res: RawPostListResponse): PostListResponse => ({
   ...res,
   content: res.content.map((post) => ({
     ...post,
-    keywords: ((post.keywords as unknown as RawKeyword[]) ?? []).map(normalizeKeyword),
+    keywords: (post.keywords ?? []).map(normalizeKeyword),
   })),
 });
 
@@ -117,7 +124,7 @@ export const getPosts = async (
     ? `/api/posts/search?boardType=${boardType}${query ? `&${query}` : ""}`
     : `/api/posts/${boardType}${query ? `?${query}` : ""}`;
 
-  const res = await backendJson<PostListResponse>(path, {
+  const res = await backendJson<RawPostListResponse>(path, {
     requiresAuth: false,
   });
   return normalizePosts(res);
