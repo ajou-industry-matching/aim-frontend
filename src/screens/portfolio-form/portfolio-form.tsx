@@ -59,7 +59,14 @@ export type PortfolioFormProps = {
   existingFiles?: PortfolioAttachment[];
 };
 
-type FieldName = "title" | "description" | "content" | "thumbnail" | "videoLink" | "githubLink";
+type FieldName =
+  | "title"
+  | "description"
+  | "content"
+  | "keywords"
+  | "thumbnail"
+  | "videoLink"
+  | "githubLink";
 type FieldErrors = Partial<Record<FieldName, string>>;
 
 const DEFAULT_INITIAL_VALUES: PortfolioFormInitialValues = {
@@ -186,6 +193,10 @@ export const PortfolioForm = ({
       errors.content = "프로젝트 상세 설명을 입력해주세요.";
     }
 
+    if (keywordIds.length === 0) {
+      errors.keywords = "태그를 1개 이상 선택해주세요.";
+    }
+
     if (!thumbnail && !existingThumbnailUrl) {
       errors.thumbnail = "썸네일 이미지를 등록해주세요.";
     }
@@ -272,7 +283,7 @@ export const PortfolioForm = ({
           </FormField>
 
           <FormField>
-            <FormLabel>태그</FormLabel>
+            <FormLabel required>태그</FormLabel>
             <Select
               key={tagSelectKey}
               placeholder="태그를 선택하세요"
@@ -291,6 +302,7 @@ export const PortfolioForm = ({
                 ))}
               </div>
             )}
+            {fieldErrors.keywords && <FormErrorMessage>{fieldErrors.keywords}</FormErrorMessage>}
           </FormField>
         </section>
 
