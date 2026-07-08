@@ -163,13 +163,14 @@ type MenuState = {
   selectedIndex: number;
 };
 
-const getContainerClasses = (className: string): string => {
-  const baseClasses = "w-full border border-[var(--border-default,#cccccc)] rounded-lg bg-white";
-  return [baseClasses, className].filter(Boolean).join(" ");
+const getContainerClasses = (isEditable: boolean, className: string): string => {
+  // 편집 모드에서만 입력 박스(테두리/배경)를 보여주고, 읽기 전용은 콘텐츠만 표시한다.
+  const editableBoxClasses = "border border-[var(--border-default,#cccccc)] rounded-lg bg-white";
+  return ["w-full", isEditable ? editableBoxClasses : "", className].filter(Boolean).join(" ");
 };
 
-const editorContentClasses = [
-  "w-full min-h-[240px] px-4 py-3",
+const editorContentBaseClasses = [
+  "w-full",
   "[&_.ProseMirror]:outline-none",
   "[&_.ProseMirror_h1]:text-[2rem] [&_.ProseMirror_h1]:font-bold [&_.ProseMirror_h1]:leading-tight [&_.ProseMirror_h1]:mb-3 [&_.ProseMirror_h1]:mt-4",
   "[&_.ProseMirror_h2]:text-[1.5rem] [&_.ProseMirror_h2]:font-semibold [&_.ProseMirror_h2]:leading-snug [&_.ProseMirror_h2]:mb-2 [&_.ProseMirror_h2]:mt-4",
@@ -190,6 +191,10 @@ const editorContentClasses = [
   "[&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none",
   "[&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0",
 ].join(" ");
+
+// 편집 모드에서만 입력 영역 여백/최소 높이를 준다. 읽기 전용은 콘텐츠만 노출한다.
+const getEditorContentClasses = (isEditable: boolean): string =>
+  [editorContentBaseClasses, isEditable ? "min-h-[240px] px-4 py-3" : ""].filter(Boolean).join(" ");
 
 export const RichEditor = ({
   content = "",
@@ -308,8 +313,8 @@ export const RichEditor = ({
   }, [editor, isEditable]);
 
   return (
-    <div className={getContainerClasses(className)}>
-      <EditorContent editor={editor} className={editorContentClasses} />
+    <div className={getContainerClasses(isEditable, className)}>
+      <EditorContent editor={editor} className={getEditorContentClasses(isEditable)} />
       {isEditable && menuState && (
         <SlashCommandMenu
           items={menuState.items}
