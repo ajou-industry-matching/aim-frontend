@@ -16,7 +16,7 @@ const navigationItems: NavItem[] = [
 ];
 
 const headerlessRoutes = new Set(["/"]);
-const routeOwnedNavigationPrefixes = ["/home", "/admin"];
+const routeOwnedNavigationPrefixes = ["/home"];
 
 export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
   const router = useRouter();

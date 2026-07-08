@@ -1,1 +1,0 @@
-export { AdminNoticesPage } from "./notices";

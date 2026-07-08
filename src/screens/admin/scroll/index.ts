@@ -1,1 +1,0 @@
-export { AdminScrollPage } from "./scroll";
