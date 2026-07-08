@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { useRouter } from "next/navigation";
 import { getPortfolioDetail, type PortfolioBoardType, type PortfolioDetail } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
+import { useCurrentUser } from "@/lib/user";
 import { Button } from "@/shared/ui/button/button";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { RichEditor } from "@/shared/ui/rich-editor";
@@ -60,6 +61,7 @@ const toDetailFetchKey = (boardType: PortfolioBoardType, postId: number): string
 export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPageProps) => {
   const router = useRouter();
   const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
+  const { profile } = useCurrentUser();
   const [result, setResult] = useState<DetailFetchResult | null>(null);
 
   const fetchKey = toDetailFetchKey(boardType, postId);
@@ -140,13 +142,26 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
 
     if (!detail) return null;
 
+    const isOwner = profile != null && profile.userId === detail.userId;
+
     return (
       <>
         {/* 헤더: 좋아요 + 썸네일/상세 정보 */}
         <div className="mx-auto max-w-[1440px] px-6 py-20">
           <div className="flex flex-col gap-10">
-            {/* 좋아요 */}
-            <div className="flex justify-end">
+            {/* 편집(작성자 전용) + 좋아요 */}
+            <div className="flex items-center justify-end gap-3">
+              {isOwner && (
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() =>
+                    router.push(`/portfolio/edit?id=${detail.postId}&type=${detail.boardType}`)
+                  }
+                >
+                  편집
+                </Button>
+              )}
               <PortfolioLikeButton
                 postId={detail.postId}
                 initialLiked={Boolean(detail.liked)}
