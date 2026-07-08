@@ -42,7 +42,7 @@ const toPortfolioQueryKey = ({ page, sort, keyword, selectedTypes }: PortfolioQu
 export const PortfolioListPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isReady: isAuthReady } = useAuthReady();
+  const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
   const urlKeyword = searchParams.get("keyword") ?? "";
   const [query, setQuery] = useState<PortfolioQuery>({
     page: 1,
@@ -54,6 +54,7 @@ export const PortfolioListPage = () => {
 
   const queryKey = toPortfolioQueryKey(query);
   const hasMatchingResult = result?.queryKey === queryKey;
+  // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
   const isLoading = !isAuthReady || !hasMatchingResult;
   const data = hasMatchingResult ? result.data : undefined;
   const error = hasMatchingResult ? (result.error ?? null) : null;
@@ -93,7 +94,7 @@ export const PortfolioListPage = () => {
     return () => {
       isCancelled = true;
     };
-  }, [isAuthReady, queryKey]);
+  }, [isAuthReady, isAuthenticated, queryKey]);
 
   const handleSearchSubmit = (nextKeyword: string) => {
     const keyword = nextKeyword.trim();

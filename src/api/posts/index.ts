@@ -22,3 +22,9 @@ export {
   type PostSortType,
 } from "./posts-api";
 export { togglePostLike, type PostLikeToggleResponse } from "./post-like-api";
+export {
+  getPortfolioDetail,
+  type PortfolioAttachment,
+  type PortfolioAttachmentType,
+  type PortfolioDetail,
+} from "./portfolio-detail-api";
