@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
 import "../../../index.css";
 import { Card } from "./card";
-import storyDefaultImage from "@/shared/assets/images/test_img.jpg";
+import { storageAsset } from "@/shared/config/storage-asset";
 
 const meta = {
   title: "Shared/UI/Card",
@@ -33,7 +33,7 @@ type Story = StoryObj<typeof meta>;
 export const PostCard: Story = {
   args: {
     variant: "post",
-    thumbnail: storyDefaultImage,
+    thumbnail: storageAsset("test_img.jpg"),
     tags: ["React", "Next.js", "TypeScript"],
     title: "React Server Components 이해하기",
     description:
@@ -60,7 +60,7 @@ export const PostCardWithHref: Story = {
 export const ProfileCard: Story = {
   args: {
     variant: "profile",
-    avatar: storyDefaultImage,
+    avatar: storageAsset("test_img.jpg"),
     name: "김철수",
     role: "프론트엔드 개발자",
     stats: {
@@ -90,7 +90,7 @@ export const SimpleCard: Story = {
 export const FeaturedCard: Story = {
   args: {
     variant: "featured",
-    image: storyDefaultImage,
+    image: storageAsset("test_img.jpg"),
     badge: "NEW",
     title: "프리미엄 기능 출시",
     description:

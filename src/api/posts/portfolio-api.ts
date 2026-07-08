@@ -64,7 +64,7 @@ const portfolioSortComparators: Record<
   VIEWS: (a, b) => b.viewCount - a.viewCount,
 };
 
-const buildPortfolioPageableParams = ({
+export const buildPortfolioPageableParams = ({
   page = 0,
   size = PORTFOLIO_DEFAULT_PAGE_SIZE,
   sort = "LATEST",

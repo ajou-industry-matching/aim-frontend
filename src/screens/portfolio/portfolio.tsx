@@ -1,0 +1,390 @@
+"use client";
+
+import React, { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getPosts } from "@/api/posts";
+import type { Post, PostSortType, BoardType } from "@/api/posts";
+import { signOut, useAuthUser } from "@/lib/auth";
+import { storageAsset } from "@/shared/config/storage-asset";
+import { Card } from "@/shared/ui/card";
+import { EmptyState } from "@/shared/ui/empty-states/empty-states";
+import { SearchIcon } from "@/shared/ui/icons";
+import { Pagination, Navigation } from "@/shared/ui";
+import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Tag } from "@/shared/ui/tag";
+import type { NavItem } from "@/shared/ui";
+
+// --- Constants ---
+
+const navItems: NavItem[] = [
+  { label: "포트폴리오", href: "/portfolio", isActive: true },
+  { label: "소개", href: "#about" },
+  { label: "공지사항", href: "#notice" },
+];
+
+type CategoryFilter = "개인" | "기업" | "연구실";
+
+const CATEGORY_FILTERS: CategoryFilter[] = ["개인", "기업", "연구실"];
+
+const CATEGORY_TO_BOARD: Record<CategoryFilter, BoardType> = {
+  개인: "PORTFOLIO",
+  기업: "COMPANY_PROJECT",
+  연구실: "LAB_INTERN",
+};
+
+const SORT_OPTIONS: { label: string; value: PostSortType }[] = [
+  { label: "최신순", value: "LATEST" },
+  { label: "인기순", value: "POPULAR" },
+  { label: "조회순", value: "VIEWS" },
+];
+
+const PAGE_SIZE = 12;
+const GENERIC_FETCH_ERROR_MESSAGE = "잠시 후 다시 시도해주세요.";
+
+// --- Helpers ---
+
+const formatDate = (isoString: string): string => {
+  const date = new Date(isoString);
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+};
+
+// --- Component ---
+
+const PortfolioPageContent = (): React.ReactElement => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const authUser = useAuthUser();
+  const requestIdRef = useRef(0);
+  const urlKeyword = searchParams.get("keyword") ?? "";
+
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState<PostSortType>("LATEST");
+  const [searchInput, setSearchInput] = useState(() => searchParams.get("keyword") ?? "");
+  const [keyword, setKeyword] = useState(() => searchParams.get("keyword") ?? "");
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("개인");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleLogout = async () => {
+    await signOut();
+    router.replace("/login");
+  };
+
+  const fetchPosts = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const response = await getPosts(CATEGORY_TO_BOARD[categoryFilter], {
+        page: currentPage - 1,
+        size: PAGE_SIZE,
+        sort,
+        keyword: keyword || undefined,
+      });
+      if (requestId !== requestIdRef.current) return;
+      setPosts(response.content);
+      setTotalPages(response.totalPages);
+      setTotalElements(response.totalElements);
+    } catch (cause) {
+      console.error("Failed to fetch portfolio posts", cause);
+      if (requestId !== requestIdRef.current) return;
+      setPosts([]);
+      setTotalPages(1);
+      setTotalElements(0);
+      setErrorMessage(GENERIC_FETCH_ERROR_MESSAGE);
+    } finally {
+      if (requestId === requestIdRef.current) {
+        setIsLoading(false);
+      }
+    }
+  }, [currentPage, sort, keyword, categoryFilter]);
+
+  useEffect(() => {
+    setKeyword(urlKeyword);
+    setSearchInput(urlKeyword);
+    setCurrentPage(1);
+  }, [urlKeyword]);
+
+  useEffect(() => {
+    void fetchPosts();
+  }, [fetchPosts]);
+
+  useEffect(() => {
+    return () => {
+      requestIdRef.current += 1;
+    };
+  }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    setKeyword(searchInput.trim());
+  };
+
+  const handleKeywordRemove = () => {
+    setKeyword("");
+    setSearchInput("");
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (cat: CategoryFilter) => {
+    setCategoryFilter(cat);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (value: PostSortType) => {
+    setSort(value);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-white text-gray-900">
+      <Navigation
+        items={navItems}
+        user={authUser ?? undefined}
+        onLogin={() => router.push("/login")}
+        onSignup={() => router.push("/login")}
+        onLogout={() => void handleLogout()}
+      />
+
+      {/* 검색 바 */}
+      <div className="bg-[#0f2550] px-6 py-5 md:px-16">
+        <div className="mx-auto max-w-360">
+          <form onSubmit={handleSearch} className="flex items-center gap-3">
+            <SearchIcon size={18} className="shrink-0 text-white/60" />
+            <input
+              type="text"
+              placeholder="포트폴리오를 검색해보세요"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="flex-1 bg-transparent text-[15px] text-white placeholder-white/50 outline-none"
+            />
+          </form>
+        </div>
+      </div>
+
+      <main className="mx-auto w-full max-w-360 px-6 py-8 md:px-16">
+        {/* 카테고리 필터 */}
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          {CATEGORY_FILTERS.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => handleCategoryChange(cat)}
+              className={[
+                "rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all",
+                categoryFilter === cat
+                  ? "bg-(--color-primary-800) text-white"
+                  : "border border-gray-200 bg-white text-gray-600 hover:border-(--color-primary-800) hover:text-(--color-primary-800)",
+              ].join(" ")}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* 선택된 키워드 칩 */}
+        {keyword && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            <Tag onRemove={handleKeywordRemove}>{keyword}</Tag>
+          </div>
+        )}
+
+        {/* 헤더 + 정렬 */}
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h1 className="text-[20px] font-bold tracking-[-0.5px] text-gray-900">
+              포트폴리오 탐색
+            </h1>
+            {!isLoading && (
+              <span className="text-[14px] text-gray-500">
+                총 {totalElements.toLocaleString()}개
+              </span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            {SORT_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handleSortChange(opt.value)}
+                className={[
+                  "rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all",
+                  sort === opt.value
+                    ? "bg-(--color-primary-800) text-white"
+                    : "border border-gray-200 bg-white text-gray-600 hover:border-(--color-primary-800) hover:text-(--color-primary-800)",
+                ].join(" ")}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 포스트 그리드 */}
+        {isLoading ? (
+          <div className="flex min-h-100 items-center justify-center">
+            <Spinner size="large" />
+          </div>
+        ) : errorMessage ? (
+          <EmptyState
+            variant="error"
+            title="게시글을 불러오지 못했습니다."
+            description={errorMessage}
+            className="min-h-100"
+          />
+        ) : posts.length === 0 ? (
+          <EmptyState
+            variant="no-results"
+            title="게시글이 없습니다."
+            description="다른 검색어를 시도해보세요."
+            className="min-h-100"
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {posts.map((post) => (
+              <Card
+                key={post.postId}
+                variant="post"
+                href={`/portfolio/detail?id=${post.postId}&type=${post.boardType}`}
+                thumbnail={post.thumbnailImage}
+                tags={post.keywords}
+                title={post.title}
+                description={post.description}
+                author={{ name: `사용자 ${post.userId}` }}
+                date={formatDate(post.createdAt)}
+                stats={{
+                  likes: post.likeCount,
+                  comments: post.commentCount,
+                  views: post.viewCount,
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* 페이지네이션 */}
+        {!isLoading && totalPages > 1 && (
+          <div className="mt-12 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
+      </main>
+
+      <footer className="mt-auto border-t border-gray-200 bg-white px-6 py-10 md:px-16">
+        <div className="mx-auto max-w-360">
+          <div className="mb-6 flex justify-center gap-6 text-[13px] text-gray-500">
+            <a href="/terms" className="transition-colors hover:text-gray-900">
+              이용약관
+            </a>
+            <a href="/privacy" className="transition-colors hover:text-gray-900">
+              개인정보처리방침
+            </a>
+            <a href="/sitemap" className="transition-colors hover:text-gray-900">
+              사이트맵
+            </a>
+          </div>
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-3">
+              <img
+                src={storageAsset("ajou-logo.svg")}
+                alt="Ajou University"
+                className="h-10 w-10 object-contain"
+              />
+              <div>
+                <p className="text-[14px] font-bold text-gray-900">아주대학교</p>
+                <p className="text-[11px] text-gray-400">AJOU University</p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-1 text-[12px] text-gray-500 md:text-center">
+              <p>16499 경기도 수원시 영통구 월드컵로 206 아주대학교</p>
+              <p>T. 031-219-2114</p>
+              <p>Copyright © 2026 Ajou University. All Rights Reserved.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-colors hover:border-(--color-primary-800) hover:text-(--color-primary-800)"
+                aria-label="인스타그램"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </a>
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-colors hover:border-(--color-primary-800) hover:text-(--color-primary-800)"
+                aria-label="페이스북"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                </svg>
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-colors hover:border-(--color-primary-800) hover:text-(--color-primary-800)"
+                aria-label="유튜브"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
+                  <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export const PortfolioPage = (): React.ReactElement => (
+  <Suspense fallback={null}>
+    <PortfolioPageContent />
+  </Suspense>
+);

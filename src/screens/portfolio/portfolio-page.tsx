@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   getPortfolioList,
   searchPortfolios,
@@ -16,16 +17,11 @@ import { PortfolioSearchBar } from "./portfolio-search-bar";
 import { PortfolioTypeFilter } from "./portfolio-type-filter";
 
 const PORTFOLIO_PAGE_SIZE = 12;
-
-const getErrorMessage = (cause: unknown): string => {
-  if (cause instanceof Error && cause.message) return cause.message;
-  return "포트폴리오를 불러오지 못했습니다.";
-};
+const GENERIC_FETCH_ERROR_MESSAGE = "잠시 후 다시 시도해주세요.";
 
 type PortfolioQuery = {
   page: number;
   sort: PortfolioSort;
-  keyword: string;
   selectedTypes: PortfolioBoardType[];
 };
 
@@ -35,20 +31,27 @@ type PortfolioFetchResult = {
   error?: string;
 };
 
-const toPortfolioQueryKey = ({ page, sort, keyword, selectedTypes }: PortfolioQuery): string =>
-  `${page}|${sort}|${keyword}|${[...selectedTypes].sort().join(",")}`;
+const toPortfolioQueryKey = (
+  { page, sort, selectedTypes }: PortfolioQuery,
+  keyword: string,
+): string => `${page}|${sort}|${keyword}|${[...selectedTypes].sort().join(",")}`;
 
 export const PortfolioListPage = () => {
-  const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { isReady: isAuthReady } = useAuthReady();
+  const urlKeyword = searchParams.get("keyword") ?? "";
+  const keyword = urlKeyword.trim();
+  const lastKeywordRef = useRef(keyword);
   const [query, setQuery] = useState<PortfolioQuery>({
     page: 1,
     sort: "LATEST",
-    keyword: "",
     selectedTypes: [],
   });
   const [result, setResult] = useState<PortfolioFetchResult | null>(null);
 
-  const queryKey = toPortfolioQueryKey(query);
+  const effectiveQuery = lastKeywordRef.current === keyword ? query : { ...query, page: 1 };
+  const queryKey = toPortfolioQueryKey(effectiveQuery, keyword);
   const hasMatchingResult = result?.queryKey === queryKey;
   // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
   const isLoading = !isAuthReady || !hasMatchingResult;
@@ -56,17 +59,22 @@ export const PortfolioListPage = () => {
   const error = hasMatchingResult ? (result.error ?? null) : null;
 
   useEffect(() => {
+    lastKeywordRef.current = keyword;
+    setQuery((previous) => (previous.page === 1 ? previous : { ...previous, page: 1 }));
+  }, [keyword]);
+
+  useEffect(() => {
     if (!isAuthReady) return;
 
     let isCancelled = false;
     const pageable = {
-      page: query.page - 1,
+      page: effectiveQuery.page - 1,
       size: PORTFOLIO_PAGE_SIZE,
-      sort: query.sort,
-      boardTypes: query.selectedTypes,
+      sort: effectiveQuery.sort,
+      boardTypes: effectiveQuery.selectedTypes,
     };
-    const request = query.keyword
-      ? searchPortfolios({ ...pageable, keyword: query.keyword })
+    const request = keyword
+      ? searchPortfolios({ ...pageable, keyword })
       : getPortfolioList(pageable);
 
     request
@@ -75,17 +83,33 @@ export const PortfolioListPage = () => {
         setResult({ queryKey, data: response });
       })
       .catch((cause: unknown) => {
+        console.error("Failed to fetch portfolios", cause);
         if (isCancelled) return;
-        setResult({ queryKey, error: getErrorMessage(cause) });
+        setResult({ queryKey, error: GENERIC_FETCH_ERROR_MESSAGE });
       });
 
     return () => {
       isCancelled = true;
     };
-  }, [isAuthReady, isAuthenticated, queryKey]);
+  }, [isAuthReady, queryKey]);
 
   const handleSearchSubmit = (nextKeyword: string) => {
-    setQuery((previous) => ({ ...previous, keyword: nextKeyword, page: 1 }));
+    const keyword = nextKeyword.trim();
+    const nextParams = new URLSearchParams(searchParams.toString());
+
+    if (keyword) {
+      nextParams.set("keyword", keyword);
+    } else {
+      nextParams.delete("keyword");
+    }
+
+    const nextQueryString = nextParams.toString();
+    const nextHref = nextQueryString ? `/portfolio?${nextQueryString}` : "/portfolio";
+
+    if (keyword === urlKeyword) {
+      setQuery((previous) => ({ ...previous, page: 1 }));
+    }
+    router.push(nextHref);
   };
 
   const handleSortChange = (nextSort: PortfolioSort) => {
@@ -112,7 +136,7 @@ export const PortfolioListPage = () => {
     <main className="min-h-screen bg-white">
       <div className="mx-auto max-w-[1440px] px-4 py-16">
         <div className="mb-8">
-          <PortfolioSearchBar initialKeyword={query.keyword} onSubmit={handleSearchSubmit} />
+          <PortfolioSearchBar initialKeyword={keyword} onSubmit={handleSearchSubmit} />
         </div>
 
         <div className="mb-8">
@@ -124,14 +148,14 @@ export const PortfolioListPage = () => {
             totalCount={totalElements}
             sort={query.sort}
             onSortChange={handleSortChange}
-            keyword={query.keyword}
+            keyword={keyword}
           />
 
           <PortfolioList
             portfolios={data?.content ?? []}
             isLoading={isLoading}
             error={error}
-            hasKeyword={Boolean(query.keyword)}
+            hasKeyword={Boolean(keyword)}
           />
 
           {!isLoading && !error && totalPages > 1 && (

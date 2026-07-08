@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { storageAsset } from "@/shared/config/storage-asset";
 
 // --- Types ---
 export type FooterLink = {
@@ -62,7 +63,7 @@ export const Footer = ({
             {/* Ajou Logo */}
             <div className="relative shrink-0 h-15 w-58">
               <Image
-                src="/assets/ajou-logo-text.svg"
+                src={storageAsset("ajou-logo-text.svg")}
                 alt="Ajou University Logo"
                 fill
                 className="object-contain"

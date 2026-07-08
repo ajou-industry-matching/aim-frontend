@@ -9,8 +9,10 @@ import {
   signUpCompanyWithEmail,
 } from "@/lib/auth";
 import type { BackendUser } from "@/api/auth";
+import { storageAsset } from "@/shared/config/storage-asset";
 import {
   Button,
+  Footer,
   Modal,
   ModalContent,
   ModalFooter,
@@ -98,7 +100,7 @@ export const LoginPage = () => {
 
     try {
       await signInWithGoogle();
-      router.replace("/home");
+      router.replace("/portfolio");
     } catch (error) {
       console.error("[auth] Google login failed", error);
       showErrorModal(getAuthErrorMessage(error));
@@ -183,18 +185,22 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="login-page flex min-h-[calc(100vh-80px)] flex-col bg-white text-[var(--color-gray-900)]">
+    <div className="login-page flex min-h-screen flex-col bg-white text-(--color-gray-900)">
       <main className="login-page__main flex flex-1 justify-center px-2 pb-5 pt-[10vh] md:px-8 md:pb-10 md:pt-[8vh]">
         <div className="flex w-full justify-center">
-          <section className="login-page__surface w-full rounded-[24px] bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_100%)] py-0">
+          <section className="login-page__surface w-full rounded-3xl bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_100%)] py-0">
             <div className="login-page__content flex flex-col items-center">
-              <h1 className="login-page__title mb-8 text-center text-[36px] font-bold leading-[1.3] tracking-[-1px] text-black md:mb-14 md:text-[40px]">
-                AIM AJOU
-              </h1>
+              <div className="login-page__title mb-8 md:mb-14">
+                <img
+                  src={storageAsset("aim-logo.svg")}
+                  alt="AIM AJOU"
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
 
               <div
                 className={[
-                  "login-page__card w-full max-w-[720px] overflow-hidden rounded-[12px] border border-[var(--color-gray-200)] bg-white md:min-h-[300px]",
+                  "login-page__card w-full max-w-180 overflow-hidden rounded-xl border border-gray-200 bg-white md:min-h-75",
                   isStudent
                     ? "shadow-[0_8px_24px_rgba(15,23,42,0.06)]"
                     : "shadow-[0_0_4px_4px_rgba(0,74,156,0.25)]",
@@ -214,11 +220,11 @@ export const LoginPage = () => {
                   />
                 </div>
 
-                <div className="login-page__body px-4 pb-8 pt-7 md:px-6 md:pb-[40px] md:pt-7">
+                <div className="login-page__body px-4 pb-8 pt-7 md:px-6 md:pb-10 md:pt-7">
                   <div
                     key={`${activeTab}-${companyMode}`}
                     className={[
-                      "login-page__panel mx-auto flex w-full flex-col md:max-w-[672px]",
+                      "login-page__panel mx-auto flex w-full flex-col md:max-w-2xl",
                       styles.panelAnimated,
                       isStudent ? "items-center text-center" : "gap-2 text-left",
                     ].join(" ")}
@@ -246,7 +252,7 @@ export const LoginPage = () => {
                     {statusMessage && (
                       <p
                         role="status"
-                        className="mt-4 text-center text-[14px] font-medium leading-5 text-[var(--color-primary-800)]"
+                        className="mt-4 text-center text-[14px] font-medium leading-5 text-(--color-primary-800)"
                       >
                         {statusMessage}
                       </p>
@@ -259,6 +265,11 @@ export const LoginPage = () => {
         </div>
       </main>
 
+      <Footer
+        copyright="Copyright © 2026 Ajou University. All Rights Reserved."
+        className="mt-auto px-6 md:px-16"
+      />
+
       <Modal
         isOpen={errorModal !== null}
         onClose={() => setErrorModal(null)}
@@ -266,9 +277,7 @@ export const LoginPage = () => {
       >
         <ModalHeader title={errorModal?.title ?? "오류"} onClose={() => setErrorModal(null)} />
         <ModalContent>
-          <p className="text-[15px] font-medium leading-6 text-[var(--color-gray-700)]">
-            {errorModal?.message}
-          </p>
+          <p className="text-[15px] font-medium leading-6 text-gray-700">{errorModal?.message}</p>
         </ModalContent>
         <ModalFooter>
           <Button

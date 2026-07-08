@@ -1,4 +1,5 @@
 export {
+  buildPortfolioPageableParams,
   getPortfolioList,
   PORTFOLIO_BOARD_TYPES_ALL,
   searchPortfolios,
@@ -12,6 +13,14 @@ export {
   type PortfolioVisibility,
   type SearchPortfoliosParams,
 } from "./portfolio-api";
+export {
+  getPosts,
+  type BoardType,
+  type GetPostsParams,
+  type Post,
+  type PostListResponse,
+  type PostSortType,
+} from "./posts-api";
 export { togglePostLike, type PostLikeToggleResponse } from "./post-like-api";
 export {
   getPortfolioDetail,
