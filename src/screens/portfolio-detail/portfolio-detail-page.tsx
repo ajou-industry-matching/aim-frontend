@@ -261,7 +261,7 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
             <div ref={introRef} className="flex flex-col gap-10 pt-[60px]">
               {/* 본문 */}
               <section className="flex flex-col gap-5">
-                <h2 className={sectionTitleClasses}>포트폴리오</h2>
+                <h2 className={sectionTitleClasses}>상세 설명</h2>
                 <RichEditor content={detail.content} isEditable={false} />
               </section>
 
