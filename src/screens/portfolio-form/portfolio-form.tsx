@@ -10,7 +10,8 @@ import {
   ThumbnailUploader,
 } from "@/shared/ui/file-uploader/file-uploader";
 import { FormErrorMessage, FormField, FormHelperText, FormLabel } from "@/shared/ui/form/form";
-import { Input, Select, Textarea } from "@/shared/ui/input/input";
+import { SelectDropdown } from "@/shared/ui/dropdown";
+import { Input, Textarea } from "@/shared/ui/input/input";
 import { RichEditor } from "@/shared/ui/rich-editor";
 import { Tag } from "@/shared/ui/tag/tag";
 import { XIcon } from "@/shared/ui/icons";
@@ -132,7 +133,6 @@ export const PortfolioForm = ({
   const [files, setFiles] = useState<File[]>([]);
   const [removedAttachmentIds, setRemovedAttachmentIds] = useState<number[]>([]);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [tagSelectKey, setTagSelectKey] = useState(0);
 
   // 미리보기 objectURL은 렌더 시 파생하고, cleanup에서만 revoke한다.
   const newThumbnailPreview = useMemo(
@@ -169,7 +169,6 @@ export const PortfolioForm = ({
   const handleAddKeyword = (keywordId: number) => {
     if (!Number.isInteger(keywordId) || keywordIds.includes(keywordId)) return;
     setKeywordIds((prev) => [...prev, keywordId]);
-    setTagSelectKey((key) => key + 1);
   };
 
   const handleRemoveKeyword = (keywordId: number) => {
@@ -289,11 +288,11 @@ export const PortfolioForm = ({
 
           <FormField>
             <FormLabel required>태그</FormLabel>
-            <Select
-              key={tagSelectKey}
+            <SelectDropdown
+              isFullWidth
               placeholder="태그를 선택하세요"
               options={availableKeywordOptions}
-              onChange={(event) => handleAddKeyword(Number(event.target.value))}
+              onChange={(option) => handleAddKeyword(Number(option.value))}
             />
             {selectedKeywords.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
