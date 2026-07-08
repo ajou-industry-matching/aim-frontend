@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   getPortfolioList,
   searchPortfolios,
@@ -39,28 +40,34 @@ const toPortfolioQueryKey = ({ page, sort, keyword, selectedTypes }: PortfolioQu
   `${page}|${sort}|${keyword}|${[...selectedTypes].sort().join(",")}`;
 
 export const PortfolioListPage = () => {
-  const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { isReady: isAuthReady } = useAuthReady();
+  const urlKeyword = searchParams.get("keyword") ?? "";
   const [query, setQuery] = useState<PortfolioQuery>({
     page: 1,
     sort: "LATEST",
-    keyword: "",
+    keyword: urlKeyword,
     selectedTypes: [],
   });
   const [result, setResult] = useState<PortfolioFetchResult | null>(null);
 
   const queryKey = toPortfolioQueryKey(query);
-  const isUnauthorizedSession = isAuthReady && !isAuthenticated;
   const hasMatchingResult = result?.queryKey === queryKey;
-  const isLoading = !isAuthReady || (!isUnauthorizedSession && !hasMatchingResult);
+  const isLoading = !isAuthReady || !hasMatchingResult;
   const data = hasMatchingResult ? result.data : undefined;
-  const error = isUnauthorizedSession
-    ? "로그인이 필요합니다. 로그인 후 다시 시도해주세요."
-    : hasMatchingResult
-      ? (result.error ?? null)
-      : null;
+  const error = hasMatchingResult ? (result.error ?? null) : null;
 
   useEffect(() => {
-    if (!isAuthReady || !isAuthenticated) return;
+    setQuery((previous) =>
+      previous.keyword === urlKeyword && previous.page === 1
+        ? previous
+        : { ...previous, keyword: urlKeyword, page: 1 },
+    );
+  }, [urlKeyword]);
+
+  useEffect(() => {
+    if (!isAuthReady) return;
 
     let isCancelled = false;
     const pageable = {
@@ -86,10 +93,25 @@ export const PortfolioListPage = () => {
     return () => {
       isCancelled = true;
     };
-  }, [isAuthReady, isAuthenticated, queryKey]);
+  }, [isAuthReady, queryKey]);
 
   const handleSearchSubmit = (nextKeyword: string) => {
-    setQuery((previous) => ({ ...previous, keyword: nextKeyword, page: 1 }));
+    const keyword = nextKeyword.trim();
+    const nextParams = new URLSearchParams(searchParams.toString());
+
+    if (keyword) {
+      nextParams.set("keyword", keyword);
+    } else {
+      nextParams.delete("keyword");
+    }
+
+    const nextQueryString = nextParams.toString();
+    const nextHref = nextQueryString ? `/portfolio?${nextQueryString}` : "/portfolio";
+
+    if (keyword === urlKeyword) {
+      setQuery((previous) => ({ ...previous, page: 1 }));
+    }
+    router.push(nextHref);
   };
 
   const handleSortChange = (nextSort: PortfolioSort) => {

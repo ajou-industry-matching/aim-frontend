@@ -50,11 +50,21 @@ const SearchIcon = () => (
   </svg>
 );
 
-const TOTAL_PAGES = 3;
+const PAGE_SIZE = 5;
 
 export const AdminNoticesPage = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredNotices = normalizedSearch
+    ? MOCK_NOTICES.filter((notice) => notice.title.toLowerCase().includes(normalizedSearch))
+    : MOCK_NOTICES;
+  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const visibleNotices = filteredNotices.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   return (
     <div className="flex-1 bg-white p-8">
@@ -78,7 +88,10 @@ export const AdminNoticesPage = () => {
         <input
           type="text"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           placeholder="제목 검색..."
           className="flex-1 bg-transparent text-[14px] text-[#333] placeholder-[#999] outline-none"
         />
@@ -106,7 +119,7 @@ export const AdminNoticesPage = () => {
         </div>
 
         {/* Rows */}
-        {MOCK_NOTICES.map((notice) => (
+        {visibleNotices.map((notice) => (
           <div
             key={notice.id}
             className="flex min-h-14 items-center border-b border-[#e5e5e5] bg-white px-5 py-4 transition-colors hover:bg-[#f9f9f9]"
@@ -132,13 +145,13 @@ export const AdminNoticesPage = () => {
 
       {/* Pagination */}
       <div className="mt-6 flex items-center justify-center gap-1">
-        {Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1).map((p) => (
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
           <button
             key={p}
             onClick={() => setPage(p)}
             className={[
               "flex h-8 w-8 items-center justify-center rounded-md text-[14px] font-medium transition-colors",
-              page === p
+              currentPage === p
                 ? "bg-[#004a9c] text-white"
                 : "text-[#666] hover:bg-[#004a9c]/5 hover:text-[#004a9c]",
             ].join(" ")}

@@ -1,31 +1,70 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signOut, useAuthUser } from "@/lib/auth";
+import { signOut, useAuthSession } from "@/lib/auth";
 import { Navigation } from "@/shared/ui";
 import { AdminSidebar } from "@/screens/admin";
-import type { NavItem } from "@/shared/ui";
+import type { NavItem, NavUser } from "@/shared/ui";
+import type { BackendUser } from "@/api/auth";
 
 const navItems: NavItem[] = [
   { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "#about" },
-  { label: "공지사항", href: "#notice" },
+  { label: "소개", href: "/home#about" },
+  { label: "공지사항", href: "/home#notice" },
 ];
+
+const authRoleLabels: Record<BackendUser["role"], NavUser["userType"]> = {
+  STUDENT: "학생",
+  PROFESSOR: "교수",
+  COMPANY: "기업",
+};
+
+const isAdminRole = (adminRole: BackendUser["adminRole"]): boolean =>
+  adminRole === "ADMIN" || adminRole === "SUPER_ADMIN";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const authUser = useAuthUser();
+  const { session, isAuthReady } = useAuthSession();
+  const isAuthorizedAdmin = Boolean(session && isAdminRole(session.adminRole));
+  const authUser: NavUser | undefined = session
+    ? {
+        name: session.name ?? session.email ?? "사용자",
+        email: session.email,
+        userType: authRoleLabels[session.role],
+        isAdmin: isAdminRole(session.adminRole),
+      }
+    : undefined;
+
+  useEffect(() => {
+    if (!isAuthReady) return;
+    if (!isAuthorizedAdmin) {
+      router.replace("/login");
+    }
+  }, [isAuthReady, isAuthorizedAdmin, router]);
 
   const handleLogout = async () => {
     await signOut();
     router.replace("/login");
   };
 
+  if (!isAuthReady || !isAuthorizedAdmin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div
+          className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-(--color-primary-800)"
+          role="status"
+          aria-label="관리자 권한 확인 중"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       <Navigation
         items={navItems}
-        user={authUser ?? undefined}
+        user={authUser}
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}

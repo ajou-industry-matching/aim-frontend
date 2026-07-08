@@ -3,9 +3,10 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signOut, useAuthUser } from "@/lib/auth";
+import { signOut, useAuthReady, useAuthUser } from "@/lib/auth";
 import { Card } from "@/shared/ui/card";
 import { Navigation } from "@/shared/ui";
+import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import type { NavItem } from "@/shared/ui";
 import { useHomeStore, type SectionFilter } from "./home-store";
 
@@ -80,6 +81,7 @@ const SectionHeader = ({ title, href }: { title: string; href?: string }) => (
 const PostGrid = ({
   posts,
   isLoading,
+  error,
 }: {
   posts: {
     postId: number;
@@ -94,6 +96,7 @@ const PostGrid = ({
     viewCount: number;
   }[];
   isLoading: boolean;
+  error?: string | null;
 }) => {
   if (isLoading) {
     return (
@@ -101,6 +104,14 @@ const PostGrid = ({
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-(--color-primary-800)" />
       </div>
     );
+  }
+
+  if (error) {
+    return <EmptyState variant="error" title="게시글을 불러오지 못했습니다" description={error} />;
+  }
+
+  if (posts.length === 0) {
+    return <EmptyState variant="no-content" title="게시글이 없습니다" />;
   }
 
   return (
@@ -132,6 +143,7 @@ const PostGrid = ({
 export const HomePage: React.FC = () => {
   const router = useRouter();
   const authUser = useAuthUser();
+  const { isReady: isAuthReady } = useAuthReady();
   const searchRef = useRef<HTMLInputElement>(null);
   const {
     newPosts,
@@ -141,6 +153,9 @@ export const HomePage: React.FC = () => {
     isLoadingNew,
     isLoadingSection,
     isLoadingNotice,
+    newPostsError,
+    sectionPostsError,
+    noticePostsError,
     fetchNewPosts,
     fetchSectionPosts,
     fetchNoticePosts,
@@ -170,6 +185,8 @@ export const HomePage: React.FC = () => {
       <Navigation
         items={navItems}
         user={authUser ?? undefined}
+        isAuthLoading={!isAuthReady}
+        logoHref="/home"
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
@@ -236,11 +253,11 @@ export const HomePage: React.FC = () => {
         {/* 새로 올라온 포트폴리오 */}
         <section className="mb-16">
           <SectionHeader title="새로 올라온 포트폴리오" href="/portfolio" />
-          <PostGrid posts={newPosts} isLoading={isLoadingNew} />
+          <PostGrid posts={newPosts} isLoading={isLoadingNew} error={newPostsError} />
         </section>
 
         {/* 아주대학교와 함께하세요 */}
-        <section className="mb-16">
+        <section id="about" className="mb-16">
           <h2 className="mb-6 text-center text-[28px] font-bold leading-tight tracking-[-0.7px] text-gray-900">
             아주대학교와 함께하세요.
           </h2>
@@ -260,7 +277,7 @@ export const HomePage: React.FC = () => {
               </button>
             ))}
           </div>
-          <PostGrid posts={sectionPosts} isLoading={isLoadingSection} />
+          <PostGrid posts={sectionPosts} isLoading={isLoadingSection} error={sectionPostsError} />
         </section>
 
         {/* 공지사항 */}
@@ -270,6 +287,12 @@ export const HomePage: React.FC = () => {
             <div className="flex min-h-32 items-center justify-center">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-(--color-primary-800)" />
             </div>
+          ) : noticePostsError ? (
+            <EmptyState
+              variant="error"
+              title="공지사항을 불러오지 못했습니다"
+              description={noticePostsError}
+            />
           ) : noticePosts.length === 0 ? (
             <p className="py-8 text-center text-[14px] text-gray-500">공지사항이 없습니다.</p>
           ) : (

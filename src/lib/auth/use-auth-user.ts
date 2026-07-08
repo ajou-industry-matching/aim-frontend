@@ -1,11 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/shared/config/firebase";
 import type { NavUser } from "@/shared/ui/navigation/navigation";
-import type { AuthRole } from "@/api/auth";
-import { getStoredBackendUser } from "./auth-service";
+import type { AuthRole, BackendUser } from "@/api/auth";
+import { useAuthSession } from "./auth-session";
 
 const roleToUserType = (role: AuthRole): NavUser["userType"] => {
   if (role === "PROFESSOR") return "교수";
@@ -13,27 +10,18 @@ const roleToUserType = (role: AuthRole): NavUser["userType"] => {
   return "학생";
 };
 
+const isAdminRole = (adminRole: BackendUser["adminRole"]): boolean =>
+  adminRole === "ADMIN" || adminRole === "SUPER_ADMIN";
+
 export const useAuthUser = (): NavUser | null => {
-  const [navUser, setNavUser] = useState<NavUser | null>(null);
+  const { session } = useAuthSession();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (!firebaseUser) {
-        setNavUser(null);
-        return;
-      }
+  if (!session) return null;
 
-      const backendUser = getStoredBackendUser();
-      setNavUser({
-        name: backendUser?.name ?? firebaseUser.displayName ?? firebaseUser.email ?? "사용자",
-        email: firebaseUser.email ?? "",
-        userType: backendUser ? roleToUserType(backendUser.role) : "학생",
-        isAdmin: backendUser?.adminRole !== undefined && backendUser.adminRole !== "NONE",
-      });
-    });
-
-    return unsubscribe;
-  }, []);
-
-  return navUser;
+  return {
+    name: session.name ?? session.email ?? "사용자",
+    email: session.email,
+    userType: roleToUserType(session.role),
+    isAdmin: isAdminRole(session.adminRole),
+  };
 };

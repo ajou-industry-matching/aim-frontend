@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getPosts } from "@/api/posts";
 import type { Post, PostSortType, BoardType } from "@/api/posts";
@@ -35,24 +35,6 @@ const SORT_OPTIONS: { label: string; value: PostSortType }[] = [
 
 const PAGE_SIZE = 12;
 
-// --- Mock data ---
-
-const MOCK_POSTS: Post[] = Array.from({ length: 12 }, (_, i) => ({
-  postId: i + 1,
-  userId: i + 1,
-  boardType: "PORTFOLIO",
-  title: `포트폴리오 프로젝트 ${i + 1}`,
-  description: "Next.js와 TypeScript를 활용한 웹 서비스 개발 프로젝트입니다.",
-  visibility: "PUBLIC",
-  thumbnailImage: `https://picsum.photos/seed/${i + 1}/360/203`,
-  keywords:
-    i % 3 === 0 ? ["React", "TypeScript"] : i % 3 === 1 ? ["Next.js", "Tailwind"] : ["Node.js"],
-  createdAt: new Date(Date.now() - i * 86400000).toISOString(),
-  likeCount: Math.floor(Math.random() * 50),
-  commentCount: Math.floor(Math.random() * 20),
-  viewCount: Math.floor(Math.random() * 200),
-}));
-
 // --- Helpers ---
 
 const formatDate = (isoString: string): string => {
@@ -62,20 +44,23 @@ const formatDate = (isoString: string): string => {
 
 // --- Component ---
 
-export const PortfolioPage = (): React.ReactElement => {
+const PortfolioPageContent = (): React.ReactElement => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const authUser = useAuthUser();
+  const requestIdRef = useRef(0);
+  const urlKeyword = searchParams.get("keyword") ?? "";
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState<PostSortType>("LATEST");
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState(() => searchParams.get("keyword") ?? "");
   const [keyword, setKeyword] = useState(() => searchParams.get("keyword") ?? "");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("개인");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleLogout = async () => {
     await signOut();
@@ -83,7 +68,9 @@ export const PortfolioPage = (): React.ReactElement => {
   };
 
   const fetchPosts = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
     setIsLoading(true);
+    setErrorMessage(null);
     try {
       const response = await getPosts(CATEGORY_TO_BOARD[categoryFilter], {
         page: currentPage - 1,
@@ -91,21 +78,40 @@ export const PortfolioPage = (): React.ReactElement => {
         sort,
         keyword: keyword || undefined,
       });
+      if (requestId !== requestIdRef.current) return;
       setPosts(response.content);
       setTotalPages(response.totalPages);
       setTotalElements(response.totalElements);
-    } catch {
-      setPosts(MOCK_POSTS);
-      setTotalPages(3);
-      setTotalElements(MOCK_POSTS.length);
+    } catch (cause) {
+      if (requestId !== requestIdRef.current) return;
+      setPosts([]);
+      setTotalPages(1);
+      setTotalElements(0);
+      setErrorMessage(
+        cause instanceof Error && cause.message ? cause.message : "게시글을 불러오지 못했습니다.",
+      );
     } finally {
-      setIsLoading(false);
+      if (requestId === requestIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [currentPage, sort, keyword, categoryFilter]);
 
   useEffect(() => {
+    setKeyword(urlKeyword);
+    setSearchInput(urlKeyword);
+    setCurrentPage(1);
+  }, [urlKeyword]);
+
+  useEffect(() => {
     void fetchPosts();
   }, [fetchPosts]);
+
+  useEffect(() => {
+    return () => {
+      requestIdRef.current += 1;
+    };
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -253,6 +259,11 @@ export const PortfolioPage = (): React.ReactElement => {
           <div className="flex min-h-100 items-center justify-center">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-(--color-primary-800)" />
           </div>
+        ) : errorMessage ? (
+          <div className="flex min-h-100 flex-col items-center justify-center gap-2 text-gray-500">
+            <p className="text-[18px] font-semibold">게시글을 불러오지 못했습니다.</p>
+            <p className="text-[14px]">{errorMessage}</p>
+          </div>
         ) : posts.length === 0 ? (
           <div className="flex min-h-100 flex-col items-center justify-center gap-2 text-gray-500">
             <p className="text-[18px] font-semibold">게시글이 없습니다.</p>
@@ -394,3 +405,9 @@ export const PortfolioPage = (): React.ReactElement => {
     </div>
   );
 };
+
+export const PortfolioPage = (): React.ReactElement => (
+  <Suspense fallback={null}>
+    <PortfolioPageContent />
+  </Suspense>
+);

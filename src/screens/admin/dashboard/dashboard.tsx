@@ -20,6 +20,7 @@ type RecentNotice = {
   createdAt: string;
 };
 
+// TODO: 백엔드 연동 전 임시 표시 데이터
 const STAT_CARDS: StatCard[] = [
   {
     label: "총 사용자",

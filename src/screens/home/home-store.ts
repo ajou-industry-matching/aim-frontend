@@ -10,22 +10,9 @@ const FILTER_TO_BOARD: Record<SectionFilter, BoardType> = {
   연구실: "LAB_INTERN",
 };
 
-const makeMock = (count: number, offset = 0): Post[] =>
-  Array.from({ length: count }, (_, i) => ({
-    postId: offset + i + 1,
-    userId: i + 1,
-    boardType: "PORTFOLIO" as const,
-    title: `포트폴리오 프로젝트 ${offset + i + 1}`,
-    description: "Next.js와 TypeScript를 활용한 웹 서비스 개발 프로젝트입니다.",
-    visibility: "PUBLIC" as const,
-    thumbnailImage: `https://picsum.photos/seed/${offset + i + 1}/360/203`,
-    keywords:
-      i % 3 === 0 ? ["React", "TypeScript"] : i % 3 === 1 ? ["Next.js", "Tailwind"] : ["Node.js"],
-    createdAt: new Date(Date.now() - i * 86400000).toISOString(),
-    likeCount: Math.floor(Math.random() * 50),
-    commentCount: Math.floor(Math.random() * 20),
-    viewCount: Math.floor(Math.random() * 200),
-  }));
+let newPostsRequestId = 0;
+let sectionPostsRequestId = 0;
+let noticePostsRequestId = 0;
 
 interface HomeState {
   newPosts: Post[];
@@ -35,6 +22,9 @@ interface HomeState {
   isLoadingNew: boolean;
   isLoadingSection: boolean;
   isLoadingNotice: boolean;
+  newPostsError: string | null;
+  sectionPostsError: string | null;
+  noticePostsError: string | null;
 
   fetchNewPosts: () => Promise<void>;
   fetchSectionPosts: (filter?: SectionFilter) => Promise<void>;
@@ -47,44 +37,76 @@ export const useHomeStore = create<HomeState>((set, get) => ({
   sectionPosts: [],
   noticePosts: [],
   sectionFilter: "학생 포트폴리오",
-  isLoadingNew: false,
-  isLoadingSection: false,
-  isLoadingNotice: false,
+  isLoadingNew: true,
+  isLoadingSection: true,
+  isLoadingNotice: true,
+  newPostsError: null,
+  sectionPostsError: null,
+  noticePostsError: null,
 
   fetchNewPosts: async () => {
-    set({ isLoadingNew: true });
+    const requestId = ++newPostsRequestId;
+    set({ isLoadingNew: true, newPostsError: null });
     try {
       const res = await getPosts("PORTFOLIO", { sort: "LATEST", size: 4, page: 0 });
+      if (requestId !== newPostsRequestId) return;
       set({ newPosts: res.content });
-    } catch {
-      set({ newPosts: makeMock(4, 0) });
+    } catch (cause) {
+      if (requestId !== newPostsRequestId) return;
+      set({
+        newPosts: [],
+        newPostsError:
+          cause instanceof Error && cause.message ? cause.message : "게시글을 불러오지 못했습니다.",
+      });
     } finally {
-      set({ isLoadingNew: false });
+      if (requestId === newPostsRequestId) {
+        set({ isLoadingNew: false });
+      }
     }
   },
 
   fetchSectionPosts: async (filter?: SectionFilter) => {
     const active = filter ?? get().sectionFilter;
-    set({ isLoadingSection: true });
+    const requestId = ++sectionPostsRequestId;
+    set({ isLoadingSection: true, sectionPostsError: null });
     try {
       const res = await getPosts(FILTER_TO_BOARD[active], { sort: "LATEST", size: 12, page: 0 });
+      if (requestId !== sectionPostsRequestId) return;
       set({ sectionPosts: res.content });
-    } catch {
-      set({ sectionPosts: makeMock(12, 10) });
+    } catch (cause) {
+      if (requestId !== sectionPostsRequestId) return;
+      set({
+        sectionPosts: [],
+        sectionPostsError:
+          cause instanceof Error && cause.message ? cause.message : "게시글을 불러오지 못했습니다.",
+      });
     } finally {
-      set({ isLoadingSection: false });
+      if (requestId === sectionPostsRequestId) {
+        set({ isLoadingSection: false });
+      }
     }
   },
 
   fetchNoticePosts: async () => {
-    set({ isLoadingNotice: true });
+    const requestId = ++noticePostsRequestId;
+    set({ isLoadingNotice: true, noticePostsError: null });
     try {
       const res = await getPosts("NOTICE", { sort: "LATEST", size: 4, page: 0 });
+      if (requestId !== noticePostsRequestId) return;
       set({ noticePosts: res.content });
-    } catch {
-      set({ noticePosts: [] });
+    } catch (cause) {
+      if (requestId !== noticePostsRequestId) return;
+      set({
+        noticePosts: [],
+        noticePostsError:
+          cause instanceof Error && cause.message
+            ? cause.message
+            : "공지사항을 불러오지 못했습니다.",
+      });
     } finally {
-      set({ isLoadingNotice: false });
+      if (requestId === noticePostsRequestId) {
+        set({ isLoadingNotice: false });
+      }
     }
   },
 

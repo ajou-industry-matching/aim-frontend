@@ -12,11 +12,12 @@ type AppLayoutProps = Readonly<{
 
 const navigationItems: NavItem[] = [
   { label: "포트폴리오", href: "/portfolio" },
-  { label: "소개", href: "/about" },
-  { label: "공지사항", href: "/notice" },
+  { label: "소개", href: "/home#about" },
+  { label: "공지사항", href: "/home#notice" },
 ];
 
 const headerlessRoutes = new Set(["/"]);
+const routeOwnedNavigationPrefixes = ["/home", "/admin"];
 
 // 세션 파싱(normalizeStoredSession)이 role을 STUDENT/PROFESSOR/COMPANY로 보장하므로
 // 망라적 Record로 매핑한다. AuthRole에 새 역할이 추가되면 컴파일 에러로 누락을 잡는다.
@@ -26,17 +27,24 @@ const authRoleLabels: Record<BackendUser["role"], NavUser["userType"]> = {
   COMPANY: "기업",
 };
 
+const isAdminRole = (adminRole: BackendUser["adminRole"]): boolean =>
+  adminRole === "ADMIN" || adminRole === "SUPER_ADMIN";
+
 export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
   const router = useRouter();
   const pathname = usePathname();
   const { session, isAuthReady } = useAuthSession();
-  const shouldRenderNavigation = !headerlessRoutes.has(pathname);
+  const shouldRenderNavigation =
+    !headerlessRoutes.has(pathname) &&
+    !routeOwnedNavigationPrefixes.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    );
   const navigationUser: NavUser | undefined = session
     ? {
         name: session.name ?? session.email ?? "",
         email: session.email,
         userType: authRoleLabels[session.role],
-        isAdmin: session.adminRole !== "NONE",
+        isAdmin: isAdminRole(session.adminRole),
       }
     : undefined;
 

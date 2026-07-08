@@ -1,4 +1,12 @@
 import { backendJson } from "@/api/client";
+import {
+  buildPortfolioPageableParams,
+  getPortfolioList,
+  searchPortfolios,
+  type PortfolioBoardType,
+  type PortfolioKeyword,
+  type PortfolioListItem,
+} from "./portfolio-api";
 
 export type BoardType =
   | "PORTFOLIO"
@@ -42,8 +50,35 @@ export type GetPostsParams = {
 
 type RawKeyword = { keywordId?: number; keywordName?: string } | string;
 
+const portfolioBoardTypes: ReadonlySet<BoardType> = new Set([
+  "PORTFOLIO",
+  "LAB_INTERN",
+  "COMPANY_PROJECT",
+]);
+
+const isPortfolioBoardType = (boardType: BoardType): boardType is PortfolioBoardType =>
+  portfolioBoardTypes.has(boardType);
+
 const normalizeKeyword = (k: RawKeyword): string =>
   typeof k === "string" ? k : (k.keywordName ?? "");
+
+const mapPortfolioItemToPost = (item: PortfolioListItem): Post => ({
+  ...item,
+  thumbnailImage: item.thumbnailImage ?? undefined,
+  liked: item.liked,
+  keywords: item.keywords.map((keyword: PortfolioKeyword) => keyword.keywordName),
+});
+
+const mapPortfolioResponseToPosts = (res: {
+  content: PortfolioListItem[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}): PostListResponse => ({
+  ...res,
+  content: res.content.map(mapPortfolioItemToPost),
+});
 
 const normalizePosts = (res: PostListResponse): PostListResponse => ({
   ...res,
@@ -57,15 +92,33 @@ export const getPosts = async (
   boardType: BoardType,
   params?: GetPostsParams,
 ): Promise<PostListResponse> => {
-  const searchParams = new URLSearchParams();
-  if (params?.page !== undefined) searchParams.set("page", String(params.page));
-  if (params?.size !== undefined) searchParams.set("size", String(params.size));
-  if (params?.sort) searchParams.set("sort", params.sort);
+  if (isPortfolioBoardType(boardType)) {
+    const portfolioParams = {
+      boardTypes: [boardType],
+      page: params?.page,
+      size: params?.size,
+      sort: params?.sort,
+    };
+    const response = params?.keyword
+      ? await searchPortfolios({ ...portfolioParams, keyword: params.keyword })
+      : await getPortfolioList(portfolioParams);
+
+    return mapPortfolioResponseToPosts(response);
+  }
+
+  const searchParams = buildPortfolioPageableParams({
+    page: params?.page,
+    size: params?.size,
+    sort: params?.sort,
+  });
   if (params?.keyword) searchParams.set("keyword", params.keyword);
-
   const query = searchParams.toString();
-  const path = `/api/posts/${boardType}${query ? `?${query}` : ""}`;
+  const path = params?.keyword
+    ? `/api/posts/search?boardType=${boardType}${query ? `&${query}` : ""}`
+    : `/api/posts/${boardType}${query ? `?${query}` : ""}`;
 
-  const res = await backendJson<PostListResponse>(path);
+  const res = await backendJson<PostListResponse>(path, {
+    requiresAuth: false,
+  });
   return normalizePosts(res);
 };
