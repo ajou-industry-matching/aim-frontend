@@ -155,8 +155,12 @@ export const PortfolioForm = ({
     newThumbnailPreview ?? (isThumbnailRemoved ? null : existingThumbnailUrl);
   const hasThumbnail = thumbnail != null || (existingThumbnailUrl != null && !isThumbnailRemoved);
 
+  // 썸네일과 같은 파일인 첨부는 추가 이미지 그리드에서 제외한다.
+  // (여기서 지우면 deleteAttachmentIds로 실제 파일이 삭제돼 썸네일이 404가 된다)
   const visibleExistingImages = existingImages.filter(
-    (attachment) => !removedAttachmentIds.includes(attachment.attachmentId),
+    (attachment) =>
+      !removedAttachmentIds.includes(attachment.attachmentId) &&
+      attachment.filePath !== existingThumbnailUrl,
   );
   const visibleExistingFiles = existingFiles.filter(
     (attachment) => !removedAttachmentIds.includes(attachment.attachmentId),
