@@ -26,3 +26,4 @@ export {
   type PortfolioCreateRequest,
 } from "./portfolio-create-api";
 export { updatePortfolio, type PortfolioUpdateRequest } from "./portfolio-update-api";
+export { deletePortfolio } from "./portfolio-delete-api";
