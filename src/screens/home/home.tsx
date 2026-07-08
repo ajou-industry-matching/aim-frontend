@@ -219,7 +219,11 @@ export const HomePage: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex flex-1 items-end justify-end px-6 pb-5">
-                  <img src={card.icon} alt="" className="h-35 w-auto object-contain" />
+                  <img
+                    src={card.icon}
+                    alt={`${card.title.replace(/\n/g, " ")} 아이콘`}
+                    className="h-35 w-auto object-contain"
+                  />
                 </div>
               </div>
             ))}
