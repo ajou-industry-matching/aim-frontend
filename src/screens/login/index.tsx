@@ -36,7 +36,6 @@ const loginTabs: TabItem[] = [
 const initialCompanySignupValues: CompanySignupValues = {
   companyName: "",
   name: "",
-  username: "",
   email: "",
   password: "",
   passwordConfirm: "",
@@ -138,12 +137,11 @@ export const LoginPage = () => {
 
     const companyName = signupValues.companyName.trim();
     const name = signupValues.name.trim();
-    const username = signupValues.username.trim();
     const signupEmail = signupValues.email.trim();
     const signupPassword = signupValues.password;
     const passwordConfirm = signupValues.passwordConfirm;
 
-    if (!companyName || !name || !username || !signupEmail || !signupPassword || !passwordConfirm) {
+    if (!companyName || !name || !signupEmail || !signupPassword || !passwordConfirm) {
       showErrorModal("모든 정보를 입력해주세요.", "입력 오류");
       return;
     }
