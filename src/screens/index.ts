@@ -4,3 +4,12 @@ export { AboutPage } from "./about";
 export { LoginPage } from "./login";
 export { PortfolioListPage } from "./portfolio";
 export { PortfolioDetailPage } from "./portfolio-detail";
+export {
+  AdminSidebar,
+  AdminNoticesPage,
+  AdminNoticesEditPage,
+  AdminUsersPage,
+  AdminUsersDetailPage,
+  AdminPortfolioPage,
+  AdminPortfolioEditPage,
+} from "./admin";
