@@ -55,7 +55,7 @@ export function NoticeScreen({ notices, currentPage, totalPages }: NoticeScreenP
             columns={noticeColumns}
             data={tableData}
             isEmpty={notices.length === 0}
-            onRowClick={(id) => router.push(`/notice/${id}`)}
+            onRowClick={(id) => router.push(`/notice/detail?id=${id}`)}
           />
         </div>
 
