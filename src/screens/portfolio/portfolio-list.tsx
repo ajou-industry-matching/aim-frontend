@@ -3,7 +3,6 @@
 import type { PortfolioListItem } from "@/api/posts";
 import { Card } from "@/shared/ui/card/card";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
-import { Spinner } from "@/shared/ui/spinner/spinner";
 
 export type PortfolioListProps = {
   portfolios: PortfolioListItem[];
@@ -13,6 +12,8 @@ export type PortfolioListProps = {
 };
 
 const gridClasses = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+const PORTFOLIO_LIST_SKELETON_COUNT = 12;
+const portfolioListStateClasses = "flex min-h-[420px] items-center justify-center";
 
 const formatPortfolioDate = (iso: string): string => {
   const date = new Date(iso);
@@ -28,40 +29,65 @@ const toCardTags = (item: PortfolioListItem): string[] =>
 
 const toAuthorLabel = (item: PortfolioListItem): string => `사용자 ${item.userId}`;
 
+const PortfolioCardSkeleton = () => (
+  <div
+    className="flex w-full min-w-[280px] max-w-[360px] flex-col animate-pulse"
+    aria-hidden="true"
+  >
+    <div className="aspect-[360/203] w-full rounded-t-xl border border-b-0 border-[color:var(--color-gray-200,#e5e5e5)] bg-[var(--color-gray-100,#f5f5f5)]" />
+    <div className="flex flex-col gap-4 rounded-b-xl border border-[color:var(--color-gray-200,#e5e5e5)] bg-white p-6">
+      <div className="flex gap-2">
+        <div className="h-6 w-18 rounded-xl bg-[var(--color-gray-100,#f5f5f5)]" />
+        <div className="h-6 w-14 rounded-xl bg-[var(--color-gray-100,#f5f5f5)]" />
+      </div>
+      <div className="h-7 w-4/5 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+      <div className="h-5 w-full rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+      <div className="h-4 w-1/2 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+      <div className="flex gap-4">
+        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
+      </div>
+    </div>
+  </div>
+);
+
 export const PortfolioList = ({ portfolios, isLoading, error, hasKeyword }: PortfolioListProps) => {
   if (isLoading) {
     return (
-      <div
-        className="flex items-center justify-center py-24"
-        role="status"
-        aria-label="포트폴리오 로딩 중"
-      >
-        <Spinner size="large" />
+      <div className={gridClasses} role="status" aria-label="포트폴리오 로딩 중">
+        {Array.from({ length: PORTFOLIO_LIST_SKELETON_COUNT }, (_, index) => (
+          <PortfolioCardSkeleton key={index} />
+        ))}
       </div>
     );
   }
 
   if (error) {
     return (
-      <EmptyState
-        variant="error"
-        title="포트폴리오를 불러오지 못했습니다"
-        description={error}
-        hasBackground
-      />
+      <div className={portfolioListStateClasses}>
+        <EmptyState
+          variant="error"
+          title="포트폴리오를 불러오지 못했습니다"
+          description={error}
+          hasBackground
+        />
+      </div>
     );
   }
 
   if (portfolios.length === 0) {
     return (
-      <EmptyState
-        variant={hasKeyword ? "no-results" : "no-content"}
-        title={hasKeyword ? "검색 결과가 없습니다" : "포트폴리오가 없습니다"}
-        description={
-          hasKeyword ? "다른 검색어로 다시 시도해보세요." : "아직 등록된 포트폴리오가 없습니다."
-        }
-        hasBackground
-      />
+      <div className={portfolioListStateClasses}>
+        <EmptyState
+          variant={hasKeyword ? "no-results" : "no-content"}
+          title={hasKeyword ? "검색 결과가 없습니다" : "포트폴리오가 없습니다"}
+          description={
+            hasKeyword ? "다른 검색어로 다시 시도해보세요." : "아직 등록된 포트폴리오가 없습니다."
+          }
+          hasBackground
+        />
+      </div>
     );
   }
 
@@ -71,7 +97,7 @@ export const PortfolioList = ({ portfolios, isLoading, error, hasKeyword }: Port
         <Card
           key={item.postId}
           variant="post"
-          href={`/portfolio/${item.postId}`}
+          href={`/portfolio/detail?id=${item.postId}&type=${item.boardType}`}
           thumbnail={item.thumbnailImage ?? undefined}
           tags={toCardTags(item)}
           title={item.title}

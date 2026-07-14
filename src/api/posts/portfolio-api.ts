@@ -64,7 +64,7 @@ const portfolioSortComparators: Record<
   VIEWS: (a, b) => b.viewCount - a.viewCount,
 };
 
-const buildPortfolioPageableParams = ({
+export const buildPortfolioPageableParams = ({
   page = 0,
   size = PORTFOLIO_DEFAULT_PAGE_SIZE,
   sort = "LATEST",
@@ -81,7 +81,10 @@ const fetchSinglePortfolioPage = async (
   pageable: PortfolioPageable,
 ): Promise<PortfolioListPageResponse> => {
   const params = buildPortfolioPageableParams(pageable);
-  return backendJson<PortfolioListPageResponse>(`/api/posts/${boardType}?${params.toString()}`);
+  // 공개 조회: 비로그인도 접근 가능
+  return backendJson<PortfolioListPageResponse>(`/api/posts/${boardType}?${params.toString()}`, {
+    requiresAuth: false,
+  });
 };
 
 const fetchSinglePortfolioSearch = async (
@@ -94,7 +97,10 @@ const fetchSinglePortfolioSearch = async (
   if (keyword) {
     params.set("keyword", keyword);
   }
-  return backendJson<PortfolioListPageResponse>(`/api/posts/search?${params.toString()}`);
+  // 공개 조회: 비로그인도 접근 가능
+  return backendJson<PortfolioListPageResponse>(`/api/posts/search?${params.toString()}`, {
+    requiresAuth: false,
+  });
 };
 
 const mergePortfolioPages = (

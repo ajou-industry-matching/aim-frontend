@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { storageAsset } from "@/shared/config/storage-asset";
 import { AppLayout } from "./app-layout";
 import "./globals.css";
 
@@ -8,10 +9,13 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/assets/ajou-logo.svg", type: "image/svg+xml" },
+      {
+        url: storageAsset("aim-logo.svg"),
+        type: "image/svg+xml",
+      },
     ],
     shortcut: "/favicon.ico",
-    apple: "/assets/ajou-logo.svg",
+    apple: storageAsset("aim-logo.svg"),
   },
 };
 
