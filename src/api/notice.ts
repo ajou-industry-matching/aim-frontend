@@ -1,11 +1,7 @@
 // src/api/notice.ts
-import { backendJson } from "@/api/client";
+import { backendJson, backendFetch } from "@/api/client";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-// ---------------------------------------------------------
-// [인터페이스 정의]
-// ---------------------------------------------------------
+// 인터페이스
 export interface Attachment {
   attachmentId: number;
   attachmentType: string;
@@ -49,7 +45,20 @@ interface NoticePageResponse {
   totalPages?: number;
 }
 
-// 공지사항 목록 조회 (클라이언트/서버 공용)
+export interface CreateNoticeRequest {
+  title: string;
+  content: string;
+  userId?: number;
+  description?: string;
+  visibility?: "PUBLIC" | "PRIVATE";
+  videoLink?: string | null;
+  githubLink?: string | null;
+  // 파일/이미지 처리
+  // images?: number[];
+  // files?: number[];
+}
+
+// 공지사항 목록 조회
 export async function getNotices(
   page: number = 1,
   size: number = 10,
@@ -57,7 +66,7 @@ export async function getNotices(
   const backendPage = page - 1;
 
   const data = await backendJson<NoticePageResponse>(
-    `/api/posts/NOTICE?page=${backendPage}&size=${size}&sort=LATEST`,
+    `/api/posts/NOTICE?page=${backendPage}&size=${size}&sortType=LATEST`,
     {
       method: "GET",
       requiresAuth: false,
@@ -71,7 +80,7 @@ export async function getNotices(
   };
 }
 
-// 클라이언트용 단건 상세 조회 함수
+// 클라이언트용 상세 조회 함수
 export async function getNoticeById(id: number): Promise<Notice | null> {
   const data = await backendJson<Notice>(`/api/posts/NOTICE/${id}`, {
     method: "GET",
@@ -83,18 +92,25 @@ export async function getNoticeById(id: number): Promise<Notice | null> {
 }
 
 // 공지사항 작성 함수
-export async function createNotice(noticeData: Record<string, unknown>) {
-  const response = await fetch(`${API_BASE_URL}/api/posts/notices`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(noticeData),
-  });
+export async function createNotice(
+  noticeData: CreateNoticeRequest,
+  files?: File[],
+): Promise<Notice> {
+  const formData = new FormData();
 
-  if (!response.ok) {
-    throw new Error(`공지사항 작성 실패: 상태 코드 ${response.status}`);
+  formData.append("request", new Blob([JSON.stringify(noticeData)], { type: "application/json" }));
+
+  if (files && files.length > 0) {
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
   }
+
+  const response = await backendFetch("/api/posts/NOTICE", {
+    method: "POST",
+    body: formData,
+    requiresAuth: true, //임시로 false로 설정, 실제로는 true로 설정해야 함
+  });
 
   return response.json();
 }

@@ -19,7 +19,6 @@ export function NoticeCreateScreen() {
 
   // 등록 로직 핸들러
   const handleSubmit = async () => {
-    // 필수 필드 검증
     if (!title.trim() || !author.trim() || !description.trim() || !content.trim()) {
       alert("모든 필수 항목(*)을 입력해주세요.");
       return;
@@ -32,13 +31,15 @@ export function NoticeCreateScreen() {
         title,
         description,
         content,
-        userId: 10,
+        userId: 10, // 임시
       });
 
       alert("공지사항이 성공적으로 등록되었습니다.");
       router.push("/notice");
       router.refresh();
-    } catch {
+    } catch (error) {
+      // 💡 에러의 진짜 원인을 콘솔에 출력합니다!
+      console.error("🚨 공지 등록 실패 상세 원인:", error);
       alert("등록 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
