@@ -1,4 +1,5 @@
 import { backendJson } from "@/api/client";
+import { cachedGet } from "@/api/cache";
 
 export type PortfolioBoardType = "PORTFOLIO" | "COMPANY_PROJECT" | "LAB_INTERN";
 export type PortfolioVisibility = "PUBLIC" | "PRIVATE";
@@ -81,10 +82,11 @@ const fetchSinglePortfolioPage = async (
   pageable: PortfolioPageable,
 ): Promise<PortfolioListPageResponse> => {
   const params = buildPortfolioPageableParams(pageable);
+  const path = `/api/posts/${boardType}?${params.toString()}`;
   // 공개 조회: 비로그인도 접근 가능
-  return backendJson<PortfolioListPageResponse>(`/api/posts/${boardType}?${params.toString()}`, {
-    requiresAuth: false,
-  });
+  return cachedGet(path, () =>
+    backendJson<PortfolioListPageResponse>(path, { requiresAuth: false }),
+  );
 };
 
 const fetchSinglePortfolioSearch = async (
@@ -97,10 +99,11 @@ const fetchSinglePortfolioSearch = async (
   if (keyword) {
     params.set("keyword", keyword);
   }
+  const path = `/api/posts/search?${params.toString()}`;
   // 공개 조회: 비로그인도 접근 가능
-  return backendJson<PortfolioListPageResponse>(`/api/posts/search?${params.toString()}`, {
-    requiresAuth: false,
-  });
+  return cachedGet(path, () =>
+    backendJson<PortfolioListPageResponse>(path, { requiresAuth: false }),
+  );
 };
 
 const mergePortfolioPages = (
