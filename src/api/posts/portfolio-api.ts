@@ -1,4 +1,4 @@
-import { backendJson } from "@/api/client";
+import { authScopeKey, backendJson } from "@/api/client";
 import { cachedGet } from "@/api/cache";
 
 export type PortfolioBoardType = "PORTFOLIO" | "COMPANY_PROJECT" | "LAB_INTERN";
@@ -83,8 +83,8 @@ const fetchSinglePortfolioPage = async (
 ): Promise<PortfolioListPageResponse> => {
   const params = buildPortfolioPageableParams(pageable);
   const path = `/api/posts/${boardType}?${params.toString()}`;
-  // 공개 조회: 비로그인도 접근 가능
-  return cachedGet(path, () =>
+  // 공개 조회: 비로그인도 접근 가능. liked 등 개인화 필드 때문에 auth scope로 캐시 분리
+  return cachedGet(`${authScopeKey()}|${path}`, () =>
     backendJson<PortfolioListPageResponse>(path, { requiresAuth: false }),
   );
 };
@@ -100,8 +100,8 @@ const fetchSinglePortfolioSearch = async (
     params.set("keyword", keyword);
   }
   const path = `/api/posts/search?${params.toString()}`;
-  // 공개 조회: 비로그인도 접근 가능
-  return cachedGet(path, () =>
+  // 공개 조회: 비로그인도 접근 가능. liked 등 개인화 필드 때문에 auth scope로 캐시 분리
+  return cachedGet(`${authScopeKey()}|${path}`, () =>
     backendJson<PortfolioListPageResponse>(path, { requiresAuth: false }),
   );
 };
