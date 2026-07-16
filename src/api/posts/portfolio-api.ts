@@ -12,6 +12,7 @@ export type PortfolioKeyword = {
 export type PortfolioListItem = {
   postId: number;
   userId: number;
+  authorName: string;
   boardType: PortfolioBoardType;
   title: string;
   description: string;
