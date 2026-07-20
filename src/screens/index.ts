@@ -6,6 +6,7 @@ export { PortfolioListPage } from "./portfolio";
 export { PortfolioDetailPage } from "./portfolio-detail";
 export {
   AdminSidebar,
+  AdminDashboardPage,
   AdminNoticesPage,
   AdminNoticesEditPage,
   AdminUsersPage,

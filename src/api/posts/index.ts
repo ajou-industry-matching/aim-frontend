@@ -14,12 +14,21 @@ export {
   type SearchPortfoliosParams,
 } from "./portfolio-api";
 export {
+  createPost,
+  deletePost,
+  getPostDetail,
   getPosts,
+  updatePost,
   type BoardType,
+  type DeletePostResponse,
   type GetPostsParams,
   type Post,
+  type PostCreateRequest,
+  type PostDetail,
   type PostListResponse,
+  type PostMutationFiles,
   type PostSortType,
+  type PostUpdateRequest,
 } from "./posts-api";
 export { togglePostLike, type PostLikeToggleResponse } from "./post-like-api";
 export {
