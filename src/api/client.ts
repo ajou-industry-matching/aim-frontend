@@ -6,6 +6,10 @@ export type BackendFetchOptions = RequestInit & {
   requiresAuth?: boolean;
 };
 
+// 공개 조회 응답에도 로그인 사용자면 개인화 필드(liked 등)가 섞여 내려온다.
+// 캐시 키에 붙여 로그인 상태/사용자 간 캐시 오염을 막는 데 쓴다.
+export const authScopeKey = (): string => auth.currentUser?.uid ?? "anon";
+
 export type BackendJsonOptions<RequestBody = unknown> = Omit<BackendFetchOptions, "body"> & {
   body?: BodyInit | null;
   json?: RequestBody;

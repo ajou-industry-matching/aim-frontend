@@ -142,12 +142,6 @@ export const AdminDashboardPage = () => {
             <h2 className="text-[24px] font-semibold leading-[1.33] tracking-[-0.6px] text-[#1a1a1a]">
               최근 가입한 사용자
             </h2>
-            <Link
-              href="/admin/users"
-              className="rounded px-2 py-1 text-[14px] text-[#004a9c] transition-colors hover:bg-[#004a9c]/5"
-            >
-              전체보기 &gt;
-            </Link>
           </div>
           <div className="rounded-lg border border-[#e5e5e5] bg-white p-6">
             <div className="flex flex-col gap-4">

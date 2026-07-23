@@ -43,44 +43,9 @@ const BellIcon = () => (
   </svg>
 );
 
-const UsersIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-);
-
-const FolderIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-  </svg>
-);
-
 const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: "대시보드", href: "/admin", icon: <GridIcon /> },
   { label: "공지사항 관리", href: "/admin/notices", icon: <BellIcon /> },
-  { label: "사용자 관리", href: "/admin/users", icon: <UsersIcon /> },
-  { label: "포트폴리오 관리", href: "/admin/portfolio", icon: <FolderIcon /> },
 ];
 
 export const AdminSidebar = () => {

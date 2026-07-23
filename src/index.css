@@ -277,4 +277,82 @@ body {
   .animate-shimmer {
     animation: shimmer 1.5s infinite;
   }
+
+  /* 로딩 점 물결 바운스 (Loading 컴포넌트) */
+  @keyframes wave-bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-60%); }
+  }
+  .animate-wave-bounce {
+    animation: wave-bounce 1.2s ease-in-out infinite;
+  }
+
+  /* 전체 화면 로딩 배경 판: 화면을 통째로 덮는 솔리드.
+     윗변은 SVG 2차 베지어(Q)로 그려, 가운데 컨트롤 포인트의 Y만 움직여 곡률을 만든다.
+     (border-radius 로 둥글리는 게 아니라, 직선 가운데를 실로 당기듯 위로 볼록하게 하는 방식)
+
+     lift: 윗변이 화면 위로 빠져나간 뒤에 감속(ease-in 꼬리)이 끝나도록 주는 여유 높이. */
+  .loading-panel {
+    --loading-panel-lift: 12vh;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100% + var(--loading-panel-lift));
+  }
+  /* preserveAspectRatio="none" + overflow visible → 곡선이 뷰박스 위로 볼록해져도 잘리지 않고 늘어난다 */
+  .loading-panel-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  /* Firefox 등 CSS `d` 애니메이션 미지원 브라우저는 이 곡선 d(리딩 아치)로 고정 표시. */
+  .loading-panel-fill {
+    d: path("M 0 0 Q 50 -22 100 0 L 100 100 L 0 100 Z");
+  }
+
+  /* 전체 화면 로딩 진입 (Loading 컴포넌트 isFullScreen)
+     솔리드가 아래에서 한 번 올라와 이전 화면을 덮고 그대로 머무른다(반복 없음).
+
+     핵심: 상승(translateY)과 곡률(d)에 '같은 duration·같은 timing-function'을 줘서
+     매 순간 곡률 진행률 = 상승 진행률이 되도록 동기화한다.
+     → 느리게 출발할 땐 거의 직선, 속도가 붙을수록 아치가 함께 자란다(툭 튀지 않음).
+     정착 시 아치 코너(y=0)는 lift 만큼 화면 위로 빠져나가 화면은 평평하게 덮인다. */
+  @keyframes panel-cover {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  @keyframes panel-curve {
+    from { d: path("M 0 0 Q 50 0 100 0 L 100 100 L 0 100 Z"); }
+    to   { d: path("M 0 0 Q 50 -22 100 0 L 100 100 L 0 100 Z"); }
+  }
+  .animate-panel-cover {
+    /* ease-in (가속): 처음엔 천천히 밀려 올라오다 끝으로 갈수록 훅 빨라지며 덮는다 (텐션 유지, 속도만 ↑) */
+    animation: panel-cover 0.6s cubic-bezier(0.55, 0, 0.85, 0.3) forwards;
+  }
+  .animate-panel-cover .loading-panel-fill {
+    /* 상승과 완전히 동일한 타이밍 — 곡률이 이동량에 1:1로 붙어 따로 놀지 않는다 */
+    animation: panel-curve 0.6s cubic-bezier(0.55, 0, 0.85, 0.3) forwards;
+  }
+
+  /* 문구·점은 아치가 화면을 덮은 뒤에 떠오른다 (backwards: 지연 동안 숨김) */
+  @keyframes loading-content-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-loading-content-in {
+    /* 아치가 화면을 덮은 직후(≈0.55s) 문구·점이 떠오르도록 지연을 상승 속도에 맞춰 당김 */
+    animation: loading-content-in 0.3s ease-out 0.5s backwards;
+  }
+
+  /* 모션 민감 사용자 배려: 로딩 모션 정지 (판은 덮은 상태, 콘텐츠는 보이는 상태로 고정) */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-wave-bounce,
+    .animate-panel-cover,
+    .animate-panel-cover .loading-panel-fill,
+    .animate-loading-content-in {
+      animation: none;
+    }
+  }
 }

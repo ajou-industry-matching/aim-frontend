@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { storageAsset } from "@/shared/config/storage-asset";
 
 export type FooterLink = {
   label: string;
@@ -90,7 +91,7 @@ export const Footer = ({
           <div className="flex items-center gap-10">
             {/* Ajou Logo */}
             <img
-              src="/assets/ajou-logo-text.svg"
+              src={storageAsset("ajou-logo-text.svg")}
               alt="Ajou University"
               className="h-15 w-58 shrink-0 object-contain"
             />

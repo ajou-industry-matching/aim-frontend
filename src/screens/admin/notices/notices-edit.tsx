@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BackendApiError } from "@/api/client";
+import { clearListCache } from "@/api/cache";
 import { createPost, deletePost, getPostDetail, updatePost } from "@/api/posts";
 import type { PortfolioAttachment } from "@/api/posts";
 
@@ -146,6 +147,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
           { files: newFiles },
         );
       }
+      clearListCache();
       router.push("/admin/notices");
     } catch (submitError) {
       console.error("[admin] 공지사항 저장 실패", submitError);
@@ -163,6 +165,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
 
     try {
       await deletePost("NOTICE", postId);
+      clearListCache();
       router.push("/admin/notices");
     } catch (deleteError) {
       console.error("[admin] 공지사항 삭제 실패", deleteError);

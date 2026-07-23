@@ -1,4 +1,5 @@
-import { backendJson } from "@/api/client";
+import { authScopeKey, backendJson } from "@/api/client";
+import { cachedGet } from "@/api/cache";
 import {
   buildPortfolioPageableParams,
   getPortfolioList,
@@ -126,9 +127,9 @@ export const getPosts = async (
     ? `/api/posts/search?boardType=${boardType}${query ? `&${query}` : ""}`
     : `/api/posts/${boardType}${query ? `?${query}` : ""}`;
 
-  const res = await backendJson<RawPostListResponse>(path, {
-    requiresAuth: false,
-  });
+  const res = await cachedGet(`${authScopeKey()}|${path}`, () =>
+    backendJson<RawPostListResponse>(path, { requiresAuth: false }),
+  );
   return normalizePosts(res);
 };
 
