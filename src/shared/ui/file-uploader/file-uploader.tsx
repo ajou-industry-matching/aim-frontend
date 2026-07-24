@@ -130,10 +130,7 @@ export const ThumbnailUploader = ({
         onChange={handleFileChange}
       />
       <div className="text-center pointer-events-none">
-        <ImageIcon
-          size={48}
-          className="mx-auto mb-3 text-[var(--color-gray-400,#999)] group-hover:text-[var(--color-primary-500)] transition-colors"
-        />
+        <ImageIcon size={48} className="mx-auto mb-3 text-[var(--color-gray-400,#999)]" />
         <p className="text-[16px] font-medium text-[var(--color-gray-800,#333)]">
           썸네일 이미지 업로드
         </p>

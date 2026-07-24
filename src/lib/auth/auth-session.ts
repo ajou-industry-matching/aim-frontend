@@ -18,6 +18,8 @@ export type StoredSession = {
   name: string | null;
   role: BackendUser["role"];
   adminRole: BackendUser["adminRole"];
+  // 백엔드 사용자 식별자(소유권 판정 등에 사용). 구버전 세션에는 없을 수 있어 nullable.
+  userId: number | null;
 };
 
 const AUTH_SESSION_STORAGE_KEY = "aim-auth-session";
@@ -54,6 +56,7 @@ const normalizeStoredSession = (value: unknown): StoredSession | null => {
       adminRole: adminRoles.has(s.adminRole as BackendUser["adminRole"])
         ? (s.adminRole as BackendUser["adminRole"])
         : "NONE",
+      userId: typeof s.userId === "number" ? s.userId : null,
     };
   }
 
@@ -91,6 +94,7 @@ export const saveAuthSession = (session: AuthSession): void => {
     name: toDisplayName(session.backendUser.name) ?? toDisplayName(session.displayName),
     role: session.backendUser.role,
     adminRole: session.backendUser.adminRole ?? "NONE",
+    userId: session.backendUser.userId ?? null,
   };
 
   window.localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(toStore));
