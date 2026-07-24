@@ -2,14 +2,12 @@ import { ExternalLinkIcon } from "@/shared/ui/icons";
 
 export type PolicyPageProps = {
   title: string;
-  description: string;
   externalUrl: string;
   externalLinkLabel: string;
 };
 
 export const PolicyPage = ({
   title,
-  description,
   externalUrl,
   externalLinkLabel,
 }: PolicyPageProps): React.ReactElement => {
@@ -19,7 +17,6 @@ export const PolicyPage = ({
         <header>
           <h1 className="text-[32px] font-bold leading-tight text-gray-900">{title}</h1>
         </header>
-        <p className="max-w-[560px] text-[16px] leading-6 text-gray-600">{description}</p>
         <a
           href={externalUrl}
           target="_blank"
