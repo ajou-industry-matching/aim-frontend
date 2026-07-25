@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/button/button";
 import { Input } from "@/shared/ui/input/input";
 import { FileTextAltIcon } from "@/shared/ui/icons/index";
-import { createNotice } from "@/api/notice";
+// import { createNotice } from "@/api/notice";
 
 export function NoticeCreateScreen() {
   const router = useRouter();
@@ -28,12 +28,12 @@ export function NoticeCreateScreen() {
     try {
       setIsSubmitting(true);
 
-      await createNotice({
-        title,
-        description,
-        content,
-        userId: 10,
-      });
+      // await createNotice({
+      //   title,
+      //   description,
+      //   content,
+      //   userId: 10,
+      // });
 
       alert("공지사항이 성공적으로 등록되었습니다.");
       router.push("/notice");
