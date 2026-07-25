@@ -54,8 +54,8 @@ export interface CreateNoticeRequest {
   videoLink?: string | null;
   githubLink?: string | null;
   // 파일/이미지 처리
-  // images?: number[];
-  // files?: number[];
+  images?: number[];
+  files?: number[];
 }
 
 // 공지사항 목록 조회
@@ -94,23 +94,26 @@ export async function getNoticeById(id: number): Promise<Notice | null> {
 // 공지사항 작성 함수
 export async function createNotice(
   noticeData: CreateNoticeRequest,
-  files?: File[],
+  files: File[] = [],
 ): Promise<Notice> {
   const formData = new FormData();
 
   formData.append("request", new Blob([JSON.stringify(noticeData)], { type: "application/json" }));
 
-  if (files && files.length > 0) {
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
-  }
+  files.forEach((file) => {
+    formData.append("files", file);
+  });
 
+  // fetch 호출
   const response = await backendFetch("/api/posts/NOTICE", {
     method: "POST",
     body: formData,
-    requiresAuth: true, //임시로 false로 설정, 실제로는 true로 설정해야 함
+    requiresAuth: true,
   });
+
+  if (!response.ok) {
+    throw new Error(`공지사항 등록 실패: ${response.status}`);
+  }
 
   return response.json();
 }
