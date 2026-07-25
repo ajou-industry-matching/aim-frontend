@@ -1,8 +1,6 @@
 // src/api/notice.ts
 import { backendJson } from "@/api/client";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export interface Attachment {
   attachmentId: number;
   attachmentType: string;
@@ -77,21 +75,4 @@ export async function getNoticeById(id: number): Promise<Notice | null> {
   });
 
   return data;
-}
-
-// 공지사항 작성 함수
-export async function createNotice(noticeData: Record<string, unknown>) {
-  const response = await fetch(`${API_BASE_URL}/api/posts/notices`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(noticeData),
-  });
-
-  if (!response.ok) {
-    throw new Error(`공지사항 작성 실패: 상태 코드 ${response.status}`);
-  }
-
-  return response.json();
 }
