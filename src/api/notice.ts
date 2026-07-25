@@ -3,9 +3,6 @@ import { backendJson } from "@/api/client";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// ---------------------------------------------------------
-// [인터페이스 정의]
-// ---------------------------------------------------------
 export interface Attachment {
   attachmentId: number;
   attachmentType: string;
