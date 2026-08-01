@@ -4,7 +4,10 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { useRouter } from "next/navigation";
 import { getPortfolioDetail, type PortfolioBoardType, type PortfolioDetail } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
+import { useDeletePortfolio } from "@/lib/posts";
+import { useCurrentUserId } from "@/lib/user";
 import { Button } from "@/shared/ui/button/button";
+import { Modal, ModalContent, ModalFooter, ModalHeader } from "@/shared/ui/modal";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { RichEditor } from "@/shared/ui/rich-editor";
 import { Spinner } from "@/shared/ui/spinner/spinner";
@@ -60,7 +63,10 @@ const toDetailFetchKey = (boardType: PortfolioBoardType, postId: number): string
 export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPageProps) => {
   const router = useRouter();
   const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
+  const { userId: currentUserId } = useCurrentUserId();
+  const { remove: removePortfolio, isDeleting, error: deleteError } = useDeletePortfolio();
   const [result, setResult] = useState<DetailFetchResult | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchKey = toDetailFetchKey(boardType, postId);
   const hasMatchingResult = result?.fetchKey === fetchKey;
@@ -140,13 +146,44 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
 
     if (!detail) return null;
 
+    const isOwner = currentUserId != null && currentUserId === detail.userId;
+
+    // 추가 이미지 갤러리: 상단 히어로와 중복되는 썸네일 파일은 제외한다.
+    const galleryImages = detail.images
+      .filter((image) => image.filePath !== detail.thumbnailImage)
+      .sort((a, b) => a.displayOrder - b.displayOrder);
+
+    const handleDelete = async () => {
+      const isDeleted = await removePortfolio(detail.boardType, detail.postId);
+      if (isDeleted) {
+        setIsDeleteModalOpen(false);
+        router.push("/portfolio");
+      }
+    };
+
     return (
       <>
         {/* 헤더: 좋아요 + 썸네일/상세 정보 */}
         <div className="mx-auto max-w-[1440px] px-6 py-20">
           <div className="flex flex-col gap-10">
-            {/* 좋아요 */}
-            <div className="flex justify-end">
+            {/* 삭제·편집(작성자 전용) + 좋아요 */}
+            <div className="flex items-center justify-end gap-3">
+              {isOwner && (
+                <>
+                  <Button variant="danger" size="small" onClick={() => setIsDeleteModalOpen(true)}>
+                    삭제
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="small"
+                    onClick={() =>
+                      router.push(`/portfolio/edit?id=${detail.postId}&type=${detail.boardType}`)
+                    }
+                  >
+                    편집
+                  </Button>
+                </>
+              )}
               <PortfolioLikeButton
                 postId={detail.postId}
                 initialLiked={Boolean(detail.liked)}
@@ -244,9 +281,27 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
           <div className="flex flex-col gap-20">
             {/* 소개: 본문 + 태그 */}
             <div ref={introRef} className="flex flex-col gap-10 pt-[60px]">
+              {/* 추가 이미지 갤러리 (각 470x265, 간격 15px, 1440 기준 3열) */}
+              {galleryImages.length > 0 && (
+                <section className="grid grid-cols-1 gap-[15px] sm:grid-cols-2 lg:grid-cols-3">
+                  {galleryImages.map((image) => (
+                    <div
+                      key={image.attachmentId}
+                      className="aspect-[470/265] w-full overflow-hidden rounded-lg bg-[var(--color-gray-100,#f2f2f2)]"
+                    >
+                      <img
+                        src={image.filePath}
+                        alt={image.originalFilename}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </section>
+              )}
+
               {/* 본문 */}
               <section className="flex flex-col gap-5">
-                <h2 className={sectionTitleClasses}>포트폴리오</h2>
+                <h2 className={sectionTitleClasses}>상세 설명</h2>
                 <RichEditor content={detail.content} isEditable={false} />
               </section>
 
@@ -263,13 +318,11 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
               )}
             </div>
 
-            {/* 첨부파일 (이미지 + 파일 첨부 모두 표시) */}
+            {/* 첨부파일 (파일만 표시 — 이미지는 위 갤러리로 분리) */}
             <section ref={filesRef} className="flex flex-col gap-5 pt-[60px]">
               <h2 className={sectionTitleClasses}>첨부파일</h2>
               <PortfolioAttachments
-                attachments={[...detail.images, ...detail.files].sort(
-                  (a, b) => a.displayOrder - b.displayOrder,
-                )}
+                attachments={[...detail.files].sort((a, b) => a.displayOrder - b.displayOrder)}
               />
             </section>
 
@@ -286,6 +339,33 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
             </div>
           </div>
         </div>
+
+        {/* 삭제 확인 모달 (작성자 전용) */}
+        <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+          <ModalHeader title="포트폴리오 삭제" onClose={() => setIsDeleteModalOpen(false)} />
+          <ModalContent>
+            <p className="text-[15px] leading-[1.6] text-[var(--color-gray-700,#4d4d4d)]">
+              정말 이 포트폴리오를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+            </p>
+            {deleteError && (
+              <p className="mt-3 text-[14px] font-medium text-[var(--color-error-500,#ef4444)]">
+                삭제에 실패했습니다. 잠시 후 다시 시도해주세요.
+              </p>
+            )}
+          </ModalContent>
+          <ModalFooter>
+            <Button
+              variant="secondary"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+            >
+              취소
+            </Button>
+            <Button variant="danger" onClick={handleDelete} isLoading={isDeleting}>
+              삭제
+            </Button>
+          </ModalFooter>
+        </Modal>
       </>
     );
   };

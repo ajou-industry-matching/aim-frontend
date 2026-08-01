@@ -28,3 +28,11 @@ export {
   type PortfolioAttachmentType,
   type PortfolioDetail,
 } from "./portfolio-detail-api";
+export { getKeywords } from "./keyword-api";
+export {
+  createPortfolio,
+  type PortfolioCreateFiles,
+  type PortfolioCreateRequest,
+} from "./portfolio-create-api";
+export { updatePortfolio, type PortfolioUpdateRequest } from "./portfolio-update-api";
+export { deletePortfolio } from "./portfolio-delete-api";
