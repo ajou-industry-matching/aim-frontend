@@ -9,24 +9,6 @@ type SidebarItem = {
   icon: React.ReactNode;
 };
 
-const GridIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="3" y="3" width="7" height="7" />
-    <rect x="14" y="3" width="7" height="7" />
-    <rect x="3" y="14" width="7" height="7" />
-    <rect x="14" y="14" width="7" height="7" />
-  </svg>
-);
-
 const BellIcon = () => (
   <svg
     width="16"
@@ -44,7 +26,6 @@ const BellIcon = () => (
 );
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
-  { label: "대시보드", href: "/admin", icon: <GridIcon /> },
   { label: "공지사항 관리", href: "/admin/notices", icon: <BellIcon /> },
 ];
 
@@ -61,8 +42,7 @@ export const AdminSidebar = () => {
       </p>
       <nav className="flex flex-col gap-1">
         {SIDEBAR_ITEMS.map((item) => {
-          const isActive =
-            item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+          const isActive = pathname.startsWith(item.href);
 
           return (
             <Link

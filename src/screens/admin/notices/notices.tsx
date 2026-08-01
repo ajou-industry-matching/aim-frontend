@@ -89,7 +89,7 @@ export const AdminNoticesPage = () => {
           <p className="mt-1 text-[14px] text-[#444]">공지사항을 작성하고 관리할 수 있습니다.</p>
         </div>
         <Link
-          href="/admin/notices/new"
+          href="/admin/notices/edit?id=new"
           className="flex h-10 items-center gap-2 rounded-lg bg-[#004a9c] px-6 py-2.5 text-[14px] font-medium leading-[1.43] tracking-[-0.35px] text-white transition-colors hover:bg-[#003d8a]"
         >
           <PlusIcon />
@@ -155,7 +155,7 @@ export const AdminNoticesPage = () => {
                 {notice.postId}
               </span>
               <Link
-                href={`/admin/notices/${notice.postId}`}
+                href={`/admin/notices/edit?id=${notice.postId}`}
                 className="flex-1 truncate text-[14px] leading-[1.43] tracking-[-0.35px] text-[#333] hover:text-[#004a9c] hover:underline"
               >
                 {notice.title}

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { BackendApiError } from "@/api/client";
 import { clearListCache } from "@/api/cache";
 import { createPost, deletePost, getPostDetail, updatePost } from "@/api/posts";
 import type { PortfolioAttachment } from "@/api/posts";
@@ -105,11 +104,6 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
     };
   }, [postId]);
 
-  const getErrorMessage = (submitError: unknown): string =>
-    submitError instanceof BackendApiError
-      ? submitError.message
-      : "요청 처리에 실패했습니다. 잠시 후 다시 시도해주세요.";
-
   const removeExistingFile = (attachmentId: number) => {
     setExistingFiles((files) => files.filter((file) => file.attachmentId !== attachmentId));
     setDeleteAttachmentIds((ids) => [...ids, attachmentId]);
@@ -151,7 +145,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
       router.push("/admin/notices");
     } catch (submitError) {
       console.error("[admin] 공지사항 저장 실패", submitError);
-      setError(getErrorMessage(submitError));
+      setError("요청 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
       setIsSubmitting(false);
     }
   };
@@ -169,7 +163,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
       router.push("/admin/notices");
     } catch (deleteError) {
       console.error("[admin] 공지사항 삭제 실패", deleteError);
-      setError(getErrorMessage(deleteError));
+      setError("요청 처리에 실패했습니다. 잠시 후 다시 시도해주세요.");
       setIsSubmitting(false);
     }
   };
@@ -189,7 +183,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
           <h1 className="text-[40px] font-bold leading-[1.3] tracking-[-1px] text-[#111]">
             {isCreateMode ? "공지사항 작성" : "공지사항 수정"}
           </h1>
-          <p className="mt-2 text-[16px] leading-[1.5] tracking-[-0.4px] text-[#666]">
+          <p className="mt-2 text-[16px] leading-normal tracking-[-0.4px] text-[#666]">
             {isCreateMode ? "새 공지사항을 작성하세요." : "공지사항을 수정하세요."}
           </p>
         </div>

@@ -1,5 +1,14 @@
-import { AdminDashboardPage } from "@/screens/admin";
+"use client";
 
-export default function AdminDashboardRoute() {
-  return <AdminDashboardPage />;
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+export default function AdminRoute(): null {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/admin/notices");
+  }, [router]);
+
+  return null;
 }

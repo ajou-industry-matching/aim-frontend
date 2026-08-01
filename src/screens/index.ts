@@ -4,4 +4,9 @@ export { AboutPage } from "./about";
 export { LoginPage } from "./login";
 export { PortfolioListPage } from "./portfolio";
 export { PortfolioDetailPage } from "./portfolio-detail";
-export { AdminSidebar, AdminDashboardPage, AdminNoticesPage, AdminNoticesEditPage } from "./admin";
+export {
+  AdminSidebar,
+  AdminNoticesPage,
+  AdminNoticesEditPage,
+  AdminNoticesEditRoute,
+} from "./admin";
