@@ -103,9 +103,13 @@ const slashCommandItems: SlashCommandItem[] = [
     searchTerms: ["image", "img", "이미지", "사진"],
     icon: <ImageIcon size={18} />,
     command: ({ editor, range }) => {
-      const url = promptForImageUrl();
-      if (!url) return;
-      editor.chain().focus().deleteRange(range).setImage({ src: url }).run();
+      // URL 입력이 아니라 파일을 첨부해 이미지를 삽입한다.
+      editor.chain().focus().deleteRange(range).run();
+      void pickImageFile().then((dataUrl) => {
+        if (dataUrl) {
+          editor.chain().focus().setImage({ src: dataUrl }).run();
+        }
+      });
     },
   },
 ];
@@ -124,11 +128,32 @@ const isSafeImageUrl = (raw: string): boolean => {
   }
 };
 
-const promptForImageUrl = (): string | null => {
-  if (typeof window === "undefined" || typeof window.prompt !== "function") return null;
-  const input = window.prompt("이미지 URL을 입력하세요:");
-  if (input === null) return null;
-  return isSafeImageUrl(input) ? input.trim() : null;
+// 파일 첨부로 선택한 이미지를 data URL(base64)로 읽어 반환한다.
+const pickImageFile = (): Promise<string | null> => {
+  return new Promise((resolve) => {
+    if (typeof document === "undefined") {
+      resolve(null);
+      return;
+    }
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) {
+        resolve(null);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = typeof reader.result === "string" ? reader.result : null;
+        resolve(result && isSafeImageUrl(result) ? result : null);
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  });
 };
 
 type MenuState = {
@@ -138,13 +163,14 @@ type MenuState = {
   selectedIndex: number;
 };
 
-const getContainerClasses = (className: string): string => {
-  const baseClasses = "w-full border border-[var(--border-default,#cccccc)] rounded-lg bg-white";
-  return [baseClasses, className].filter(Boolean).join(" ");
+const getContainerClasses = (isEditable: boolean, className: string): string => {
+  // 편집 모드에서만 입력 박스(테두리/배경)를 보여주고, 읽기 전용은 콘텐츠만 표시한다.
+  const editableBoxClasses = "border border-[var(--border-default,#cccccc)] rounded-lg bg-white";
+  return ["w-full", isEditable ? editableBoxClasses : "", className].filter(Boolean).join(" ");
 };
 
-const editorContentClasses = [
-  "w-full min-h-[240px] px-4 py-3",
+const editorContentBaseClasses = [
+  "w-full",
   "[&_.ProseMirror]:outline-none",
   "[&_.ProseMirror_h1]:text-[2rem] [&_.ProseMirror_h1]:font-bold [&_.ProseMirror_h1]:leading-tight [&_.ProseMirror_h1]:mb-3 [&_.ProseMirror_h1]:mt-4",
   "[&_.ProseMirror_h2]:text-[1.5rem] [&_.ProseMirror_h2]:font-semibold [&_.ProseMirror_h2]:leading-snug [&_.ProseMirror_h2]:mb-2 [&_.ProseMirror_h2]:mt-4",
@@ -165,6 +191,10 @@ const editorContentClasses = [
   "[&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none",
   "[&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0",
 ].join(" ");
+
+// 편집 모드에서만 입력 영역 여백/최소 높이를 준다. 읽기 전용은 콘텐츠만 노출한다.
+const getEditorContentClasses = (isEditable: boolean): string =>
+  [editorContentBaseClasses, isEditable ? "min-h-[240px] px-4 py-3" : ""].filter(Boolean).join(" ");
 
 export const RichEditor = ({
   content = "",
@@ -283,8 +313,8 @@ export const RichEditor = ({
   }, [editor, isEditable]);
 
   return (
-    <div className={getContainerClasses(className)}>
-      <EditorContent editor={editor} className={editorContentClasses} />
+    <div className={getContainerClasses(isEditable, className)}>
+      <EditorContent editor={editor} className={getEditorContentClasses(isEditable)} />
       {isEditable && menuState && (
         <SlashCommandMenu
           items={menuState.items}
