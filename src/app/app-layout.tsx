@@ -45,6 +45,10 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
     }
   };
 
+  const handleProfileClick = () => {
+    router.push("/profile");
+  };
+
   return (
     <>
       {shouldRenderNavigation && (
@@ -57,6 +61,7 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
           onLogin={handleLoginClick}
           onSignup={handleSignupClick}
           onLogout={handleLogoutClick}
+          onProfileClick={handleProfileClick}
         />
       )}
       {children}
