@@ -52,7 +52,7 @@ export async function getNotices(
   const backendPage = page - 1;
 
   const data = await backendJson<NoticePageResponse>(
-    `/api/posts/NOTICE?page=${backendPage}&size=${size}&sort=LATEST`,
+    `/api/posts/NOTICE?page=${backendPage}&size=${size}&sortType=LATEST`,
     {
       method: "GET",
       requiresAuth: false,
