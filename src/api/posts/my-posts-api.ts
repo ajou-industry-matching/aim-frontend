@@ -21,6 +21,8 @@ export const getLikedPosts = async (
   pageable: PortfolioPageable = {},
 ): Promise<PortfolioListPageResponse> => {
   const params = buildPortfolioPageableParams(pageable);
+  // /api/posts/liked 는 정렬을 지원하지 않으므로 sortType 파라미터를 제거한다.
+  params.delete("sortType");
   const path = `/api/posts/liked?${params.toString()}`;
   return cachedGet(`${authScopeKey()}|${path}`, () => backendJson<PortfolioListPageResponse>(path));
 };
