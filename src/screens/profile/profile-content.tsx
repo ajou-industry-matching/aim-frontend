@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { AuthRole } from "@/api/auth";
 import { useProfilePosts, type ProfilePostsTab } from "@/lib/posts";
 import { useMyProfile } from "@/lib/user";
-import { Loading, Tabs, type TabItem } from "@/shared/ui";
+import { Loading } from "@/shared/ui";
 import { Avatar } from "@/shared/ui/avatars/avatars";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -20,12 +20,24 @@ const roleLabels: Record<AuthRole, string> = {
   COMPANY: "기업",
 };
 
-const tabItems: TabItem[] = [
+const tabItems: { id: ProfilePostsTab; label: string }[] = [
   { id: "my", label: "내 게시글" },
   { id: "liked", label: "좋아요한 게시글" },
 ];
 
 const containerClasses = "mx-auto max-w-[1440px] px-4 py-16";
+
+// 상세 페이지와 동일한 밑줄형 탭 스타일 (호버 배경/텍스트 강조 없음)
+const profileTabBaseClasses =
+  "-mb-px border-b-2 px-6 py-3 text-[16px] font-medium leading-[1.5] tracking-[-0.4px] transition-colors";
+
+const getProfileTabClasses = (isActive: boolean): string =>
+  [
+    profileTabBaseClasses,
+    isActive
+      ? "border-[var(--color-primary-800,#004a9c)] text-[var(--color-primary-800,#004a9c)]"
+      : "border-transparent text-[var(--color-gray-600,#666)]",
+  ].join(" ");
 
 export const ProfileContent = () => {
   const router = useRouter();
@@ -37,10 +49,8 @@ export const ProfileContent = () => {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-white">
-        <div className={`${containerClasses} flex items-center justify-center`}>
-          <Loading text="프로필을 불러오는 중" />
-        </div>
+      <main className="flex min-h-screen items-center justify-center bg-white">
+        <Loading text="프로필을 불러오는 중" />
       </main>
     );
   }
@@ -117,14 +127,18 @@ export const ProfileContent = () => {
           </div>
         </section>
 
-        {/* 탭 */}
-        <div className="mt-10">
-          <Tabs
-            items={tabItems}
-            value={activeTab}
-            variant="horizontal"
-            onChange={(id) => setActiveTab(id as ProfilePostsTab)}
-          />
+        {/* 탭 (상세 페이지와 동일한 밑줄 스타일) */}
+        <div className="mt-10 flex border-b border-[var(--color-gray-200,#e5e5e5)]">
+          {tabItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setActiveTab(item.id)}
+              className={getProfileTabClasses(activeTab === item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
 
         {/* 게시글 그리드 */}
