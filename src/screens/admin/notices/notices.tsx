@@ -50,18 +50,33 @@ const SearchIcon = () => (
 
 export const AdminNoticesPage = () => {
   const [search, setSearch] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(0);
   const [notices, setNotices] = useState<Post[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 입력이 멈추면 검색어를 반영하고 1페이지로 되돌린다(디바운스로 타이핑 중 과도한 요청 방지).
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setKeyword(search.trim());
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const fetchNotices = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await getPosts("NOTICE", { page, size: PAGE_SIZE, sort: "LATEST" });
+      const response = await getPosts("NOTICE", {
+        page,
+        size: PAGE_SIZE,
+        sort: "LATEST",
+        keyword: keyword || undefined,
+      });
       setNotices(response.content);
       setTotalPages(Math.max(1, response.totalPages));
     } catch (fetchError) {
@@ -70,15 +85,11 @@ export const AdminNoticesPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page]);
+  }, [page, keyword]);
 
   useEffect(() => {
     void fetchNotices();
   }, [fetchNotices]);
-
-  const visibleNotices = search.trim()
-    ? notices.filter((notice) => notice.title.toLowerCase().includes(search.trim().toLowerCase()))
-    : notices;
 
   return (
     <div className="flex-1 bg-white p-8">
@@ -141,12 +152,12 @@ export const AdminNoticesPage = () => {
           <div className="flex min-h-14 items-center justify-center px-5 py-8 text-[14px] text-red-500">
             {error}
           </div>
-        ) : visibleNotices.length === 0 ? (
+        ) : notices.length === 0 ? (
           <div className="flex min-h-14 items-center justify-center px-5 py-8 text-[14px] text-[#999]">
-            {search.trim() ? "검색 결과가 없습니다." : "등록된 공지사항이 없습니다."}
+            {keyword ? "검색 결과가 없습니다." : "등록된 공지사항이 없습니다."}
           </div>
         ) : (
-          visibleNotices.map((notice) => (
+          notices.map((notice) => (
             <div
               key={notice.postId}
               className="flex min-h-14 items-center border-b border-[#e5e5e5] bg-white px-5 py-4 transition-colors hover:bg-[#f9f9f9]"
