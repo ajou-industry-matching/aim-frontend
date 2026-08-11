@@ -78,15 +78,6 @@ export function NoticeCreateScreen() {
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-[15px] font-medium text-gray-700">작성자 *</label>
-            <Input
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              placeholder="작성자 이름을 입력하세요"
-            />
-          </div>
-
           {/* 간단한 소개 */}
           <div className="flex flex-col gap-2">
             <label className="text-[15px] font-medium text-gray-700">간단한 소개 *</label>
@@ -131,7 +122,7 @@ export function NoticeCreateScreen() {
               onClick={() => fileInputRef.current?.click()}
               className="flex h-[120px] cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:bg-gray-100"
             >
-              <FileTextAltIcon name="upload" className="mb-2 h-8 w-8 text-gray-400" />
+              <UploadIcon className="mb-2 h-8 w-8 text-gray-400" />
               <span className="font-medium text-gray-700">파일 추가</span>
               <span className="mt-1 text-sm text-gray-500">PDF, DOCX, PPTX, ZIP, 이미지 등</span>
             </div>
@@ -143,7 +134,7 @@ export function NoticeCreateScreen() {
                 className="flex items-center justify-between rounded-md border border-gray-200 p-4"
               >
                 <div className="flex items-center gap-3">
-                  <FileTextAltIcon name="file" className="h-6 w-6 text-gray-400" />
+                  <FileTextAltIcon className="h-6 w-6 text-gray-400" />
                   <span className="font-medium text-gray-700">{file.name}</span>
                   <span className="text-sm text-gray-400">
                     {(file.size / (1024 * 1024)).toFixed(2)} MB

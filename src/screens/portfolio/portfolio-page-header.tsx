@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import type { PortfolioSort } from "@/api/posts";
+import { useAuthReady } from "@/lib/auth";
+import { PlusIcon } from "@/shared/ui/icons";
 
 export type PortfolioPageHeaderProps = {
   totalCount: number;
@@ -39,12 +42,17 @@ const sortButtonInactiveClasses =
 const getSortButtonClasses = (isActive: boolean): string =>
   [sortButtonBaseClasses, isActive ? sortButtonActiveClasses : sortButtonInactiveClasses].join(" ");
 
+const createButtonClasses =
+  "inline-flex h-10 items-center gap-2 rounded-lg bg-[var(--color-primary-800,#004a9c)] px-6 text-[14px] font-medium text-white transition-colors hover:bg-[var(--color-primary-900,#003876)]";
+
 export const PortfolioPageHeader = ({
   totalCount,
   sort,
   onSortChange,
   keyword,
 }: PortfolioPageHeaderProps) => {
+  const { isAuthenticated } = useAuthReady();
+
   return (
     <div className="space-y-6">
       <div className="flex items-end justify-between">
@@ -56,19 +64,28 @@ export const PortfolioPageHeader = ({
         </p>
       </div>
 
-      <div className="flex items-center gap-3">
-        {portfolioSortOptions.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => onSortChange(option.value)}
-            className={getSortButtonClasses(sort === option.value)}
-            aria-pressed={sort === option.value}
-            aria-label={`${option.label}으로 정렬`}
-          >
-            {option.label}
-          </button>
-        ))}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          {portfolioSortOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onSortChange(option.value)}
+              className={getSortButtonClasses(sort === option.value)}
+              aria-pressed={sort === option.value}
+              aria-label={`${option.label}으로 정렬`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        {isAuthenticated && (
+          <Link href="/portfolio/create" className={createButtonClasses}>
+            <PlusIcon size={18} />
+            포트폴리오 작성
+          </Link>
+        )}
       </div>
     </div>
   );
