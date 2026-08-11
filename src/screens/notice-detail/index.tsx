@@ -3,7 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/button/button";
-import { Footer } from "@/shared/ui/footer";
+import { Footer } from "@/shared/ui/footer/footer";
 import type { Notice } from "@/api/notice";
 
 interface NoticeDetailScreenProps {
