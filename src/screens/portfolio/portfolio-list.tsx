@@ -22,14 +22,21 @@ const gridClasses = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:gri
 const PORTFOLIO_LIST_SKELETON_COUNT = 12;
 const portfolioListStateClasses = "flex min-h-[420px] items-center justify-center";
 
-// 사용자에게 보이는 값이므로 로컬(KST) 기준으로 표기한다(home/notice 등과 통일).
+// 브라우저 타임존과 무관하게 KST(Asia/Seoul) 기준으로 표기한다.
+const portfolioDateFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Asia/Seoul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
 const formatPortfolioDate = (iso: string): string => {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  return `${yyyy}.${mm}.${dd}.`;
+  const parts = portfolioDateFormatter.formatToParts(date);
+  const get = (type: Intl.DateTimeFormatPartTypes): string =>
+    parts.find((part) => part.type === type)?.value ?? "";
+  return `${get("year")}.${get("month")}.${get("day")}.`;
 };
 
 const toCardTags = (item: PortfolioListItem): string[] =>
