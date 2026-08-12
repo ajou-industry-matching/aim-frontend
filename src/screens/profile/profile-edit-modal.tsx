@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { AuthRole } from "@/api/auth";
 import type { UserProfile } from "@/api/user";
+import { authRoleLabels } from "@/lib/auth";
 import { useUpdateProfile } from "@/lib/user";
 import {
   Button,
@@ -13,12 +13,6 @@ import {
   ModalHeader,
   Textarea,
 } from "@/shared/ui";
-
-const roleLabels: Record<AuthRole, string> = {
-  STUDENT: "학생",
-  PROFESSOR: "교수",
-  COMPANY: "기업",
-};
 
 const BIO_MAX_LENGTH = 200;
 
@@ -91,7 +85,7 @@ export const ProfileEditModal = ({ profile, onClose, onSaved }: ProfileEditModal
           <label className={labelClasses} htmlFor="profile-role">
             회원 종류
           </label>
-          <Input id="profile-role" size="medium" value={roleLabels[profile.role]} disabled />
+          <Input id="profile-role" size="medium" value={authRoleLabels[profile.role]} disabled />
         </div>
 
         <div className="space-y-2">

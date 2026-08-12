@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AuthRole } from "@/api/auth";
+import { authRoleLabels } from "@/lib/auth";
 import { useProfilePosts, type ProfilePostsTab } from "@/lib/posts";
 import { useMyProfile } from "@/lib/user";
 import { Loading } from "@/shared/ui";
@@ -13,12 +13,6 @@ import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { UploadIcon } from "@/shared/ui/icons";
 import { ProfileEditModal } from "./profile-edit-modal";
 import { ProfilePostsGrid } from "./profile-posts-grid";
-
-const roleLabels: Record<AuthRole, string> = {
-  STUDENT: "학생",
-  PROFESSOR: "교수",
-  COMPANY: "기업",
-};
 
 const tabItems: { id: ProfilePostsTab; label: string }[] = [
   { id: "my", label: "내 게시글" },
@@ -112,7 +106,7 @@ export const ProfileContent = () => {
                 {profile.email}
               </span>
               <Badge variant="primary" size="small">
-                {roleLabels[profile.role]}
+                {authRoleLabels[profile.role]}
               </Badge>
             </div>
 
