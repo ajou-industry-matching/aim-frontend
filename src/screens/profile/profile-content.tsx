@@ -6,7 +6,7 @@ import { authRoleLabels, updateStoredSessionName } from "@/lib/auth";
 import { useProfilePosts, type ProfilePostsTab } from "@/lib/posts";
 import { useMyProfile } from "@/lib/user";
 import { PortfolioList, type PortfolioListEmptyState } from "@/screens/portfolio";
-import { Loading } from "@/shared/ui";
+import { Loading, Pagination } from "@/shared/ui";
 import { Avatar } from "@/shared/ui/avatars/avatars";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -49,10 +49,28 @@ const getProfileTabClasses = (isActive: boolean): string =>
 export const ProfileContent = () => {
   const router = useRouter();
   const { profile, isLoading, error, setProfile } = useMyProfile();
-  const myPosts = useProfilePosts("my");
-  const likedPosts = useProfilePosts("liked");
   const [activeTab, setActiveTab] = useState<ProfilePostsTab>("my");
+  const [page, setPage] = useState(1);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const {
+    posts,
+    totalPages,
+    isLoading: isPostsLoading,
+    error: postsError,
+  } = useProfilePosts(activeTab, page);
+
+  const handleTabChange = (nextTab: ProfilePostsTab) => {
+    if (nextTab === activeTab) return;
+    setActiveTab(nextTab);
+    setPage(1);
+  };
+
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -76,8 +94,6 @@ export const ProfileContent = () => {
       </main>
     );
   }
-
-  const activePosts = activeTab === "my" ? myPosts : likedPosts;
 
   return (
     <main className="min-h-screen bg-white">
@@ -140,7 +156,7 @@ export const ProfileContent = () => {
             <button
               key={item.id}
               type="button"
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => handleTabChange(item.id)}
               className={getProfileTabClasses(activeTab === item.id)}
             >
               {item.label}
@@ -151,11 +167,21 @@ export const ProfileContent = () => {
         {/* 게시글 그리드 */}
         <div className="mt-8">
           <PortfolioList
-            portfolios={activePosts.posts}
-            isLoading={activePosts.isLoading}
-            error={activePosts.error?.message ?? null}
+            portfolios={posts}
+            isLoading={isPostsLoading}
+            error={postsError?.message ?? null}
             emptyState={profileEmptyStates[activeTab]}
           />
+
+          {!isPostsLoading && !postsError && totalPages > 1 && (
+            <div className="flex justify-center pt-8">
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </div>
       </div>
 
