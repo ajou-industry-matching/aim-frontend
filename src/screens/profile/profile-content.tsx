@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { authRoleLabels } from "@/lib/auth";
+import { authRoleLabels, updateStoredSessionName } from "@/lib/auth";
 import { useProfilePosts, type ProfilePostsTab } from "@/lib/posts";
 import { useMyProfile } from "@/lib/user";
 import { Loading } from "@/shared/ui";
@@ -163,6 +163,8 @@ export const ProfileContent = () => {
           onClose={() => setIsEditOpen(false)}
           onSaved={(updated) => {
             setProfile(updated);
+            // 헤더 드롭다운이 세션의 name을 읽으므로 저장된 세션 이름도 함께 갱신한다.
+            updateStoredSessionName(updated.name);
             setIsEditOpen(false);
           }}
         />
