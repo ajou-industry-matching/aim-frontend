@@ -3,7 +3,6 @@ import { backendJson } from "@/api/client";
 
 // GET /api/users/me 응답
 export type UserProfile = {
-  userId: number;
   name: string;
   email: string;
   role: AuthRole;
