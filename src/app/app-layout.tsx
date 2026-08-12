@@ -24,6 +24,7 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
   const { session, isAuthReady } = useAuthSession();
   const shouldRenderNavigation =
     !headerlessRoutes.has(pathname) &&
+    !pathname.startsWith("/admin") &&
     !routeOwnedNavigationPrefixes.some(
       (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
     );
