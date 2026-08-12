@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { authRoleLabels, updateStoredSessionName } from "@/lib/auth";
 import { useProfilePosts, type ProfilePostsTab } from "@/lib/posts";
 import { useMyProfile } from "@/lib/user";
+import { PortfolioList, type PortfolioListEmptyState } from "@/screens/portfolio";
 import { Loading } from "@/shared/ui";
 import { Avatar } from "@/shared/ui/avatars/avatars";
 import { Badge } from "@/shared/ui/badge";
@@ -12,12 +13,24 @@ import { Button } from "@/shared/ui/button";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { UploadIcon } from "@/shared/ui/icons";
 import { ProfileEditModal } from "./profile-edit-modal";
-import { ProfilePostsGrid } from "./profile-posts-grid";
 
 const tabItems: { id: ProfilePostsTab; label: string }[] = [
   { id: "my", label: "내 게시글" },
   { id: "liked", label: "좋아요한 게시글" },
 ];
+
+const profileEmptyStates: Record<ProfilePostsTab, PortfolioListEmptyState> = {
+  my: {
+    variant: "no-content",
+    title: "아직 작성한 게시글이 없습니다",
+    description: "첫 포트폴리오를 업로드해보세요.",
+  },
+  liked: {
+    variant: "no-content",
+    title: "좋아요한 게시글이 없습니다",
+    description: "마음에 드는 포트폴리오에 좋아요를 눌러보세요.",
+  },
+};
 
 const containerClasses = "mx-auto max-w-[1440px] px-4 py-16";
 
@@ -137,23 +150,12 @@ export const ProfileContent = () => {
 
         {/* 게시글 그리드 */}
         <div className="mt-8">
-          {activeTab === "my" ? (
-            <ProfilePostsGrid
-              posts={activePosts.posts}
-              isLoading={activePosts.isLoading}
-              error={activePosts.error?.message ?? null}
-              emptyTitle="아직 작성한 게시글이 없습니다"
-              emptyDescription="첫 포트폴리오를 업로드해보세요."
-            />
-          ) : (
-            <ProfilePostsGrid
-              posts={activePosts.posts}
-              isLoading={activePosts.isLoading}
-              error={activePosts.error?.message ?? null}
-              emptyTitle="좋아요한 게시글이 없습니다"
-              emptyDescription="마음에 드는 포트폴리오에 좋아요를 눌러보세요."
-            />
-          )}
+          <PortfolioList
+            portfolios={activePosts.posts}
+            isLoading={activePosts.isLoading}
+            error={activePosts.error?.message ?? null}
+            emptyState={profileEmptyStates[activeTab]}
+          />
         </div>
       </div>
 

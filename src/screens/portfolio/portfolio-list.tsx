@@ -4,11 +4,18 @@ import type { PortfolioListItem } from "@/api/posts";
 import { Card } from "@/shared/ui/card/card";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 
+// 목록이 비었을 때 표시할 문구/아이콘. 검색·프로필 등 사용처마다 다르게 전달한다.
+export type PortfolioListEmptyState = {
+  variant: "no-results" | "no-content";
+  title: string;
+  description: string;
+};
+
 export type PortfolioListProps = {
   portfolios: PortfolioListItem[];
   isLoading: boolean;
   error: string | null;
-  hasKeyword: boolean;
+  emptyState: PortfolioListEmptyState;
 };
 
 const gridClasses = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
@@ -54,7 +61,7 @@ const PortfolioCardSkeleton = () => (
   </div>
 );
 
-export const PortfolioList = ({ portfolios, isLoading, error, hasKeyword }: PortfolioListProps) => {
+export const PortfolioList = ({ portfolios, isLoading, error, emptyState }: PortfolioListProps) => {
   if (isLoading) {
     return (
       <div className={gridClasses} role="status" aria-label="포트폴리오 로딩 중">
@@ -82,11 +89,9 @@ export const PortfolioList = ({ portfolios, isLoading, error, hasKeyword }: Port
     return (
       <div className={portfolioListStateClasses}>
         <EmptyState
-          variant={hasKeyword ? "no-results" : "no-content"}
-          title={hasKeyword ? "검색 결과가 없습니다" : "포트폴리오가 없습니다"}
-          description={
-            hasKeyword ? "다른 검색어로 다시 시도해보세요." : "아직 등록된 포트폴리오가 없습니다."
-          }
+          variant={emptyState.variant}
+          title={emptyState.title}
+          description={emptyState.description}
           hasBackground
         />
       </div>

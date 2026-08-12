@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   getPortfolioList,
@@ -42,7 +42,7 @@ export const PortfolioListPage = () => {
   const { isReady: isAuthReady } = useAuthReady();
   const urlKeyword = searchParams.get("keyword") ?? "";
   const keyword = urlKeyword.trim();
-  const lastKeywordRef = useRef(keyword);
+  const [committedKeyword, setCommittedKeyword] = useState(keyword);
   const [query, setQuery] = useState<PortfolioQuery>({
     page: 1,
     sort: "LATEST",
@@ -50,18 +50,20 @@ export const PortfolioListPage = () => {
   });
   const [result, setResult] = useState<PortfolioFetchResult | null>(null);
 
-  const effectiveQuery = lastKeywordRef.current === keyword ? query : { ...query, page: 1 };
+  // 키워드가 바뀌면 첫 페이지부터 다시 조회한다. 렌더 중 상태를 조정해 첫 조회부터 page=1을 반영한다.
+  let effectiveQuery = query;
+  if (committedKeyword !== keyword) {
+    setCommittedKeyword(keyword);
+    setQuery((previous) => (previous.page === 1 ? previous : { ...previous, page: 1 }));
+    effectiveQuery = query.page === 1 ? query : { ...query, page: 1 };
+  }
+
   const queryKey = toPortfolioQueryKey(effectiveQuery, keyword);
   const hasMatchingResult = result?.queryKey === queryKey;
   // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
   const isLoading = !isAuthReady || !hasMatchingResult;
   const data = hasMatchingResult ? result.data : undefined;
   const error = hasMatchingResult ? (result.error ?? null) : null;
-
-  useEffect(() => {
-    lastKeywordRef.current = keyword;
-    setQuery((previous) => (previous.page === 1 ? previous : { ...previous, page: 1 }));
-  }, [keyword]);
 
   useEffect(() => {
     if (!isAuthReady) return;
@@ -155,7 +157,19 @@ export const PortfolioListPage = () => {
             portfolios={data?.content ?? []}
             isLoading={isLoading}
             error={error}
-            hasKeyword={Boolean(keyword)}
+            emptyState={
+              keyword
+                ? {
+                    variant: "no-results",
+                    title: "검색 결과가 없습니다",
+                    description: "다른 검색어로 다시 시도해보세요.",
+                  }
+                : {
+                    variant: "no-content",
+                    title: "포트폴리오가 없습니다",
+                    description: "아직 등록된 포트폴리오가 없습니다.",
+                  }
+            }
           />
 
           {!isLoading && !error && totalPages > 1 && (
