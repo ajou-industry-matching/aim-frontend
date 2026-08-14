@@ -10,7 +10,7 @@ import {
   type PortfolioSort,
 } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
-import { Pagination } from "@/shared/ui";
+import { Footer, Pagination } from "@/shared/ui";
 import { PortfolioList } from "./portfolio-list";
 import { PortfolioPageHeader } from "./portfolio-page-header";
 import { PortfolioSearchBar } from "./portfolio-search-bar";
@@ -42,7 +42,7 @@ export const PortfolioListPage = () => {
   const { isReady: isAuthReady } = useAuthReady();
   const urlKeyword = searchParams.get("keyword") ?? "";
   const keyword = urlKeyword.trim();
-  const [committedKeyword, setCommittedKeyword] = useState(keyword);
+  const [lastKeyword, setLastKeyword] = useState(keyword);
   const [query, setQuery] = useState<PortfolioQuery>({
     page: 1,
     sort: "LATEST",
@@ -50,14 +50,13 @@ export const PortfolioListPage = () => {
   });
   const [result, setResult] = useState<PortfolioFetchResult | null>(null);
 
-  // 키워드가 바뀌면 첫 페이지부터 다시 조회한다. 렌더 중 상태를 조정해 첫 조회부터 page=1을 반영한다.
-  let effectiveQuery = query;
-  if (committedKeyword !== keyword) {
-    setCommittedKeyword(keyword);
+  // keyword가 바뀐 렌더에서 즉시 page를 1로 반영한다(ref 대신 state로 렌더 중 조정 — React 권장 패턴).
+  if (lastKeyword !== keyword) {
+    setLastKeyword(keyword);
     setQuery((previous) => (previous.page === 1 ? previous : { ...previous, page: 1 }));
-    effectiveQuery = query.page === 1 ? query : { ...query, page: 1 };
   }
 
+  const effectiveQuery = lastKeyword === keyword ? query : { ...query, page: 1 };
   const queryKey = toPortfolioQueryKey(effectiveQuery, keyword);
   const hasMatchingResult = result?.queryKey === queryKey;
   // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
@@ -135,54 +134,57 @@ export const PortfolioListPage = () => {
   const totalPages = data?.totalPages ?? 0;
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="mx-auto max-w-[1440px] px-4 py-16">
-        <div className="mb-8">
-          <PortfolioSearchBar initialKeyword={keyword} onSubmit={handleSearchSubmit} />
+    <div className="flex min-h-screen flex-col bg-white">
+      <main className="flex-1">
+        <div className="mx-auto max-w-[1440px] px-4 py-16">
+          <div className="mb-8">
+            <PortfolioSearchBar initialKeyword={keyword} onSubmit={handleSearchSubmit} />
+          </div>
+
+          <div className="mb-8">
+            <PortfolioTypeFilter selectedTypes={query.selectedTypes} onChange={handleTypesChange} />
+          </div>
+
+          <div className="space-y-8">
+            <PortfolioPageHeader
+              totalCount={totalElements}
+              sort={query.sort}
+              onSortChange={handleSortChange}
+              keyword={keyword}
+            />
+
+            <PortfolioList
+              portfolios={data?.content ?? []}
+              isLoading={isLoading}
+              error={error}
+              emptyState={
+                keyword
+                  ? {
+                      variant: "no-results",
+                      title: "검색 결과가 없습니다",
+                      description: "다른 검색어로 다시 시도해보세요.",
+                    }
+                  : {
+                      variant: "no-content",
+                      title: "포트폴리오가 없습니다",
+                      description: "아직 등록된 포트폴리오가 없습니다.",
+                    }
+              }
+            />
+
+            {!isLoading && !error && totalPages > 1 && (
+              <div className="flex justify-center pt-8">
+                <Pagination
+                  currentPage={query.page}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
+          </div>
         </div>
-
-        <div className="mb-8">
-          <PortfolioTypeFilter selectedTypes={query.selectedTypes} onChange={handleTypesChange} />
-        </div>
-
-        <div className="space-y-8">
-          <PortfolioPageHeader
-            totalCount={totalElements}
-            sort={query.sort}
-            onSortChange={handleSortChange}
-            keyword={keyword}
-          />
-
-          <PortfolioList
-            portfolios={data?.content ?? []}
-            isLoading={isLoading}
-            error={error}
-            emptyState={
-              keyword
-                ? {
-                    variant: "no-results",
-                    title: "검색 결과가 없습니다",
-                    description: "다른 검색어로 다시 시도해보세요.",
-                  }
-                : {
-                    variant: "no-content",
-                    title: "포트폴리오가 없습니다",
-                    description: "아직 등록된 포트폴리오가 없습니다.",
-                  }
-            }
-          />
-
-          {!isLoading && !error && totalPages > 1 && (
-            <div className="flex justify-center pt-8">
-              <Pagination
-                currentPage={query.page}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    </main>
+      </main>
+      <Footer className="mt-auto" />
+    </div>
   );
 };

@@ -9,6 +9,7 @@ import {
   FileUploader,
   ThumbnailUploader,
 } from "@/shared/ui/file-uploader/file-uploader";
+import { Footer } from "@/shared/ui/footer/footer";
 import { FormErrorMessage, FormField, FormHelperText, FormLabel } from "@/shared/ui/form/form";
 import { SelectDropdown } from "@/shared/ui/dropdown";
 import { Input, Textarea } from "@/shared/ui/input/input";
@@ -256,264 +257,271 @@ export const PortfolioForm = ({
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-4 py-12 md:px-8">
-        {/* 헤더 */}
-        <div>
-          <h1 className="mb-2 text-[40px] font-bold leading-[1.3] tracking-[-1px] text-[var(--color-gray-800,#333)]">
-            {heading}
-          </h1>
-          <p className="text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-600,#666)]">
-            {headingDescription}
-          </p>
-        </div>
+    <div className="flex min-h-screen flex-col bg-white">
+      <main className="flex-1">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-10 px-4 py-12 md:px-8">
+          {/* 헤더 */}
+          <div>
+            <h1 className="mb-2 text-[40px] font-bold leading-[1.3] tracking-[-1px] text-[var(--color-gray-800,#333)]">
+              {heading}
+            </h1>
+            <p className="text-[16px] leading-[1.5] tracking-[-0.4px] text-[var(--color-gray-600,#666)]">
+              {headingDescription}
+            </p>
+          </div>
 
-        {/* 기본 정보 */}
-        <section className="flex flex-col gap-6">
-          <h2 className={sectionTitleClasses}>기본 정보</h2>
+          {/* 기본 정보 */}
+          <section className="flex flex-col gap-6">
+            <h2 className={sectionTitleClasses}>기본 정보</h2>
 
-          <FormField>
-            <FormLabel htmlFor="portfolio-title" required>
-              프로젝트 제목
-            </FormLabel>
-            <Input
-              id="portfolio-title"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="프로젝트 제목을 입력하세요"
-              maxLength={MAX_TITLE_LENGTH}
-              hasError={Boolean(fieldErrors.title)}
-            />
-            {fieldErrors.title && <FormErrorMessage>{fieldErrors.title}</FormErrorMessage>}
-          </FormField>
+            <FormField>
+              <FormLabel htmlFor="portfolio-title" required>
+                프로젝트 제목
+              </FormLabel>
+              <Input
+                id="portfolio-title"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="프로젝트 제목을 입력하세요"
+                maxLength={MAX_TITLE_LENGTH}
+                hasError={Boolean(fieldErrors.title)}
+              />
+              {fieldErrors.title && <FormErrorMessage>{fieldErrors.title}</FormErrorMessage>}
+            </FormField>
 
-          <FormField>
-            <FormLabel htmlFor="portfolio-description" required>
-              간단 설명
-            </FormLabel>
-            <Textarea
-              id="portfolio-description"
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              placeholder="프로젝트를 2-3줄로 간단히 요약해주세요"
-              rows={3}
-              maxLength={MAX_DESCRIPTION_LENGTH}
-              hasError={Boolean(fieldErrors.description)}
-              className="min-h-[96px]"
-            />
-            {fieldErrors.description && (
-              <FormErrorMessage>{fieldErrors.description}</FormErrorMessage>
-            )}
-          </FormField>
+            <FormField>
+              <FormLabel htmlFor="portfolio-description" required>
+                간단 설명
+              </FormLabel>
+              <Textarea
+                id="portfolio-description"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="프로젝트를 2-3줄로 간단히 요약해주세요"
+                rows={3}
+                maxLength={MAX_DESCRIPTION_LENGTH}
+                hasError={Boolean(fieldErrors.description)}
+                className="min-h-[96px]"
+              />
+              {fieldErrors.description && (
+                <FormErrorMessage>{fieldErrors.description}</FormErrorMessage>
+              )}
+            </FormField>
 
-          <FormField>
-            <FormLabel required>태그</FormLabel>
-            <SelectDropdown
-              isFullWidth
-              placeholder="태그를 선택하세요"
-              options={availableKeywordOptions}
-              onChange={(option) => handleAddKeyword(Number(option.value))}
-            />
-            {selectedKeywords.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {selectedKeywords.map((keyword) => (
-                  <Tag
-                    key={keyword.keywordId}
-                    onRemove={() => handleRemoveKeyword(keyword.keywordId)}
-                  >
-                    {`#${keyword.keywordName}`}
-                  </Tag>
-                ))}
-              </div>
-            )}
-            {fieldErrors.keywords && <FormErrorMessage>{fieldErrors.keywords}</FormErrorMessage>}
-          </FormField>
-        </section>
-
-        {/* 상세 내용 */}
-        <section className="flex flex-col gap-6">
-          <h2 className={sectionTitleClasses}>상세 내용</h2>
-
-          <FormField>
-            <FormLabel required>프로젝트 상세 설명</FormLabel>
-            <FormHelperText>/ 를 입력하여 다양한 포맷을 사용할 수 있습니다</FormHelperText>
-            <RichEditor
-              content={initialValues.content}
-              onChange={(html) => setContent(html)}
-              placeholder="프로젝트를 자유롭게 소개해주세요"
-              className="min-h-[300px]"
-            />
-            {fieldErrors.content && <FormErrorMessage>{fieldErrors.content}</FormErrorMessage>}
-          </FormField>
-        </section>
-
-        {/* 미디어 및 링크 */}
-        <section className="flex flex-col gap-6">
-          <h2 className={sectionTitleClasses}>미디어 및 링크</h2>
-
-          <FormField>
-            <FormLabel required>썸네일 이미지</FormLabel>
-            <ThumbnailUploader
-              previewUrl={thumbnailPreview ?? undefined}
-              onUpload={(file) => {
-                setThumbnail(file);
-                setIsThumbnailRemoved(false);
-              }}
-              onRemove={() => {
-                // 새로 고른 파일이 있으면 그것만 취소(기존으로 복귀), 없으면 기존 썸네일을 비운다.
-                if (thumbnail) {
-                  setThumbnail(null);
-                } else {
-                  setIsThumbnailRemoved(true);
-                }
-              }}
-            />
-            {fieldErrors.thumbnail && <FormErrorMessage>{fieldErrors.thumbnail}</FormErrorMessage>}
-          </FormField>
-
-          <FormField>
-            <FormLabel>추가 이미지</FormLabel>
-            <FileUploader
-              accept="image/*"
-              multiple
-              onFileSelect={(selected) => setImages((prev) => [...prev, ...selected])}
-            />
-            {(visibleExistingImages.length > 0 || imagePreviews.length > 0) && (
-              <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
-                {visibleExistingImages.map((attachment) => (
-                  <div
-                    key={`existing-image-${attachment.attachmentId}`}
-                    className="group relative aspect-video overflow-hidden rounded-lg border border-[var(--color-gray-200,#e5e5e5)]"
-                  >
-                    {/* 서버 이미지 미리보기 (상세 페이지와 동일 방식) */}
-                    <img
-                      src={attachment.filePath}
-                      alt={attachment.originalFilename}
-                      className="h-full w-full object-cover"
-                    />
-                    <Button
-                      variant="danger"
-                      size="small"
-                      className="absolute right-2 top-2 h-8 w-8 p-0 opacity-0 transition-opacity group-hover:opacity-100"
-                      onClick={() => handleRemoveExistingAttachment(attachment.attachmentId)}
-                      aria-label={`${attachment.originalFilename} 삭제`}
+            <FormField>
+              <FormLabel required>태그</FormLabel>
+              <SelectDropdown
+                isFullWidth
+                placeholder="태그를 선택하세요"
+                options={availableKeywordOptions}
+                onChange={(option) => handleAddKeyword(Number(option.value))}
+              />
+              {selectedKeywords.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {selectedKeywords.map((keyword) => (
+                    <Tag
+                      key={keyword.keywordId}
+                      onRemove={() => handleRemoveKeyword(keyword.keywordId)}
                     >
-                      <XIcon size={16} />
-                    </Button>
-                  </div>
-                ))}
-                {imagePreviews.map((previewUrl, index) => (
-                  <div
-                    key={previewUrl}
-                    className="group relative aspect-video overflow-hidden rounded-lg border border-[var(--color-gray-200,#e5e5e5)]"
-                  >
-                    {/* blob URL 미리보기라 next/image 대신 img 사용 */}
-                    <img
-                      src={previewUrl}
-                      alt={`추가 이미지 ${index + 1}`}
-                      className="h-full w-full object-cover"
-                    />
-                    <Button
-                      variant="danger"
-                      size="small"
-                      className="absolute right-2 top-2 h-8 w-8 p-0 opacity-0 transition-opacity group-hover:opacity-100"
-                      onClick={() => setImages((prev) => prev.filter((_, i) => i !== index))}
-                      aria-label={`추가 이미지 ${index + 1} 삭제`}
+                      {`#${keyword.keywordName}`}
+                    </Tag>
+                  ))}
+                </div>
+              )}
+              {fieldErrors.keywords && <FormErrorMessage>{fieldErrors.keywords}</FormErrorMessage>}
+            </FormField>
+          </section>
+
+          {/* 상세 내용 */}
+          <section className="flex flex-col gap-6">
+            <h2 className={sectionTitleClasses}>상세 내용</h2>
+
+            <FormField>
+              <FormLabel required>프로젝트 상세 설명</FormLabel>
+              <FormHelperText>/ 를 입력하여 다양한 포맷을 사용할 수 있습니다</FormHelperText>
+              <RichEditor
+                content={initialValues.content}
+                onChange={(html) => setContent(html)}
+                placeholder="프로젝트를 자유롭게 소개해주세요"
+                className="min-h-[300px]"
+              />
+              {fieldErrors.content && <FormErrorMessage>{fieldErrors.content}</FormErrorMessage>}
+            </FormField>
+          </section>
+
+          {/* 미디어 및 링크 */}
+          <section className="flex flex-col gap-6">
+            <h2 className={sectionTitleClasses}>미디어 및 링크</h2>
+
+            <FormField>
+              <FormLabel required>썸네일 이미지</FormLabel>
+              <ThumbnailUploader
+                previewUrl={thumbnailPreview ?? undefined}
+                onUpload={(file) => {
+                  setThumbnail(file);
+                  setIsThumbnailRemoved(false);
+                }}
+                onRemove={() => {
+                  // 새로 고른 파일이 있으면 그것만 취소(기존으로 복귀), 없으면 기존 썸네일을 비운다.
+                  if (thumbnail) {
+                    setThumbnail(null);
+                  } else {
+                    setIsThumbnailRemoved(true);
+                  }
+                }}
+              />
+              {fieldErrors.thumbnail && (
+                <FormErrorMessage>{fieldErrors.thumbnail}</FormErrorMessage>
+              )}
+            </FormField>
+
+            <FormField>
+              <FormLabel>추가 이미지</FormLabel>
+              <FileUploader
+                accept="image/*"
+                multiple
+                onFileSelect={(selected) => setImages((prev) => [...prev, ...selected])}
+              />
+              {(visibleExistingImages.length > 0 || imagePreviews.length > 0) && (
+                <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
+                  {visibleExistingImages.map((attachment) => (
+                    <div
+                      key={`existing-image-${attachment.attachmentId}`}
+                      className="group relative aspect-video overflow-hidden rounded-lg border border-[var(--color-gray-200,#e5e5e5)]"
                     >
-                      <XIcon size={16} />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                      {/* 서버 이미지 미리보기 (상세 페이지와 동일 방식) */}
+                      <img
+                        src={attachment.filePath}
+                        alt={attachment.originalFilename}
+                        className="h-full w-full object-cover"
+                      />
+                      <Button
+                        variant="danger"
+                        size="small"
+                        className="absolute right-2 top-2 h-8 w-8 p-0 opacity-0 transition-opacity group-hover:opacity-100"
+                        onClick={() => handleRemoveExistingAttachment(attachment.attachmentId)}
+                        aria-label={`${attachment.originalFilename} 삭제`}
+                      >
+                        <XIcon size={16} />
+                      </Button>
+                    </div>
+                  ))}
+                  {imagePreviews.map((previewUrl, index) => (
+                    <div
+                      key={previewUrl}
+                      className="group relative aspect-video overflow-hidden rounded-lg border border-[var(--color-gray-200,#e5e5e5)]"
+                    >
+                      {/* blob URL 미리보기라 next/image 대신 img 사용 */}
+                      <img
+                        src={previewUrl}
+                        alt={`추가 이미지 ${index + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                      <Button
+                        variant="danger"
+                        size="small"
+                        className="absolute right-2 top-2 h-8 w-8 p-0 opacity-0 transition-opacity group-hover:opacity-100"
+                        onClick={() => setImages((prev) => prev.filter((_, i) => i !== index))}
+                        aria-label={`추가 이미지 ${index + 1} 삭제`}
+                      >
+                        <XIcon size={16} />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </FormField>
+
+            <FormField>
+              <FormLabel htmlFor="portfolio-video-link">시연 영상 URL</FormLabel>
+              <Input
+                id="portfolio-video-link"
+                type="url"
+                value={videoLink}
+                onChange={(event) => setVideoLink(event.target.value)}
+                placeholder="https://youtube.com/watch?v=..."
+                hasError={Boolean(fieldErrors.videoLink)}
+              />
+              {fieldErrors.videoLink && (
+                <FormErrorMessage>{fieldErrors.videoLink}</FormErrorMessage>
+              )}
+            </FormField>
+
+            <FormField>
+              <FormLabel htmlFor="portfolio-github-link">GitHub URL</FormLabel>
+              <Input
+                id="portfolio-github-link"
+                type="url"
+                value={githubLink}
+                onChange={(event) => setGithubLink(event.target.value)}
+                placeholder="https://github.com/username/repo"
+                hasError={Boolean(fieldErrors.githubLink)}
+              />
+              {fieldErrors.githubLink && (
+                <FormErrorMessage>{fieldErrors.githubLink}</FormErrorMessage>
+              )}
+            </FormField>
+
+            <FormField>
+              <FormLabel>첨부파일</FormLabel>
+              <FileUploader
+                accept={ATTACHMENT_ACCEPT}
+                multiple
+                onFileSelect={(selected) => setFiles((prev) => [...prev, ...selected])}
+              />
+              {(visibleExistingFiles.length > 0 || files.length > 0) && (
+                <div className="mt-4 flex flex-col gap-2">
+                  {visibleExistingFiles.map((attachment) => (
+                    <FileListItem
+                      key={`existing-file-${attachment.attachmentId}`}
+                      file={{
+                        id: `existing-${attachment.attachmentId}`,
+                        name: attachment.originalFilename,
+                        size: formatFileSize(attachment.fileSize),
+                        type: attachment.fileType,
+                      }}
+                      onRemove={() => handleRemoveExistingAttachment(attachment.attachmentId)}
+                    />
+                  ))}
+                  {files.map((file, index) => (
+                    <FileListItem
+                      key={`${file.name}-${index}`}
+                      file={{
+                        id: String(index),
+                        name: file.name,
+                        size: formatFileSize(file.size),
+                        type: file.type,
+                      }}
+                      onRemove={() => setFiles((prev) => prev.filter((_, i) => i !== index))}
+                    />
+                  ))}
+                </div>
+              )}
+            </FormField>
+          </section>
+
+          {/* 제출 */}
+          <div className="flex flex-col gap-3 border-t border-[var(--color-gray-200,#e5e5e5)] pt-6">
+            {submitError && (
+              <FormErrorMessage>저장에 실패했습니다. 잠시 후 다시 시도해주세요.</FormErrorMessage>
             )}
-          </FormField>
-
-          <FormField>
-            <FormLabel htmlFor="portfolio-video-link">시연 영상 URL</FormLabel>
-            <Input
-              id="portfolio-video-link"
-              type="url"
-              value={videoLink}
-              onChange={(event) => setVideoLink(event.target.value)}
-              placeholder="https://youtube.com/watch?v=..."
-              hasError={Boolean(fieldErrors.videoLink)}
-            />
-            {fieldErrors.videoLink && <FormErrorMessage>{fieldErrors.videoLink}</FormErrorMessage>}
-          </FormField>
-
-          <FormField>
-            <FormLabel htmlFor="portfolio-github-link">GitHub URL</FormLabel>
-            <Input
-              id="portfolio-github-link"
-              type="url"
-              value={githubLink}
-              onChange={(event) => setGithubLink(event.target.value)}
-              placeholder="https://github.com/username/repo"
-              hasError={Boolean(fieldErrors.githubLink)}
-            />
-            {fieldErrors.githubLink && (
-              <FormErrorMessage>{fieldErrors.githubLink}</FormErrorMessage>
-            )}
-          </FormField>
-
-          <FormField>
-            <FormLabel>첨부파일</FormLabel>
-            <FileUploader
-              accept={ATTACHMENT_ACCEPT}
-              multiple
-              onFileSelect={(selected) => setFiles((prev) => [...prev, ...selected])}
-            />
-            {(visibleExistingFiles.length > 0 || files.length > 0) && (
-              <div className="mt-4 flex flex-col gap-2">
-                {visibleExistingFiles.map((attachment) => (
-                  <FileListItem
-                    key={`existing-file-${attachment.attachmentId}`}
-                    file={{
-                      id: `existing-${attachment.attachmentId}`,
-                      name: attachment.originalFilename,
-                      size: formatFileSize(attachment.fileSize),
-                      type: attachment.fileType,
-                    }}
-                    onRemove={() => handleRemoveExistingAttachment(attachment.attachmentId)}
-                  />
-                ))}
-                {files.map((file, index) => (
-                  <FileListItem
-                    key={`${file.name}-${index}`}
-                    file={{
-                      id: String(index),
-                      name: file.name,
-                      size: formatFileSize(file.size),
-                      type: file.type,
-                    }}
-                    onRemove={() => setFiles((prev) => prev.filter((_, i) => i !== index))}
-                  />
-                ))}
-              </div>
-            )}
-          </FormField>
-        </section>
-
-        {/* 제출 */}
-        <div className="flex flex-col gap-3 border-t border-[var(--color-gray-200,#e5e5e5)] pt-6">
-          {submitError && (
-            <FormErrorMessage>저장에 실패했습니다. 잠시 후 다시 시도해주세요.</FormErrorMessage>
-          )}
-          <div className="flex justify-end gap-4">
-            <Button variant="secondary" size="large" onClick={onCancel} disabled={isSubmitting}>
-              취소
-            </Button>
-            <Button
-              variant="primary"
-              size="large"
-              onClick={handleValidateAndSubmit}
-              isLoading={isSubmitting}
-            >
-              {submitLabel}
-            </Button>
+            <div className="flex justify-end gap-4">
+              <Button variant="secondary" size="large" onClick={onCancel} disabled={isSubmitting}>
+                취소
+              </Button>
+              <Button
+                variant="primary"
+                size="large"
+                onClick={handleValidateAndSubmit}
+                isLoading={isSubmitting}
+              >
+                {submitLabel}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <Footer className="mt-auto" />
+    </div>
   );
 };
