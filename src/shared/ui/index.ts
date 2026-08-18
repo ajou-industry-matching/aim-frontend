@@ -8,6 +8,8 @@ export { Navigation } from "./navigation/navigation";
 export type { NavigationProps, NavItem, NavUser } from "./navigation/navigation";
 export { Footer } from "./footer/footer";
 export type { FooterProps, FooterLink } from "./footer/footer";
+export { Loading } from "./loading";
+export type { LoadingProps, LoadingSize } from "./loading";
 
 // Form components
 export * from "./form";

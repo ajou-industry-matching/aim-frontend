@@ -335,7 +335,7 @@ export const HomePage: React.FC = () => {
                 <Card
                   key={post.postId}
                   variant="post"
-                  href={`/notice/${post.postId}`}
+                  href={`/notice/detail?id=${post.postId}`}
                   thumbnail={post.thumbnailImage}
                   tags={post.keywords}
                   title={post.title}

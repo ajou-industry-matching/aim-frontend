@@ -1,12 +1,11 @@
 import { Button, Input } from "@/shared/ui";
-import { AtSignIcon, BuildingIcon, LockIcon, MailIcon, UserIcon } from "@/shared/ui/icons";
+import { BuildingIcon, LockIcon, MailIcon, UserIcon } from "@/shared/ui/icons";
 
 export type CompanyAuthMode = "login" | "signup";
 
 export type CompanySignupValues = {
   companyName: string;
   name: string;
-  username: string;
   email: string;
   password: string;
   passwordConfirm: string;
@@ -69,20 +68,6 @@ export const CompanyLoginForm = ({
           placeholder="이름"
           aria-label="이름"
           leftIcon={<UserIcon width={20} />}
-          iconClassName={iconClassName}
-          size="large"
-          isFullWidth
-          className={signupInputClassName}
-        />
-        <Input
-          id="company-signup-username"
-          type="text"
-          value={signupValues.username}
-          onChange={(event) => onSignupValueChange("username", event.target.value)}
-          disabled={isSubmitting}
-          placeholder="아이디"
-          aria-label="아이디"
-          leftIcon={<AtSignIcon width={20} />}
           iconClassName={iconClassName}
           size="large"
           isFullWidth
