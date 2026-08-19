@@ -99,21 +99,25 @@ export const ProfileContent = () => {
     <main className="min-h-screen bg-white">
       <div className={containerClasses}>
         {/* 프로필 헤더 */}
-        <section className="flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-[60px]">
-          <Avatar name={profile.name} size="3xl" className="flex-shrink-0" />
+        <section className="flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-[100px]">
+          <Avatar name={profile.name} size="4xl" className="flex-shrink-0" />
 
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-[20px] text-[color:var(--color-gray-900,#111)]">
                 {profile.name}
               </h1>
-              <Button variant="secondary" size="medium" onClick={() => setIsEditOpen(true)}>
+              <button
+                type="button"
+                onClick={() => setIsEditOpen(true)}
+                className="inline-flex h-[40px] items-center rounded-lg border border-[#e5e5e5] px-6 py-[10px] text-[14px] font-medium text-[#111] transition-colors hover:bg-gray-50"
+              >
                 프로필 편집
-              </Button>
+              </button>
               <Button
                 variant="primary"
                 size="medium"
-                icon={<UploadIcon />}
+                icon={<UploadIcon size={18} />}
                 iconPosition="left"
                 onClick={() => router.push("/portfolio/create")}
               >
@@ -143,7 +147,7 @@ export const ProfileContent = () => {
               {profile.department}
             </p>
             {profile.profileBio && (
-              <p className="mt-1 text-[14px] text-[color:var(--color-gray-500,#666)]">
+              <p className="mt-1 text-[14px] text-[color:var(--color-gray-600,#666)]">
                 {profile.profileBio}
               </p>
             )}
