@@ -1,4 +1,4 @@
-import { PolicyPage } from "@/shared/ui/policy-page/policy-page";
+import { PolicyPage } from "@/shared/ui";
 
 export const TermsPage = (): React.ReactElement => {
   return (
