@@ -54,6 +54,7 @@ export const PortfolioLikeButton = ({
     <Button
       variant={isLiked ? "primary" : "secondary"}
       size="small"
+      isPill
       iconPosition="left"
       icon={<HeartIcon size={16} filled={isLiked} />}
       onClick={handleClick}
