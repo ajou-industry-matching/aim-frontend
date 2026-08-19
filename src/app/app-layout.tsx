@@ -58,6 +58,7 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
           onLogin={handleLoginClick}
           onSignup={handleSignupClick}
           onLogout={handleLogoutClick}
+          onProfileClick={() => router.push("/profile")}
         />
       )}
       {children}

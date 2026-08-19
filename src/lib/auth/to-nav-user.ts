@@ -1,13 +1,8 @@
 "use client";
 
 import type { NavUser } from "@/shared/ui";
+import { authRoleLabels } from "./auth-role-labels";
 import type { StoredSession } from "./auth-session";
-
-const authRoleLabels: Record<StoredSession["role"], NavUser["userType"]> = {
-  STUDENT: "학생",
-  PROFESSOR: "교수",
-  COMPANY: "기업",
-};
 
 const isAdminRole = (adminRole: StoredSession["adminRole"]): boolean =>
   adminRole === "ADMIN" || adminRole === "SUPER_ADMIN";

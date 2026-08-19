@@ -6,6 +6,7 @@ export { PortfolioListPage } from "./portfolio";
 export { PortfolioDetailPage } from "./portfolio-detail";
 export { PortfolioCreatePage } from "./portfolio-create";
 export { PortfolioEditPage } from "./portfolio-edit";
+export { ProfilePage } from "./profile";
 export {
   AdminSidebar,
   AdminNoticesPage,

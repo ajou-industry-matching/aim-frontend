@@ -157,7 +157,19 @@ export const PortfolioListPage = () => {
               portfolios={data?.content ?? []}
               isLoading={isLoading}
               error={error}
-              hasKeyword={Boolean(keyword)}
+              emptyState={
+                keyword
+                  ? {
+                      variant: "no-results",
+                      title: "검색 결과가 없습니다",
+                      description: "다른 검색어로 다시 시도해보세요.",
+                    }
+                  : {
+                      variant: "no-content",
+                      title: "포트폴리오가 없습니다",
+                      description: "아직 등록된 포트폴리오가 없습니다.",
+                    }
+              }
             />
 
             {!isLoading && !error && totalPages > 1 && (
