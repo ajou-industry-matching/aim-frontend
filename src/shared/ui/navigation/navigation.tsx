@@ -49,7 +49,7 @@ const getHeaderClasses = (className?: string) => {
 
 // 2. NavLink Styles
 const navLinkBaseClasses =
-  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-(--color-gray-900,#1a1a1a) transition-all duration-200 border-b-2 h-full";
+  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-(--color-gray-900,#1a1a1a) transition-all duration-200 border-b-2";
 
 const navLinkStatusClasses = {
   active: "border-(--color-primary-700,#0056b3)",
