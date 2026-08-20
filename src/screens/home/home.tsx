@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useAuthReady, useAuthUser } from "@/lib/auth";
+import { useSearchTransitionStore } from "@/lib/navigation";
 import { Card } from "@/shared/ui/card";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Footer, Navigation } from "@/shared/ui";
+import { Loading, LOADING_COVER_DURATION_MS } from "@/shared/ui/loading";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { SearchIcon } from "@/shared/ui/icons";
-import { Spinner } from "@/shared/ui/spinner/spinner";
 import type { NavItem } from "@/shared/ui";
 import type { BoardType } from "@/api/posts";
 import { useHomeStore, type SectionFilter } from "./home-store";
@@ -61,7 +62,6 @@ const SECTION_FILTERS: SectionFilter[] = ["학생 포트폴리오", "기업 모�
 const POST_GRID_CLASSES =
   "grid grid-cols-1 gap-[10px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 const POST_GRID_STATE_MIN_HEIGHT = "min-h-[420px]";
-const HOME_POST_SKELETON_COUNT = 4;
 
 // --- Helpers ---
 
@@ -83,29 +83,6 @@ const SectionHeader = ({ title, href }: { title: string; href?: string }) => (
         더보기
       </Link>
     )}
-  </div>
-);
-
-const PostCardSkeleton = () => (
-  <div
-    className="flex w-full min-w-[280px] max-w-[360px] flex-col animate-pulse"
-    aria-hidden="true"
-  >
-    <div className="aspect-[360/203] w-full rounded-t-xl border border-b-0 border-[color:var(--color-gray-200,#e5e5e5)] bg-[var(--color-gray-100,#f5f5f5)]" />
-    <div className="flex flex-col gap-4 rounded-b-xl border border-[color:var(--color-gray-200,#e5e5e5)] bg-white p-6">
-      <div className="flex gap-2">
-        <div className="h-6 w-18 rounded-xl bg-[var(--color-gray-100,#f5f5f5)]" />
-        <div className="h-6 w-14 rounded-xl bg-[var(--color-gray-100,#f5f5f5)]" />
-      </div>
-      <div className="h-7 w-4/5 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-      <div className="h-5 w-full rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-      <div className="h-4 w-1/2 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-      <div className="flex gap-4">
-        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-      </div>
-    </div>
   </div>
 );
 
@@ -136,11 +113,9 @@ const PostGrid = ({
 }) => {
   if (isLoading) {
     return (
-      <div className={POST_GRID_CLASSES} role="status" aria-label="게시글 로딩 중">
-        {Array.from({ length: HOME_POST_SKELETON_COUNT }, (_, index) => (
-          <PostCardSkeleton key={index} />
-        ))}
-      </div>
+      <PostGridState>
+        <Loading />
+      </PostGridState>
     );
   }
 
@@ -191,6 +166,7 @@ export const HomePage: React.FC = () => {
   const authUser = useAuthUser();
   const { isReady: isAuthReady } = useAuthReady();
   const searchRef = useRef<HTMLInputElement>(null);
+  const startSearchTransition = useSearchTransitionStore((state) => state.start);
   const newPosts = useHomeStore((state) => state.newPosts);
   const sectionPosts = useHomeStore((state) => state.sectionPosts);
   const noticePosts = useHomeStore((state) => state.noticePosts);
@@ -212,20 +188,69 @@ export const HomePage: React.FC = () => {
     void fetchNoticePosts();
   }, [fetchNewPosts, fetchSectionPosts, fetchNoticePosts]);
 
+  // 첫 방문 화면이므로 세 영역이 모두 준비될 때까지 덮개를 유지했다가 완성된 홈을 한 번에 보여준다.
+  // 스토어가 라우트 간에 살아있어 재진입 첫 렌더에는 이전 데이터가 남아 있다.
+  // 그래서 "로딩이 시작되는 것을 본 뒤 끝났는지"를 기준으로 삼아야 재진입에서도 덮개가 유지된다.
+  // (한 번 준비된 뒤 필터를 바꾸는 경우는 해당 영역만 로딩으로 바뀐다.)
+  const isAnyLoading = isLoadingNew || isLoadingSection || isLoadingNotice;
+  const [hasSeenLoading, setHasSeenLoading] = useState(false);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+
+  // 렌더 중 상태 조정(React 권장 패턴). effect에서 setState 하면 한 프레임 늦게 반영된다.
+  if (isAnyLoading && !hasSeenLoading) {
+    setHasSeenLoading(true);
+  }
+  if (hasSeenLoading && !isAnyLoading && !hasInitiallyLoaded) {
+    setHasInitiallyLoaded(true);
+  }
+
+  const isBootstrapping = !hasInitiallyLoaded;
+
   const handleLogout = async () => {
     await signOut();
     router.replace("/login");
   };
 
+  // 검색 시에는 아치가 홈을 덮은 "뒤에" 이동한다.
+  // 이동을 먼저 하면 결과 화면이 먼저 그려지고 그 위로 아치가 올라와 순서가 뒤집힌다.
   const handleHeroSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const q = searchRef.current?.value.trim();
-    if (q) router.push(`/portfolio?keyword=${encodeURIComponent(q)}`);
-    else router.push("/portfolio");
+
+    if (!q) {
+      router.push("/portfolio");
+      return;
+    }
+
+    const href = `/portfolio?keyword=${encodeURIComponent(q)}`;
+    startSearchTransition();
+
+    // 모션을 줄이는 설정에서는 아치가 즉시 덮이므로 기다릴 이유가 없다.
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) {
+      router.push(href);
+      return;
+    }
+
+    window.setTimeout(() => router.push(href), LOADING_COVER_DURATION_MS);
   };
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-gray-900">
+      {/* 첫 방문에는 덮을 이전 화면이 없으므로 아치를 올리지 않고 덮인 상태로 시작한다.
+          페이지를 통째로 대체하지 않고 위에 얹는 이유는, 히어로 카피·섹션 제목 같은
+          정적 콘텐츠가 프리렌더 HTML에 그대로 남아 검색 노출에 쓰이게 하기 위해서다. */}
+      {isBootstrapping && (
+        <Loading
+          isFullScreen
+          hasEnterAnimation={false}
+          text="당신의 가능성이 시작되는 곳"
+          size="large"
+        />
+      )}
       <Navigation
         items={navItems}
         user={authUser ?? undefined}
@@ -320,7 +345,7 @@ export const HomePage: React.FC = () => {
           <SectionHeader title="공지사항" href="/notice" />
           {isLoadingNotice ? (
             <div className="flex min-h-32 items-center justify-center">
-              <Spinner size="large" className="text-(--color-primary-800)" />
+              <Loading />
             </div>
           ) : noticePostsError ? (
             <EmptyState

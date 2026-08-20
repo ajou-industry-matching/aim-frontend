@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { getPosts } from "@/api/posts";
 import type { Post } from "@/api/posts";
+import { Loading } from "@/shared/ui/loading";
 
 const PAGE_SIZE = 10;
 
@@ -145,8 +146,8 @@ export const AdminNoticesPage = () => {
 
         {/* Rows */}
         {isLoading ? (
-          <div className="flex min-h-14 items-center justify-center px-5 py-8 text-[14px] text-[#999]">
-            불러오는 중...
+          <div className="flex min-h-14 items-center justify-center px-5 py-8">
+            <Loading text="불러오는 중" />
           </div>
         ) : error ? (
           <div className="flex min-h-14 items-center justify-center px-5 py-8 text-[14px] text-red-500">

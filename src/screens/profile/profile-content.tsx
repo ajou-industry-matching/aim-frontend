@@ -6,7 +6,8 @@ import { authRoleLabels, updateStoredSessionName } from "@/lib/auth";
 import { useProfilePosts, type ProfilePostsTab } from "@/lib/posts";
 import { useMyProfile } from "@/lib/user";
 import { PortfolioList, type PortfolioListEmptyState } from "@/screens/portfolio";
-import { Loading, Pagination } from "@/shared/ui";
+import { Pagination } from "@/shared/ui";
+import { PageLoading } from "@/shared/ui/loading";
 import { Avatar } from "@/shared/ui/avatars/avatars";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -73,11 +74,7 @@ export const ProfileContent = () => {
   };
 
   if (isLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-white">
-        <Loading text="프로필을 불러오는 중" />
-      </main>
-    );
+    return <PageLoading />;
   }
 
   if (error || !profile) {
