@@ -219,6 +219,7 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
                       <Button
                         variant="secondary"
                         size="small"
+                        isPill
                         iconPosition="right"
                         icon={<ExternalLinkIcon size={16} />}
                         onClick={() => openExternalLink(detail.videoLink as string)}
@@ -230,6 +231,7 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
                       <Button
                         variant="secondary"
                         size="small"
+                        isPill
                         iconPosition="right"
                         icon={<ExternalLinkIcon size={16} />}
                         onClick={() => openExternalLink(detail.githubLink as string)}
