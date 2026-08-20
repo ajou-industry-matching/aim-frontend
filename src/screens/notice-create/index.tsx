@@ -8,6 +8,7 @@ import { Input } from "@/shared/ui/input/input";
 import { FileTextAltIcon, UploadIcon } from "@/shared/ui/icons/index";
 import { Footer } from "@/shared/ui/footer/footer";
 import { createNotice } from "@/api/notice";
+import { RichEditor } from "@/shared/ui/rich-editor";
 
 export function NoticeCreateScreen() {
   const router = useRouter();
@@ -92,12 +93,12 @@ export function NoticeCreateScreen() {
         <section className="mb-12 flex flex-col gap-6">
           <h2 className="text-[20px] font-bold text-gray-900">공지 내용</h2>
           <div className="flex flex-col gap-2">
-            <label className="text-[15px] font-medium text-gray-700">내용 *</label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="공지사항 상세 내용을 입력하세요"
-              className="min-h-[400px] w-full rounded-md border border-gray-300 p-4 text-[15px] text-gray-800 outline-none focus:border-gray-900"
+            <label className="text-[15px] font-medium text-gray-700">공지 내용 *</label>
+            <RichEditor
+              content={content}
+              onChange={(html) => setContent(html)}
+              placeholder="공지 내용을 입력하세요"
+              className="min-h-[400px]"
             />
           </div>
         </section>

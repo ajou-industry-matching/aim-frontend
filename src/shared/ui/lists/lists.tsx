@@ -237,7 +237,7 @@ export const Table = ({
 
   return (
     <table className="w-full border-collapse">
-      <thead>
+      <thead className="bg-[var(--color-gray-100,#f2f2f2)]">
         <tr>
           {hasCheckbox && (
             <th className={`${tableThBaseClasses} w-[48px] text-center`}>
