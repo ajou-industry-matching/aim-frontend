@@ -26,7 +26,7 @@ export function NoticeScreen({ notices, currentPage, totalPages }: NoticeScreenP
 
   const noticeColumns: TableColumn[] = [
     { id: "postId", label: "순번", width: "sm", align: "center" },
-    { id: "title", label: "제목", width: "fill", align: "center" },
+    { id: "title", label: "제목", width: "fill", align: "left" },
     { id: "createdAt", label: "등록일", width: "md", align: "center" },
     { id: "viewCount", label: "조회수", width: "md", align: "center" },
   ];
@@ -46,11 +46,11 @@ export function NoticeScreen({ notices, currentPage, totalPages }: NoticeScreenP
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <main className="mx-auto flex-1 w-full max-w-[1440px] px-4 pt-[160px] pb-[100px]">
-        <h1 className="mb-12 text-center text-[40px] font-bold leading-[1.3] tracking-[-0.025em] text-gray-900">
+        <h1 className="mb-[60px] text-center text-[40px] font-bold leading-[1.3] tracking-[-0.025em] text-gray-900">
           공지사항
         </h1>
 
-        <div className="w-full border-t-2 border-gray-900">
+        <div className="w-full">
           <Table
             columns={noticeColumns}
             data={tableData}
@@ -59,7 +59,7 @@ export function NoticeScreen({ notices, currentPage, totalPages }: NoticeScreenP
           />
         </div>
 
-        <div className="mt-12 flex items-center justify-center">
+        <div className="mt-[110px] flex items-center justify-center">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
