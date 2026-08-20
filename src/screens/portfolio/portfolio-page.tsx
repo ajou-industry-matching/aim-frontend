@@ -10,8 +10,8 @@ import {
   type PortfolioSort,
 } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
+import { useSearchTransitionStore } from "@/lib/navigation";
 import { Footer, Pagination } from "@/shared/ui";
-import { Loading } from "@/shared/ui/loading";
 import { PortfolioList } from "./portfolio-list";
 import { PortfolioPageHeader } from "./portfolio-page-header";
 import { PortfolioSearchBar } from "./portfolio-search-bar";
@@ -95,6 +95,16 @@ export const PortfolioListPage = () => {
     };
   }, [isAuthReady, queryKey]);
 
+  // 홈에서 시작된 검색 전환 덮개는 결과가 준비되면 걷는다.
+  // 이 화면을 벗어날 때도 반드시 걷어 덮개가 남지 않게 한다.
+  const endSearchTransition = useSearchTransitionStore((state) => state.end);
+
+  useEffect(() => {
+    if (!isLoading) endSearchTransition();
+  }, [isLoading, endSearchTransition]);
+
+  useEffect(() => endSearchTransition, [endSearchTransition]);
+
   const handleSearchSubmit = (nextKeyword: string) => {
     const keyword = nextKeyword.trim();
     const nextParams = new URLSearchParams(searchParams.toString());
@@ -136,10 +146,6 @@ export const PortfolioListPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
-      {/* 검색어를 들고 들어온 경우에만 전체화면 로딩으로 홈에서의 전환을 이어받는다. */}
-      {keyword && isLoading && (
-        <Loading isFullScreen text="포트폴리오를 검색하고 있어요" size="large" />
-      )}
       <main className="flex-1">
         <div className="mx-auto max-w-[1440px] px-4 py-16">
           <div className="mb-8">
