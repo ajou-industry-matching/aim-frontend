@@ -27,7 +27,10 @@ type CompanyLoginFormProps = {
 
 const inputClassName = "rounded-[4px] text-[14px] shadow-none";
 const signupInputClassName = "h-[44px] rounded-[4px] text-[14px] shadow-none md:h-12";
-const iconClassName = "!text-[#8c8c8c] hover:!text-[#8c8c8c]";
+const iconClassName =
+  "!text-[color:var(--color-gray-400,#999999)] hover:!text-[color:var(--color-gray-400,#999999)]";
+const submitButtonClassName =
+  "rounded-[4px] text-[14px] font-medium hover:scale-100 hover:shadow-none active:scale-100 !bg-[color:var(--color-primary-900,#003876)] hover:!bg-[color:var(--color-primary-900,#003876)]/90";
 
 export const CompanyLoginForm = ({
   mode,
@@ -51,8 +54,8 @@ export const CompanyLoginForm = ({
           value={signupValues.companyName}
           onChange={(event) => onSignupValueChange("companyName", event.target.value)}
           disabled={isSubmitting}
-          placeholder="회사명"
-          aria-label="회사명"
+          placeholder="소속"
+          aria-label="소속"
           leftIcon={<BuildingIcon width={20} />}
           iconClassName={iconClassName}
           size="large"
@@ -121,7 +124,7 @@ export const CompanyLoginForm = ({
           fullWidth
           size="large"
           isLoading={isSubmitting}
-          className="mt-3 rounded-[4px] text-[14px] font-medium hover:scale-100 hover:shadow-none active:scale-100"
+          className={`mt-3 ${submitButtonClassName}`}
         >
           회원가입
         </Button>
@@ -148,8 +151,8 @@ export const CompanyLoginForm = ({
         value={email}
         onChange={(event) => onEmailChange(event.target.value)}
         disabled={isSubmitting}
-        leftIcon={<MailIcon width={18} />}
-        iconClassName="!text-[#000000] hover:!text-[#000000]"
+        leftIcon={<MailIcon width={20} />}
+        iconClassName={iconClassName}
         size="large"
         isFullWidth
         className={inputClassName}
@@ -167,8 +170,8 @@ export const CompanyLoginForm = ({
         value={password}
         onChange={(event) => onPasswordChange(event.target.value)}
         disabled={isSubmitting}
-        leftIcon={<LockIcon width={18} />}
-        iconClassName="!text-[#000000] hover:!text-[#000000]"
+        leftIcon={<LockIcon width={20} />}
+        iconClassName={iconClassName}
         size="large"
         isFullWidth
         className={inputClassName}
@@ -179,7 +182,7 @@ export const CompanyLoginForm = ({
         fullWidth
         size="large"
         isLoading={isSubmitting}
-        className="mt-5 rounded-[4px] text-[14px] font-medium hover:scale-100 hover:shadow-none active:scale-100"
+        className={`mt-5 ${submitButtonClassName}`}
       >
         로그인
       </Button>
