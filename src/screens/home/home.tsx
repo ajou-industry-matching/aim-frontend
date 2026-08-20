@@ -58,7 +58,8 @@ const HERO_CARDS = [
 ];
 
 const SECTION_FILTERS: SectionFilter[] = ["학생 포트폴리오", "기업 모집공고", "연구실"];
-const POST_GRID_CLASSES = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+const POST_GRID_CLASSES =
+  "grid grid-cols-1 gap-[10px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 const POST_GRID_STATE_MIN_HEIGHT = "min-h-[420px]";
 const HOME_POST_SKELETON_COUNT = 4;
 
@@ -73,13 +74,13 @@ const formatDate = (isoString: string): string => {
 
 const SectionHeader = ({ title, href }: { title: string; href?: string }) => (
   <div className="mb-6 flex items-center justify-between">
-    <h2 className="text-[24px] font-bold leading-tight tracking-[-0.6px] text-gray-900">{title}</h2>
+    <h2 className="text-[40px] font-bold leading-[1.3] tracking-[-1px] text-gray-900">{title}</h2>
     {href && (
       <Link
         href={href}
-        className="text-[14px] font-medium text-gray-500 hover:text-(--color-primary-800) transition-colors"
+        className="text-[16px] font-normal text-gray-500 underline hover:text-(--color-primary-800) transition-colors"
       >
-        더보기 &gt;
+        더보기
       </Link>
     )}
   </div>
@@ -236,16 +237,16 @@ export const HomePage: React.FC = () => {
       />
 
       {/* Hero Banner */}
-      <section className="bg-white px-6 pb-0 pt-10 md:px-16 md:pt-14">
-        <div className="mx-auto max-w-360">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="bg-white pb-0 pt-[10px]">
+        <div className="mx-auto w-full max-w-360 px-6 min-[1440px]:px-0">
+          <div className="grid grid-cols-1 gap-[10px] sm:grid-cols-2 xl:grid-cols-4">
             {HERO_CARDS.map((card, i) => (
               <div
                 key={i}
                 className={`relative flex flex-col overflow-hidden rounded-3xl ${card.bg} text-[#f9f9f9]`}
               >
                 <div className="flex flex-col gap-2 p-6">
-                  <span className="inline-block w-fit rounded-xl border border-[#f9f9f9]/70 px-3 py-1 text-[12px] font-medium tracking-[-0.3px]">
+                  <span className="inline-block w-fit rounded-xl border border-[#f9f9f9] px-3 py-1 text-[12px] font-medium tracking-[-0.3px]">
                     {card.badge}
                   </span>
                   <h3 className="whitespace-pre-line text-2xl font-semibold leading-snug tracking-[-0.6px]">
@@ -260,7 +261,7 @@ export const HomePage: React.FC = () => {
                   <img
                     src={card.icon}
                     alt={`${card.title.replace(/\n/g, " ")} 아이콘`}
-                    className="h-35 w-auto object-contain"
+                    className="size-[200px] object-cover"
                   />
                 </div>
               </div>
@@ -270,9 +271,9 @@ export const HomePage: React.FC = () => {
           {/* Hero Search Bar */}
           <form
             onSubmit={handleHeroSearch}
-            className="mt-4 flex items-center gap-3 rounded-xl bg-[#0056b3] px-5 py-3"
+            className="mt-[25px] flex items-center gap-2 rounded-[100px] bg-[#0056b3] px-4 py-2.5"
           >
-            <SearchIcon size={18} className="shrink-0 text-white/60" />
+            <SearchIcon size={20} className="shrink-0 text-white/60" />
             <input
               ref={searchRef}
               type="text"
@@ -283,28 +284,28 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <main className="mx-auto w-full max-w-360 px-6 py-12 md:px-16 md:py-16">
+      <main className="mx-auto w-full max-w-360 px-6 py-12 min-[1440px]:px-0 md:py-16">
         {/* 새로 올라온 포트폴리오 */}
-        <section className="mb-16">
+        <section className="mb-[60px]">
           <SectionHeader title="새로 올라온 포트폴리오" href="/portfolio" />
           <PostGrid posts={newPosts} isLoading={isLoadingNew} error={newPostsError} />
         </section>
 
         {/* 아주대학교와 함께하세요 */}
-        <section id="about" className="mb-16">
-          <h2 className="mb-6 text-center text-[28px] font-bold leading-tight tracking-[-0.7px] text-gray-900">
+        <section id="about" className="mb-[60px]">
+          <h2 className="mb-6 text-center text-[40px] font-bold leading-[1.3] tracking-[-1px] text-gray-900">
             아주대학교와 함께하세요.
           </h2>
-          <div className="mb-6 flex justify-center gap-2">
+          <div className="mb-[40px] flex gap-4">
             {SECTION_FILTERS.map((filter) => (
               <button
                 key={filter}
                 onClick={() => setSectionFilter(filter)}
                 className={[
-                  "rounded-full px-5 py-2 text-[14px] font-semibold transition-all",
+                  "rounded-full px-6 py-2.5 text-[14px] font-medium transition-all",
                   sectionFilter === filter
                     ? "bg-(--color-primary-800) text-white"
-                    : "border border-gray-200 bg-white text-gray-600 hover:border-(--color-primary-800) hover:text-(--color-primary-800)",
+                    : "border border-(--color-primary-800) bg-white text-(--color-primary-800)",
                 ].join(" ")}
               >
                 {filter}
@@ -330,13 +331,13 @@ export const HomePage: React.FC = () => {
           ) : noticePosts.length === 0 ? (
             <EmptyState variant="no-content" title="공지사항이 없습니다." />
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-[10px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {noticePosts.map((post) => (
                 <Card
                   key={post.postId}
                   variant="post"
                   href={`/notice/detail?id=${post.postId}`}
-                  thumbnail={post.thumbnailImage}
+                  hideThumbnail
                   tags={post.keywords}
                   title={post.title}
                   description={post.description}
