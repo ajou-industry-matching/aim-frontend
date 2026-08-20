@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useAuthReady, useAuthUser } from "@/lib/auth";
@@ -188,6 +188,24 @@ export const HomePage: React.FC = () => {
     void fetchNoticePosts();
   }, [fetchNewPosts, fetchSectionPosts, fetchNoticePosts]);
 
+  // 첫 방문 화면이므로 세 영역이 모두 준비될 때까지 덮개를 유지했다가 완성된 홈을 한 번에 보여준다.
+  // 스토어가 라우트 간에 살아있어 재진입 첫 렌더에는 이전 데이터가 남아 있다.
+  // 그래서 "로딩이 시작되는 것을 본 뒤 끝났는지"를 기준으로 삼아야 재진입에서도 덮개가 유지된다.
+  // (한 번 준비된 뒤 필터를 바꾸는 경우는 해당 영역만 로딩으로 바뀐다.)
+  const isAnyLoading = isLoadingNew || isLoadingSection || isLoadingNotice;
+  const [hasSeenLoading, setHasSeenLoading] = useState(false);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+
+  // 렌더 중 상태 조정(React 권장 패턴). effect에서 setState 하면 한 프레임 늦게 반영된다.
+  if (isAnyLoading && !hasSeenLoading) {
+    setHasSeenLoading(true);
+  }
+  if (hasSeenLoading && !isAnyLoading && !hasInitiallyLoaded) {
+    setHasInitiallyLoaded(true);
+  }
+
+  const isBootstrapping = !hasInitiallyLoaded;
+
   const handleLogout = async () => {
     await signOut();
     router.replace("/login");
@@ -222,6 +240,17 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-gray-900">
+      {/* 첫 방문에는 덮을 이전 화면이 없으므로 아치를 올리지 않고 덮인 상태로 시작한다.
+          페이지를 통째로 대체하지 않고 위에 얹는 이유는, 히어로 카피·섹션 제목 같은
+          정적 콘텐츠가 프리렌더 HTML에 그대로 남아 검색 노출에 쓰이게 하기 위해서다. */}
+      {isBootstrapping && (
+        <Loading
+          isFullScreen
+          hasEnterAnimation={false}
+          text="당신의 가능성이 시작되는 곳"
+          size="large"
+        />
+      )}
       <Navigation
         items={navItems}
         user={authUser ?? undefined}
