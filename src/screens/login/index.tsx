@@ -214,7 +214,7 @@ export const LoginPage = () => {
                     }}
                     variant="horizontal"
                     isAnimated
-                    className="[&>button]:flex-1 [&>button]:text-[13px] [&>button]:md:text-[14px]"
+                    className="[&>button]:flex-1 [&>button]:text-[16px]"
                   />
                 </div>
 
