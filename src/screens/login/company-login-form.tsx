@@ -30,7 +30,7 @@ const signupInputClassName = "h-[44px] rounded-[4px] text-[14px] shadow-none md:
 const iconClassName =
   "!text-[color:var(--color-gray-400,#999999)] hover:!text-[color:var(--color-gray-400,#999999)]";
 const submitButtonClassName =
-  "rounded-[4px] text-[14px] font-medium hover:scale-100 hover:shadow-none active:scale-100 !bg-[color:var(--color-primary-900,#003876)] hover:!bg-[color:var(--color-primary-900,#003876)]/90";
+  "rounded-[4px] text-[14px] font-medium hover:scale-100 hover:shadow-none active:scale-100";
 
 export const CompanyLoginForm = ({
   mode,
