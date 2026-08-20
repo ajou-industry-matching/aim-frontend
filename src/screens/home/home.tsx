@@ -238,7 +238,7 @@ export const HomePage: React.FC = () => {
 
       {/* Hero Banner */}
       <section className="bg-white pb-0 pt-[10px]">
-        <div className="mx-auto max-w-360">
+        <div className="mx-auto w-full max-w-360 px-6 min-[1440px]:px-0">
           <div className="grid grid-cols-1 gap-[10px] sm:grid-cols-2 xl:grid-cols-4">
             {HERO_CARDS.map((card, i) => (
               <div
@@ -284,7 +284,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <main className="mx-auto w-full max-w-360 py-12 md:py-16">
+      <main className="mx-auto w-full max-w-360 px-6 py-12 min-[1440px]:px-0 md:py-16">
         {/* 새로 올라온 포트폴리오 */}
         <section className="mb-[60px]">
           <SectionHeader title="새로 올라온 포트폴리오" href="/portfolio" />
