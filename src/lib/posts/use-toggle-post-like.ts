@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { togglePostLike, type PostLikeToggleResponse } from "@/api/posts";
+import { clearListCache } from "@/api/cache";
 
 export type UseTogglePostLikeResult = {
   toggle: (postId: number) => Promise<PostLikeToggleResponse | null>;
@@ -24,6 +25,7 @@ export const useTogglePostLike = (): UseTogglePostLikeResult => {
     setError(null);
     try {
       const response = await togglePostLike(postId);
+      clearListCache();
       return response;
     } catch (cause) {
       setError(toErrorInstance(cause));

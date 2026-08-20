@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { deletePortfolio, type PortfolioBoardType } from "@/api/posts";
+import { clearListCache } from "@/api/cache";
 
 export type UseDeletePortfolioResult = {
   remove: (boardType: PortfolioBoardType, postId: number) => Promise<boolean>;
@@ -24,6 +25,7 @@ export const useDeletePortfolio = (): UseDeletePortfolioResult => {
     setError(null);
     try {
       await deletePortfolio(boardType, postId);
+      clearListCache();
       return true;
     } catch (cause) {
       console.error("포트폴리오 삭제에 실패했습니다.", cause);

@@ -6,7 +6,7 @@ import { UserSolidIcon } from "../icons";
 // ----------------------------------------------------------------------
 // 타입 정의
 // ----------------------------------------------------------------------
-export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
 export type AvatarStatus = "online" | "away" | "busy" | "offline";
 
 export type AvatarProps = {
@@ -42,6 +42,7 @@ const avatarSizeClasses: Record<AvatarSize, string> = {
   xl: "w-[64px] h-[64px]",
   "2xl": "w-[96px] h-[96px]",
   "3xl": "w-[128px] h-[128px]",
+  "4xl": "w-[150px] h-[150px]",
 };
 
 // 비율에 맞춘 텍스트 사이즈
@@ -53,6 +54,7 @@ const avatarTextSizeClasses: Record<AvatarSize, string> = {
   xl: "text-[26px]",
   "2xl": "text-[38px]",
   "3xl": "text-[51px]",
+  "4xl": "text-[48px]",
 };
 
 // 비율에 맞춘 상태 표시기 사이즈
@@ -64,6 +66,7 @@ const statusSizeClasses: Record<AvatarSize, string> = {
   xl: "w-[13px] h-[13px] border-[2px]",
   "2xl": "w-[19px] h-[19px] border-[3px]",
   "3xl": "w-[26px] h-[26px] border-[4px]",
+  "4xl": "w-[30px] h-[30px] border-[4px]",
 };
 
 const statusColorClasses: Record<AvatarStatus, string> = {

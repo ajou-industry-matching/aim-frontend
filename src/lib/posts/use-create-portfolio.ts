@@ -8,6 +8,7 @@ import {
   type PortfolioCreateRequest,
   type PortfolioDetail,
 } from "@/api/posts";
+import { clearListCache } from "@/api/cache";
 
 export type UseCreatePortfolioResult = {
   submit: (
@@ -38,7 +39,9 @@ export const useCreatePortfolio = (): UseCreatePortfolioResult => {
       setIsSubmitting(true);
       setError(null);
       try {
-        return await createPortfolio(boardType, request, files);
+        const result = await createPortfolio(boardType, request, files);
+        clearListCache();
+        return result;
       } catch (cause) {
         console.error("포트폴리오 저장에 실패했습니다.", cause);
         setError(toErrorInstance(cause));

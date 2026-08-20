@@ -49,11 +49,11 @@ const getHeaderClasses = (className?: string) => {
 
 // 2. NavLink Styles
 const navLinkBaseClasses =
-  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-(--color-gray-900,#1a1a1a) transition-all duration-200 border-b-2 h-full font-medium";
+  "flex items-center justify-center py-[10px] text-[16px] leading-[1.5] tracking-[-0.4px] text-(--color-gray-900,#1a1a1a) transition-all duration-200 border-b-2";
 
 const navLinkStatusClasses = {
-  active: "border-(--color-primary-800,#004a9c)",
-  inactive: "border-transparent hover:border-(--color-primary-800,#004a9c)/50",
+  active: "border-(--color-primary-700,#0056b3)",
+  inactive: "border-transparent hover:border-(--color-primary-700,#0056b3)/50",
 };
 
 const getNavLinkClasses = (isActive?: boolean) => {
@@ -214,7 +214,7 @@ export const Navigation = ({
             <div className="flex items-center gap-3 relative" ref={profileRef}>
               <button
                 onClick={() => setShowProfile(!showProfile)}
-                className="flex items-center justify-center h-10 w-10 text-(--color-primary-800,#004a9c) hover:bg-(--color-primary-50) rounded-full transition-all duration-200"
+                className="flex items-center justify-center h-10 w-10 text-(--color-primary-800,#004a9c) hover:opacity-70 transition-opacity"
                 aria-label="사용자 프로필"
               >
                 <UserIcon size={24} />
@@ -222,7 +222,7 @@ export const Navigation = ({
 
               <button
                 onClick={onLogout}
-                className="flex items-center justify-center h-10 w-10 text-(--color-primary-800,#004a9c) hover:bg-(--color-primary-50) rounded-full transition-all duration-200"
+                className="flex items-center justify-center h-10 w-10 text-(--color-primary-800,#004a9c) hover:opacity-70 transition-opacity"
                 aria-label="로그아웃"
               >
                 <LogOutIcon size={24} />
@@ -230,18 +230,18 @@ export const Navigation = ({
 
               {/* Profile Dropdown */}
               {showProfile && (
-                <div className="absolute top-13.75 right-0 w-70 bg-white border border-(--color-gray-200,#e5e5ec) rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-100 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="p-5">
-                    <div className="mb-4 pb-4 border-b border-(--color-gray-100,#f2f2f2)">
-                      <h3 className="text-[16px] font-bold text-(--color-gray-900,#111) mb-1">
+                <div className="absolute top-[50px] right-0 w-70 bg-white border border-(--color-gray-200,#e5e5ec) rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="p-4">
+                    <div className="mb-3 pb-3 border-b border-(--color-gray-200,#e5e5ec)">
+                      <h3 className="text-[16px] font-semibold text-(--color-gray-900,#111) mb-1">
                         {user.name}
                       </h3>
                       {user.email && (
-                        <p className="text-[14px] text-(--color-gray-600,#666) mb-3">
+                        <p className="text-[14px] text-(--color-gray-600,#666) mb-2">
                           {user.email}
                         </p>
                       )}
-                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-(--color-primary-50) text-(--color-primary-800,#004a9c) text-[12px] font-semibold">
+                      <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#004a9c]/10 text-[#004a9c] text-[12px] font-medium">
                         {user.userType}
                       </div>
                     </div>
@@ -253,7 +253,7 @@ export const Navigation = ({
                             onAdminDashboardClick();
                             setShowProfile(false);
                           }}
-                          className="text-left px-3 py-2.5 text-[14px] text-(--color-primary-800,#004a9c) font-medium hover:bg-(--color-primary-50) rounded-md transition-colors"
+                          className="text-left px-3 py-2 text-[14px] text-(--color-primary-800,#004a9c) font-medium hover:bg-(--color-primary-50) rounded-md transition-colors"
                         >
                           관리자 대시보드
                         </button>
@@ -263,13 +263,13 @@ export const Navigation = ({
                           onProfileClick?.();
                           setShowProfile(false);
                         }}
-                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
+                        className="text-left px-3 py-2 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-[#f5f5f5] rounded-md transition-colors"
                       >
                         내 프로필
                       </button>
                       <button
                         onClick={() => setShowProfile(false)}
-                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
+                        className="text-left px-3 py-2 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-[#f5f5f5] rounded-md transition-colors"
                       >
                         내 포트폴리오
                       </button>
@@ -278,7 +278,7 @@ export const Navigation = ({
                           onAccountSettingsClick?.();
                           setShowProfile(false);
                         }}
-                        className="text-left px-3 py-2.5 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-gray-100 rounded-md transition-colors"
+                        className="text-left px-3 py-2 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-[#f5f5f5] rounded-md transition-colors"
                       >
                         계정 설정
                       </button>
@@ -289,10 +289,10 @@ export const Navigation = ({
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="medium" onClick={onSignup}>
+              <Button variant="primary" size="medium" onClick={onSignup}>
                 회원가입
               </Button>
-              <Button variant="primary" size="medium" onClick={onLogin} className="px-6">
+              <Button variant="secondary" size="medium" onClick={onLogin}>
                 로그인
               </Button>
             </div>

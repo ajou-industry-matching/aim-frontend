@@ -12,6 +12,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   icon?: React.ReactNode;
   children?: React.ReactNode; // 버튼 텍스트 (없으면 IconButton으로 동작)
   fullWidth?: boolean;
+  isPill?: boolean; // 완전 둥근(pill) 모서리
   isLoading?: boolean;
   disabled?: boolean;
   onClick?: () => void;
@@ -27,6 +28,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       children,
       fullWidth = false,
+      isPill = false,
       isLoading = false,
       disabled = false,
       className = "",
@@ -50,12 +52,18 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           large: "w-12 h-12 p-0",
         }
       : {
-          small: "h-8 px-4 text-[14px] leading-[20px] rounded-[6px] gap-1.5",
-          medium: "h-10 px-6 text-[14px] leading-[20px] rounded-lg gap-2",
-          large: "h-12 px-8 text-[16px] leading-[24px] rounded-lg gap-2",
+          small: "h-8 px-4 text-[14px] leading-[20px] gap-1.5",
+          medium: "h-10 px-6 text-[14px] leading-[20px] gap-2",
+          large: "h-12 px-8 text-[16px] leading-[24px] gap-2",
         };
 
-    const borderRadiusClass = isIconOnly ? "rounded-lg" : "";
+    const borderRadiusClass = isPill
+      ? "rounded-full"
+      : isIconOnly
+        ? "rounded-lg"
+        : size === "small"
+          ? "rounded-[6px]"
+          : "rounded-lg";
 
     const variantClasses = {
       primary: {
@@ -67,11 +75,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       },
       secondary: {
         default:
-          "bg-transparent border-2 border-[var(--color-primary-800)] text-[var(--color-primary-800)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-700)] hover:text-[var(--color-primary-700)] active:bg-[var(--color-primary-100)] active:border-[var(--color-primary-900)] active:text-[var(--color-primary-900)]",
+          "bg-transparent border border-[var(--color-primary-800)] text-[var(--color-primary-800)] hover:bg-[var(--color-primary-50)] hover:border-[var(--color-primary-700)] hover:text-[var(--color-primary-700)] active:bg-[var(--color-primary-100)] active:border-[var(--color-primary-900)] active:text-[var(--color-primary-900)]",
         disabled:
-          "bg-transparent border-2 border-[var(--color-gray-300)] text-[var(--color-gray-400)] cursor-not-allowed opacity-60",
+          "bg-transparent border border-[var(--color-gray-300)] text-[var(--color-gray-400)] cursor-not-allowed opacity-60",
         loading:
-          "bg-transparent border-2 border-[var(--color-primary-800)] text-[var(--color-primary-800)] cursor-wait",
+          "bg-transparent border border-[var(--color-primary-800)] text-[var(--color-primary-800)] cursor-wait",
       },
       ghost: {
         default:

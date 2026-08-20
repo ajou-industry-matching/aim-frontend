@@ -8,6 +8,7 @@ import {
   type PortfolioDetail,
   type PortfolioUpdateRequest,
 } from "@/api/posts";
+import { clearListCache } from "@/api/cache";
 
 export type UseUpdatePortfolioResult = {
   submit: (
@@ -40,7 +41,9 @@ export const useUpdatePortfolio = (): UseUpdatePortfolioResult => {
       setIsSubmitting(true);
       setError(null);
       try {
-        return await updatePortfolio(boardType, postId, request, files);
+        const result = await updatePortfolio(boardType, postId, request, files);
+        clearListCache();
+        return result;
       } catch (cause) {
         console.error("포트폴리오 수정에 실패했습니다.", cause);
         setError(toErrorInstance(cause));
