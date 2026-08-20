@@ -38,6 +38,7 @@ export {
   type PortfolioDetail,
 } from "./portfolio-detail-api";
 export { getKeywords } from "./keyword-api";
+export { getLikedPosts, getMyPosts } from "./my-posts-api";
 export {
   createPortfolio,
   type PortfolioCreateFiles,

@@ -117,7 +117,7 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
       ? "transition-colors duration-200 ease-out group-hover:border-[var(--color-primary-500,#3385DB)]"
       : "";
 
-    const wrapperClasses = `flex w-full min-w-[280px] max-w-[360px] flex-col group ${linkedHoverClasses} ${
+    const wrapperClasses = `flex w-full min-w-[280px] max-w-[360px] self-start rounded-xl flex-col group ${linkedHoverClasses} ${
       href || onClick ? "cursor-pointer" : ""
     } ${className}`;
 

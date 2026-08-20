@@ -101,6 +101,19 @@ export const saveAuthSession = (session: AuthSession): void => {
   emitAuthSessionChanged();
 };
 
+// 프로필 수정 등으로 표시 이름만 바뀐 경우 저장된 세션의 name을 갱신한다.
+// 헤더 드롭다운은 StoredSession.name을 읽으므로 갱신하지 않으면 이전 이름이 남는다.
+export const updateStoredSessionName = (name: string): void => {
+  const stored = readStoredSession();
+
+  if (!stored) return;
+
+  const next: StoredSession = { ...stored, name: toDisplayName(name) };
+
+  window.localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(next));
+  emitAuthSessionChanged();
+};
+
 export const clearAuthSession = (): void => {
   removeStoredAuthSession();
 };
