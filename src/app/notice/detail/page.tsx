@@ -6,8 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { NoticeDetailScreen } from "@/screens/notice-detail";
 import { getNoticeById, type Notice } from "@/api/notice";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
-import { Loading } from "@/shared/ui/loading";
-import RouteLoading from "@/app/loading";
+import { PageLoading } from "@/shared/ui/loading";
 
 function NoticeDetailWrapper() {
   const searchParams = useSearchParams();
@@ -45,11 +44,7 @@ function NoticeDetailWrapper() {
 
   // 로딩 중 화면
   if (isLoading) {
-    return (
-      <div className="flex min-h-[500px] w-full items-center justify-center pt-[160px]">
-        <Loading text="공지사항을 불러오는 중" />
-      </div>
-    );
+    return <PageLoading />;
   }
 
   // 예외 처리
@@ -74,7 +69,7 @@ function NoticeDetailWrapper() {
 
 export default function NoticeDetailRoute() {
   return (
-    <Suspense fallback={<RouteLoading />}>
+    <Suspense fallback={<PageLoading />}>
       <NoticeDetailWrapper />
     </Suspense>
   );

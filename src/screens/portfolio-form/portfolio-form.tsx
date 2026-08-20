@@ -14,7 +14,7 @@ import { FormErrorMessage, FormField, FormHelperText, FormLabel } from "@/shared
 import { SelectDropdown } from "@/shared/ui/dropdown";
 import { Input, Textarea } from "@/shared/ui/input/input";
 import { RichEditor } from "@/shared/ui/rich-editor";
-import { Loading } from "@/shared/ui/loading";
+import { PageLoading } from "@/shared/ui/loading";
 import { Tag } from "@/shared/ui/tag/tag";
 import { XIcon } from "@/shared/ui/icons";
 
@@ -243,13 +243,7 @@ export const PortfolioForm = ({
 
   // 태그 목록 로딩이 끝나기 전에는 폼 대신 공통 로딩 화면을 보여준다(폼 진입 시 태그 준비 완료 보장).
   if (isKeywordsLoading) {
-    return (
-      <main className="min-h-screen bg-white">
-        <div className="flex items-center justify-center py-40">
-          <Loading text="불러오는 중" size="large" />
-        </div>
-      </main>
-    );
+    return <PageLoading />;
   }
 
   return (

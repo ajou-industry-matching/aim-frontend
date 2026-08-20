@@ -294,7 +294,7 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
     if (isLoading) {
       return (
         <div className="flex justify-center py-12">
-          <Loading text="댓글을 불러오는 중" />
+          <Loading />
         </div>
       );
     }

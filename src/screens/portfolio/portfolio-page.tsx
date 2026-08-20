@@ -12,6 +12,7 @@ import {
 import { useAuthReady } from "@/lib/auth";
 import { useSearchTransitionStore } from "@/lib/navigation";
 import { Footer, Pagination } from "@/shared/ui";
+import { PageLoading } from "@/shared/ui/loading";
 import { PortfolioList } from "./portfolio-list";
 import { PortfolioPageHeader } from "./portfolio-page-header";
 import { PortfolioSearchBar } from "./portfolio-search-bar";
@@ -62,6 +63,9 @@ export const PortfolioListPage = () => {
   const hasMatchingResult = result?.queryKey === queryKey;
   // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
   const isLoading = !isAuthReady || !hasMatchingResult;
+  // 첫 진입은 라우트 전환 로딩에서 그대로 이어받아야 하므로 화면 전체를 덮는다.
+  // 필터·정렬·페이지 변경처럼 이미 화면이 있는 경우는 목록 영역만 로딩으로 바꾼다.
+  const isInitialLoading = isLoading && result === null;
   const data = hasMatchingResult ? result.data : undefined;
   const error = hasMatchingResult ? (result.error ?? null) : null;
 
@@ -96,14 +100,13 @@ export const PortfolioListPage = () => {
   }, [isAuthReady, queryKey]);
 
   // 홈에서 시작된 검색 전환 덮개는 결과가 준비되면 걷는다.
-  // 이 화면을 벗어날 때도 반드시 걷어 덮개가 남지 않게 한다.
+  // (언마운트 정리로 걷으면 Strict Mode의 effect 재실행 때 덮개가 조기에 사라진다.
+  //  이동 실패 등으로 남는 경우는 스토어의 안전장치가 처리한다.)
   const endSearchTransition = useSearchTransitionStore((state) => state.end);
 
   useEffect(() => {
     if (!isLoading) endSearchTransition();
   }, [isLoading, endSearchTransition]);
-
-  useEffect(() => endSearchTransition, [endSearchTransition]);
 
   const handleSearchSubmit = (nextKeyword: string) => {
     const keyword = nextKeyword.trim();
@@ -143,6 +146,10 @@ export const PortfolioListPage = () => {
 
   const totalElements = data?.totalElements ?? 0;
   const totalPages = data?.totalPages ?? 0;
+
+  if (isInitialLoading) {
+    return <PageLoading />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
