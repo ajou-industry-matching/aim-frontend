@@ -7,6 +7,8 @@ import { NoticeScreen } from "@/screens/notice";
 import { getNotices, type Notice } from "@/api/notice";
 
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
+import { Loading } from "@/shared/ui/loading";
+import RouteLoading from "@/app/loading";
 
 function NoticeListWrapper() {
   const searchParams = useSearchParams();
@@ -57,7 +59,7 @@ function NoticeListWrapper() {
   if (isLoading) {
     return (
       <div className="mx-auto flex min-h-[500px] w-full max-w-[1440px] items-center justify-center pt-[160px]">
-        <span className="text-[15px] text-gray-500">목록을 불러오는 중입니다...</span>
+        <Loading text="목록을 불러오는 중" />
       </div>
     );
   }
@@ -80,7 +82,7 @@ function NoticeListWrapper() {
 
 export default function NoticeRoute() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<RouteLoading />}>
       <NoticeListWrapper />
     </Suspense>
   );

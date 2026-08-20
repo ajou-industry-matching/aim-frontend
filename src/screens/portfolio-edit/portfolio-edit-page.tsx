@@ -13,7 +13,7 @@ import {
 } from "@/screens/portfolio-form";
 import { Button } from "@/shared/ui/button/button";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Loading } from "@/shared/ui/loading";
 
 export type PortfolioEditPageProps = {
   postId: number;
@@ -134,12 +134,8 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
   if (!isAuthReady || !isAuthenticated || !detail || !isProfileResolved) {
     return (
       <CenteredMain>
-        <div
-          className="flex items-center justify-center py-24"
-          role="status"
-          aria-label="불러오는 중"
-        >
-          <Spinner size="large" />
+        <div className="flex items-center justify-center py-24">
+          <Loading text="불러오는 중" size="large" />
         </div>
       </CenteredMain>
     );

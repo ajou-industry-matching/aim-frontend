@@ -11,6 +11,7 @@ import {
 } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
 import { Footer, Pagination } from "@/shared/ui";
+import { Loading } from "@/shared/ui/loading";
 import { PortfolioList } from "./portfolio-list";
 import { PortfolioPageHeader } from "./portfolio-page-header";
 import { PortfolioSearchBar } from "./portfolio-search-bar";
@@ -135,6 +136,10 @@ export const PortfolioListPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
+      {/* 검색어를 들고 들어온 경우에만 전체화면 로딩으로 홈에서의 전환을 이어받는다. */}
+      {keyword && isLoading && (
+        <Loading isFullScreen text="포트폴리오를 검색하고 있어요" size="large" />
+      )}
       <main className="flex-1">
         <div className="mx-auto max-w-[1440px] px-4 py-16">
           <div className="mb-8">

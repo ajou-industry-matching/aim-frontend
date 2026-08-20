@@ -6,7 +6,7 @@ import type { PortfolioBoardType } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
 import { useCreatePortfolio } from "@/lib/posts";
 import { PortfolioForm, type PortfolioFormSubmitValue } from "@/screens/portfolio-form";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Loading } from "@/shared/ui/loading";
 
 // 작성 페이지는 포트폴리오 게시판 전용.
 const BOARD_TYPE: PortfolioBoardType = "PORTFOLIO";
@@ -47,12 +47,8 @@ export const PortfolioCreatePage = () => {
   if (!isAuthReady || !isAuthenticated) {
     return (
       <main className="min-h-screen bg-white">
-        <div
-          className="flex items-center justify-center py-40"
-          role="status"
-          aria-label="불러오는 중"
-        >
-          <Spinner size="large" />
+        <div className="flex items-center justify-center py-40">
+          <Loading text="불러오는 중" size="large" />
         </div>
       </main>
     );

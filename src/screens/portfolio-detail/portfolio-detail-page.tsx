@@ -10,7 +10,7 @@ import { Button } from "@/shared/ui/button/button";
 import { Modal, ModalContent, ModalFooter, ModalHeader } from "@/shared/ui/modal";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { RichEditor } from "@/shared/ui/rich-editor";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Loading } from "@/shared/ui/loading";
 import { Tag } from "@/shared/ui/tag/tag";
 import { ExternalLinkIcon } from "@/shared/ui/icons";
 import { PortfolioAttachments } from "./portfolio-attachments";
@@ -120,12 +120,8 @@ export const PortfolioDetailPage = ({ postId, boardType }: PortfolioDetailPagePr
     if (isLoading) {
       return (
         <div className="mx-auto max-w-[1440px] px-6 py-20">
-          <div
-            className="flex items-center justify-center py-24"
-            role="status"
-            aria-label="불러오는 중"
-          >
-            <Spinner size="large" />
+          <div className="flex items-center justify-center py-24">
+            <Loading text="불러오는 중" size="large" />
           </div>
         </div>
       );

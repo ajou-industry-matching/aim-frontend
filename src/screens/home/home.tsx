@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useAuthReady, useAuthUser } from "@/lib/auth";
 import { Card } from "@/shared/ui/card";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Footer, Navigation } from "@/shared/ui";
+import { Loading } from "@/shared/ui/loading";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { SearchIcon } from "@/shared/ui/icons";
-import { Spinner } from "@/shared/ui/spinner/spinner";
 import type { NavItem } from "@/shared/ui";
 import type { BoardType } from "@/api/posts";
 import { useHomeStore, type SectionFilter } from "./home-store";
@@ -191,6 +191,7 @@ export const HomePage: React.FC = () => {
   const authUser = useAuthUser();
   const { isReady: isAuthReady } = useAuthReady();
   const searchRef = useRef<HTMLInputElement>(null);
+  const [isSearching, setIsSearching] = useState(false);
   const newPosts = useHomeStore((state) => state.newPosts);
   const sectionPosts = useHomeStore((state) => state.sectionPosts);
   const noticePosts = useHomeStore((state) => state.noticePosts);
@@ -217,15 +218,18 @@ export const HomePage: React.FC = () => {
     router.replace("/login");
   };
 
+  // 검색 결과로 넘어가는 동안에는 전체화면 로딩(물결 아치)으로 화면을 덮는다.
   const handleHeroSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const q = searchRef.current?.value.trim();
+    setIsSearching(true);
     if (q) router.push(`/portfolio?keyword=${encodeURIComponent(q)}`);
     else router.push("/portfolio");
   };
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-gray-900">
+      {isSearching && <Loading isFullScreen text="포트폴리오를 검색하고 있어요" size="large" />}
       <Navigation
         items={navItems}
         user={authUser ?? undefined}
@@ -320,7 +324,7 @@ export const HomePage: React.FC = () => {
           <SectionHeader title="공지사항" href="/notice" />
           {isLoadingNotice ? (
             <div className="flex min-h-32 items-center justify-center">
-              <Spinner size="large" className="text-(--color-primary-800)" />
+              <Loading text="공지사항을 불러오는 중" />
             </div>
           ) : noticePostsError ? (
             <EmptyState

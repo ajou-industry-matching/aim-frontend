@@ -7,7 +7,7 @@ import { usePortfolioComments } from "@/lib/comments";
 import { Avatar } from "@/shared/ui/avatars/avatars";
 import { Button } from "@/shared/ui/button/button";
 import { Textarea } from "@/shared/ui/input/input";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Loading } from "@/shared/ui/loading";
 import { CornerDownRightIcon, LockIcon, SendIcon } from "@/shared/ui/icons";
 
 export type PortfolioCommentsProps = {
@@ -293,8 +293,8 @@ export const PortfolioComments = ({ postId }: PortfolioCommentsProps) => {
   const renderList = () => {
     if (isLoading) {
       return (
-        <div className="flex justify-center py-12" role="status" aria-label="댓글 불러오는 중">
-          <Spinner size="medium" />
+        <div className="flex justify-center py-12">
+          <Loading text="댓글을 불러오는 중" />
         </div>
       );
     }
