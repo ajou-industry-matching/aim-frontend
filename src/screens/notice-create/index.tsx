@@ -33,9 +33,15 @@ export function NoticeCreateScreen() {
     setFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  // 리치 에디터는 내용을 지워도 빈 문단 태그를 반환하므로 태그를 걷어낸 텍스트로 판단한다.
+  const isContentEmpty = !content
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, "")
+    .trim();
+
   // 등록 로직 핸들러
   const handleSubmit = async () => {
-    if (!title.trim() || !description.trim() || !content.trim()) {
+    if (!title.trim() || !description.trim() || isContentEmpty) {
       alert("모든 필수 항목(*)을 입력해주세요.");
       return;
     }
@@ -93,7 +99,7 @@ export function NoticeCreateScreen() {
         <section className="mb-12 flex flex-col gap-6">
           <h2 className="text-[20px] font-bold text-gray-900">공지 내용</h2>
           <div className="flex flex-col gap-2">
-            <label className="text-[15px] font-medium text-gray-700">공지 내용 *</label>
+            <label className="text-[15px] font-medium text-gray-700">내용 *</label>
             <RichEditor
               content={content}
               onChange={(html) => setContent(html)}
