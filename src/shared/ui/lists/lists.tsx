@@ -33,6 +33,8 @@ export type TableColumn = {
   label: string;
   width?: TableColumnWidth;
   align?: TableColumnAlign;
+  /** 헤더(th) 전용 정렬. 없으면 align을 따른다 (데이터는 좌측, 헤더는 가운데인 경우 사용) */
+  headerAlign?: TableColumnAlign;
 };
 
 export type TableRowData = {
@@ -237,7 +239,7 @@ export const Table = ({
 
   return (
     <table className="w-full border-collapse">
-      <thead className="bg-[var(--color-gray-100,#f2f2f2)]">
+      <thead>
         <tr>
           {hasCheckbox && (
             <th className={`${tableThBaseClasses} w-[48px] text-center`}>
@@ -256,7 +258,7 @@ export const Table = ({
                 tableThBaseClasses,
                 i > 0 || hasCheckbox ? "border-l" : "",
                 columnWidthClasses[col.width || "fill"],
-                columnAlignClasses[col.align || "center"],
+                columnAlignClasses[col.headerAlign || col.align || "center"],
               ].join(" ")}
             >
               {col.label}

@@ -26,7 +26,7 @@ export function NoticeScreen({ notices, currentPage, totalPages }: NoticeScreenP
 
   const noticeColumns: TableColumn[] = [
     { id: "postId", label: "순번", width: "sm", align: "center" },
-    { id: "title", label: "제목", width: "fill", align: "left" },
+    { id: "title", label: "제목", width: "fill", align: "left", headerAlign: "center" },
     { id: "createdAt", label: "등록일", width: "md", align: "center" },
     { id: "viewCount", label: "조회수", width: "md", align: "center" },
   ];
