@@ -95,7 +95,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       return variantClasses[variant].default;
     };
 
-    const widthClass = fullWidth ? "w-full" : "w-auto";
+    // w-auto는 버튼 기본값이라 불필요한데, 붙어 있으면 같은 width 속성이라
+    // className으로 넘긴 w-[150px] 같은 고정 폭이 클래스 순서와 무관하게 무시된다.
+    const widthClass = fullWidth ? "w-full" : "";
 
     const iconSizeClasses = {
       small: "[&>svg]:w-4 [&>svg]:h-4",
