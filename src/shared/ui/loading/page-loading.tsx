@@ -10,5 +10,3 @@ export const PageLoading = (): React.ReactElement => (
     <Loading text="불러오는 중" size="large" />
   </div>
 );
-
-PageLoading.displayName = "PageLoading";

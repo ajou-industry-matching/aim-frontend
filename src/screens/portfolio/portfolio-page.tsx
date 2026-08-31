@@ -10,9 +10,8 @@ import {
   type PortfolioSort,
 } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
-import { useSearchTransitionStore } from "@/lib/navigation";
 import { Footer, Pagination } from "@/shared/ui";
-import { PageLoading } from "@/shared/ui/loading";
+import { Loading, PageLoading } from "@/shared/ui/loading";
 import { PortfolioList } from "./portfolio-list";
 import { PortfolioPageHeader } from "./portfolio-page-header";
 import { PortfolioSearchBar } from "./portfolio-search-bar";
@@ -99,15 +98,6 @@ export const PortfolioListPage = () => {
     };
   }, [isAuthReady, queryKey]);
 
-  // 홈에서 시작된 검색 전환 덮개는 결과가 준비되면 걷는다.
-  // (언마운트 정리로 걷으면 Strict Mode의 effect 재실행 때 덮개가 조기에 사라진다.
-  //  이동 실패 등으로 남는 경우는 스토어의 안전장치가 처리한다.)
-  const endSearchTransition = useSearchTransitionStore((state) => state.end);
-
-  useEffect(() => {
-    if (!isLoading) endSearchTransition();
-  }, [isLoading, endSearchTransition]);
-
   const handleSearchSubmit = (nextKeyword: string) => {
     const keyword = nextKeyword.trim();
     const nextParams = new URLSearchParams(searchParams.toString());
@@ -148,7 +138,18 @@ export const PortfolioListPage = () => {
   const totalPages = data?.totalPages ?? 0;
 
   if (isInitialLoading) {
-    return <PageLoading />;
+    // 검색어를 들고 들어온 첫 진입(홈 검색)만 물결 덮개로 받는다.
+    // 이동 직후 이미 덮인 상태로 시작하므로 아치를 다시 올리지 않는다.
+    return keyword ? (
+      <Loading
+        isFullScreen
+        hasEnterAnimation={false}
+        text="포트폴리오를 검색하고 있어요"
+        size="large"
+      />
+    ) : (
+      <PageLoading />
+    );
   }
 
   return (

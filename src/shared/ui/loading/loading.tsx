@@ -8,14 +8,11 @@ export interface LoadingProps {
   isFullScreen?: boolean;
   /**
    * 아치가 아래에서 올라오는 진입 애니메이션 사용 여부 (isFullScreen 전용).
-   * 이미 덮인 화면을 이어받는 쪽(이동 후 도착 화면)에서는 false로 두어 덮인 상태로 바로 표시한다.
+   * 덮을 이전 화면이 없는 경우(첫 진입·이동 직후)에는 false로 두어 덮인 상태로 바로 표시한다.
    */
   hasEnterAnimation?: boolean;
   className?: string;
 }
-
-/** 아치가 화면을 덮는 데 걸리는 시간(ms). `panel-cover` 애니메이션 길이와 맞춘다. */
-export const LOADING_COVER_DURATION_MS = 600;
 
 // 점마다 아주 블루 팔레트를 진 → 연으로 (물결 색상 그라데이션). 밝은 배경(인라인)용
 const dotColorClasses = [

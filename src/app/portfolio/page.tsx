@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { PortfolioListPage } from "@/screens/portfolio";
-import RouteLoading from "@/app/loading";
+import { PortfolioRouteLoading } from "./portfolio-route-loading";
 
 export default function PortfolioRoute(): React.ReactElement {
   return (
-    <Suspense fallback={<RouteLoading />}>
+    <Suspense fallback={<PortfolioRouteLoading />}>
       <PortfolioListPage />
     </Suspense>
   );

@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { AdminNoticesEditRoute } from "@/screens/admin";
-import RouteLoading from "@/app/loading";
+import { PageLoading } from "@/shared/ui/loading";
 
 export default function AdminNoticesEditRoutePage(): React.ReactElement {
   return (
-    <Suspense fallback={<RouteLoading />}>
+    <Suspense fallback={<PageLoading />}>
       <AdminNoticesEditRoute />
     </Suspense>
   );

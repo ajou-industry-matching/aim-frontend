@@ -4,11 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useAuthReady, useAuthUser } from "@/lib/auth";
-import { useSearchTransitionStore } from "@/lib/navigation";
 import { Card } from "@/shared/ui/card";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Footer, Navigation } from "@/shared/ui";
-import { Loading, LOADING_COVER_DURATION_MS } from "@/shared/ui/loading";
+import { Loading } from "@/shared/ui/loading";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { SearchIcon } from "@/shared/ui/icons";
 import type { NavItem } from "@/shared/ui";
@@ -166,7 +165,6 @@ export const HomePage: React.FC = () => {
   const authUser = useAuthUser();
   const { isReady: isAuthReady } = useAuthReady();
   const searchRef = useRef<HTMLInputElement>(null);
-  const startSearchTransition = useSearchTransitionStore((state) => state.start);
   const newPosts = useHomeStore((state) => state.newPosts);
   const sectionPosts = useHomeStore((state) => state.sectionPosts);
   const noticePosts = useHomeStore((state) => state.noticePosts);
@@ -211,31 +209,11 @@ export const HomePage: React.FC = () => {
     router.replace("/login");
   };
 
-  // 검색 시에는 아치가 홈을 덮은 "뒤에" 이동한다.
-  // 이동을 먼저 하면 결과 화면이 먼저 그려지고 그 위로 아치가 올라와 순서가 뒤집힌다.
+  // 검색 결과 화면이 덮인 상태로 시작하므로(포트폴리오 목록 참고) 여기서는 바로 이동한다.
   const handleHeroSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const q = searchRef.current?.value.trim();
-
-    if (!q) {
-      router.push("/portfolio");
-      return;
-    }
-
-    const href = `/portfolio?keyword=${encodeURIComponent(q)}`;
-    startSearchTransition();
-
-    // 모션을 줄이는 설정에서는 아치가 즉시 덮이므로 기다릴 이유가 없다.
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (prefersReducedMotion) {
-      router.push(href);
-      return;
-    }
-
-    window.setTimeout(() => router.push(href), LOADING_COVER_DURATION_MS);
+    router.push(q ? `/portfolio?keyword=${encodeURIComponent(q)}` : "/portfolio");
   };
 
   return (
