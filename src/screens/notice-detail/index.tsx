@@ -4,6 +4,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/button/button";
 import { Footer } from "@/shared/ui/footer/footer";
+import { RichEditor } from "@/shared/ui/rich-editor";
 import type { Notice } from "@/api/notice";
 
 interface NoticeDetailScreenProps {
@@ -33,36 +34,36 @@ export function NoticeDetailScreen({ notice }: NoticeDetailScreenProps) {
 
   return (
     <>
-      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-[40px] px-4 pt-[160px] pb-[100px]">
+      <main className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-[40px] pt-[160px] pb-[100px]">
         {/* 타이틀 영역 */}
-        <h1 className="text-center text-[40px] font-bold leading-[1.3] tracking-[-0.025em] text-gray-900">
+        <h1 className="mb-[20px] text-center text-[40px] font-bold leading-[1.3] tracking-[-0.025em] text-gray-900">
           공지사항
         </h1>
 
         {/* 상세 내용 테이블 영역 */}
         <div className="w-full text-[15px] text-gray-800">
-          <div className="flex min-h-[48px] items-center justify-center gap-[10px] border-b border-t-2 border-b-gray-200 border-t-gray-900 bg-gray-50 px-5 py-3">
+          <div className="flex min-h-[48px] items-center justify-center gap-[10px] border-b border-t-2 border-b-gray-200 border-t-gray-200 bg-gray-50 px-5 py-3">
             <span className="text-center font-semibold">{notice.title}</span>
           </div>
 
           <div className="flex flex-wrap md:flex-nowrap border-b border-gray-200">
             <div className="flex min-h-[48px] w-full shrink-0 items-center gap-[10px] border-b border-r border-gray-200 bg-gray-50 px-5 py-3 font-medium text-gray-700 md:w-[180px] md:border-b-0">
-              작성자
+              작성일
             </div>
             <div className="flex min-h-[48px] w-full shrink-0 items-center gap-[10px] border-b border-gray-200 px-5 py-3 md:w-[540px] md:border-b-0">
-              {notice.userId ? `회원(ID: ${notice.userId})` : "관리자"}
+              {formatDate(notice.createdAt)}
             </div>
 
             <div className="flex min-h-[48px] w-full shrink-0 items-center gap-[10px] border-b border-l border-r border-gray-200 bg-gray-50 px-5 py-3 font-medium text-gray-700 md:w-[180px] md:border-b-0 md:border-l-0">
-              작성일
+              작성자
             </div>
             <div className="flex min-h-[48px] w-full shrink-0 items-center gap-[10px] px-5 py-3 md:w-[540px]">
-              {formatDate(notice.createdAt)}
+              {notice.authorName?.trim() || "관리자"}
             </div>
           </div>
 
           {/* 본문 내용 영역 */}
-          <div className="flex flex-col min-h-[576px] w-full border-b border-gray-200 py-6 px-5 gap-[10px] whitespace-pre-wrap leading-relaxed text-[16px] text-gray-800">
+          <div className="flex flex-col min-h-[576px] w-full border-b border-gray-200 py-6 px-5 gap-[10px] leading-relaxed text-[16px] text-gray-800">
             {notice.images && notice.images.length > 0 && (
               <div className="flex flex-col gap-4 mb-4">
                 {notice.images.map((img) => (
@@ -76,14 +77,15 @@ export function NoticeDetailScreen({ notice }: NoticeDetailScreenProps) {
               </div>
             )}
 
-            {/* 실제 텍스트 본문 */}
-            <div>{notice.content}</div>
+            {/* 본문은 리치 에디터로 작성된 HTML이므로 동일한 에디터로 읽기 전용 렌더한다.
+                (포트폴리오 상세와 같은 방식 — 평문으로 출력하면 태그가 그대로 보인다) */}
+            <RichEditor content={notice.content} isEditable={false} />
           </div>
 
           {/* 파일 첨부 영역 */}
           <div className="flex flex-wrap md:flex-nowrap border-b border-gray-200">
             <div className="flex min-h-[48px] w-full shrink-0 items-center gap-[10px] border-b border-r border-gray-200 bg-gray-50 px-5 py-3 font-medium text-gray-700 md:w-[180px] md:border-b-0">
-              첨부파일
+              파일첨부
             </div>
 
             {/* 첨부파일 리스트 영역 */}
@@ -110,12 +112,12 @@ export function NoticeDetailScreen({ notice }: NoticeDetailScreenProps) {
         </div>
 
         {/* 목록 돌아가기 버튼 */}
-        <div className="mt-8 flex justify-center">
+        <div className="flex justify-center">
           <Button
-            variant="secondary"
+            variant="primary"
             size="large"
+            className="w-[150px]"
             onClick={() => router.push("/notice")}
-            className="w-[120px]"
           >
             목록
           </Button>
