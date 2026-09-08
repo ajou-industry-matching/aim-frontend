@@ -12,7 +12,7 @@
   - `aim-frontend` — Next.js(App Router) 웹앱. 배포는 정적 export(`out/`) 기반 Firebase Hosting.
   - `aim-backend` — Spring Boot(Java 17) API. Cloud Run(`aim-be-prod`)으로 배포.
   - `aim-crawler` — 소프트콘 크롤러(Python). 크롤링 결과를 백엔드 API로 적재.
-- 데이터: 운영 DB는 Oracle Cloud MySQL `161.33.46.41:3306/aim` (테이블명 소문자 `posts`, `users` 등). Firebase는 인증(ID 토큰 검증)과 Storage(이미지/첨부)에 사용.
+- 데이터: 운영 DB는 Oracle Cloud MySQL. 접속 정보(host/port/db)와 비밀번호는 공개 저장소에 두지 않고 GCP Secret Manager 및 접근 통제된 운영 문서에서 관리한다. 테이블명은 소문자(`posts`, `users` 등). Firebase는 인증(ID 토큰 검증)과 Storage(이미지/첨부)에 사용.
 - 리전: **`asia-northeast3`로 통일**(Firestore·Artifact Registry·Cloud Run). 자세한 배경은 2절.
 
 ### 프론트 렌더링/배포 구조
@@ -130,7 +130,11 @@
 - 생성/수정/삭제 mutation 성공 후 `clearListCache()` 호출(목록은 `cachedGet` 30초 캐시).
 
 ### 5.8 폼 · 상태 · 타이머
-- 편집 폼은 id 변경 시 리마운트한다: `<PortfolioForm key={`${boardType}-${postId}`} .../>` (RichEditor content가 생성 시점에만 반영되는 문제도 함께 해결).
+- 편집 폼은 id 변경 시 리마운트한다(아래처럼 `key`에 식별자를 넣는다). RichEditor content가 생성 시점에만 반영되는 문제도 함께 해결된다.
+
+```tsx
+<PortfolioForm key={`${boardType}-${postId}`} ... />
+```
 - controlled 컴포넌트의 파생값(글자수 카운터 등)은 초기 `value`/`defaultValue`를 반영한다.
 - 썸네일 제거는 명시적 상태(`isThumbnailRemoved`)로 폴백을 차단한다.
 - `setTimeout` 등은 언마운트/라우트 변경 시 `clearTimeout`으로 정리한다.
