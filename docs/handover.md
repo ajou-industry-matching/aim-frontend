@@ -154,7 +154,3 @@
 - 프론트가 백엔드 계약과 어긋남(`sortType`, multipart 작성, `UserMeResponse.userId` 부재 등) → 5.6 확인.
 - 리전/도메인 변경 시 컷오버 순서·Cloud Run public invoke 누락 → 2.1.
 - 프론트 PR을 `main`으로 올림 → `dev`로 올려야 한다(3.1). 잘못 올렸으면 dev 기준으로 재생성.
-
----
-
-이 문서는 살아있는 문서다. 관례가 바뀌면 갱신한다.
