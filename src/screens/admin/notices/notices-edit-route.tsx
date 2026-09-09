@@ -2,12 +2,11 @@
 
 import { useSearchParams } from "next/navigation";
 import { AdminNoticesEditPage } from "./notices-edit";
-import { AdminNoticeCreatePage } from "./notices-create";
 
 export const AdminNoticesEditRoute = (): React.ReactElement => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const isValidId = id !== null && (id === "new" || /^\d+$/.test(id));
+  const isValidId = id !== null && /^\d+$/.test(id);
 
   if (!isValidId) {
     return (
@@ -15,10 +14,6 @@ export const AdminNoticesEditRoute = (): React.ReactElement => {
         <p className="py-16 text-center text-[14px] text-[#999]">잘못된 접근입니다.</p>
       </div>
     );
-  }
-
-  if (id === "new") {
-    return <AdminNoticeCreatePage />;
   }
 
   return <AdminNoticesEditPage id={id} />;

@@ -6,7 +6,7 @@ import { Button } from "@/shared/ui/button/button";
 import { Input } from "@/shared/ui/input/input";
 import { FileTextAltIcon, UploadIcon } from "@/shared/ui/icons/index";
 import { createNotice } from "@/api/notice";
-import { RichEditor } from "@/shared/ui/rich-editor";
+import { RichEditor, isRichTextEmpty } from "@/shared/ui/rich-editor";
 import { clearListCache } from "@/api/cache";
 
 export function AdminNoticeCreatePage() {
@@ -32,15 +32,9 @@ export function AdminNoticeCreatePage() {
     setFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  // 리치 에디터는 내용을 지워도 빈 문단 태그를 반환하므로 태그를 걷어낸 텍스트로 판단한다.
-  const isContentEmpty = !content
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, "")
-    .trim();
-
   // 등록 로직 핸들러
   const handleSubmit = async () => {
-    if (!title.trim() || !description.trim() || isContentEmpty) {
+    if (!title.trim() || !description.trim() || isRichTextEmpty(content)) {
       alert("모든 필수 항목(*)을 입력해주세요.");
       return;
     }
@@ -62,6 +56,8 @@ export function AdminNoticeCreatePage() {
     }
   };
 
+  // 관리자 콘솔 레이아웃이 상단 Navigation·좌측 사이드바·하단 Footer를 감싸므로
+  // 작성 화면은 공개 버전과 동일한 폼 본문만 렌더한다.
   return (
     <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-6 pt-12 pb-[100px] md:px-12 xl:px-24 2xl:px-8">
       {/* 1. 타이틀 영역 */}
