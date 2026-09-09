@@ -58,7 +58,7 @@ export function NoticeDetailScreen({ notice }: NoticeDetailScreenProps) {
               작성자
             </div>
             <div className="flex min-h-[48px] w-full shrink-0 items-center gap-[10px] px-5 py-3 md:w-[540px]">
-              {notice.userId ? `회원(ID: ${notice.userId})` : "관리자"}
+              {notice.authorName?.trim() || "관리자"}
             </div>
           </div>
 

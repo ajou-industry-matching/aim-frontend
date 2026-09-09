@@ -8,7 +8,7 @@ import { Input } from "@/shared/ui/input/input";
 import { FileTextAltIcon, UploadIcon } from "@/shared/ui/icons/index";
 import { Footer } from "@/shared/ui/footer/footer";
 import { createNotice } from "@/api/notice";
-import { RichEditor } from "@/shared/ui/rich-editor";
+import { RichEditor, isRichTextEmpty } from "@/shared/ui/rich-editor";
 
 export function NoticeCreateScreen() {
   const router = useRouter();
@@ -34,6 +34,7 @@ export function NoticeCreateScreen() {
   };
 
   // 리치 에디터는 내용을 지워도 빈 문단 태그를 반환하므로 태그를 걷어낸 텍스트로 판단한다.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isContentEmpty = !content
     .replace(/<[^>]*>/g, "")
     .replace(/&nbsp;/g, "")
@@ -41,7 +42,7 @@ export function NoticeCreateScreen() {
 
   // 등록 로직 핸들러
   const handleSubmit = async () => {
-    if (!title.trim() || !description.trim() || isContentEmpty) {
+    if (!title.trim() || !description.trim() || isRichTextEmpty(content)) {
       alert("모든 필수 항목(*)을 입력해주세요.");
       return;
     }
