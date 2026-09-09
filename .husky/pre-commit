@@ -3,7 +3,7 @@
 
 # 방지책: next-env.d.ts가 스테이징되어 있다면 커밋에서 제외 (체크아웃)
 if git diff --cached --name-only | grep -q "^next-env.d.ts$"; then
-  echo "⚠️ next-env.d.ts 변경사항은 커밋할 수 없으므로 스테이징을 해제하고 되돌립니다."
+  echo "next-env.d.ts 변경사항은 커밋할 수 없으므로 스테이징을 해제하고 되돌립니다."
   git restore --staged next-env.d.ts
   git checkout -- next-env.d.ts
 fi
