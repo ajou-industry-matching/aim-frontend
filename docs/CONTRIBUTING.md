@@ -99,9 +99,7 @@ aim-frontend/
  │   ├─ screens/            # 화면 구현 (기존 pages 레이어 대체)
  │   └─ shared/             # 공유 레이어
  │       ├─ ui/             # 재사용 가능한 UI 컴포넌트
- │       ├─ assets/         # 전역 에셋 (images, icons, fonts)
- │       ├─ config/         # 설정 (firebase.ts)
- │       └─ types/          # 공통 타입 정의
+ │       └─ config/         # 설정 (firebase.ts)
  │
  ├─ docs/                   # 문서
  │   └─ VERSIONS.md         # 의존성 버전 관리

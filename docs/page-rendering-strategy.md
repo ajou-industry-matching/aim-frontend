@@ -44,10 +44,10 @@
 | 진입 분기 페이지 | `/` | 공개 | CSR 리다이렉트 | 정적 export 환경에서 `/login`으로 분기 |
 | 인증 진입 페이지 | `/login`, `/signup` | 공개 | CSR | 상호작용 중심, SEO 우선도 낮음 |
 | 정적 공개 페이지 | `/about` | 공개 | SSG | 소개/안내형 콘텐츠 |
-| 공지 목록 페이지 | `/notice` | 공개 | SSG | 필요 시 ISR 검토 가능 |
-| 공지 상세 페이지 | `/notice/[id]` | 공개 | SSG 우선 | 실제 갱신 주기 크면 ISR 검토 |
-| 공개 포트폴리오 목록 | `/portfolio` | 공개 | SSG | 콘텐츠 규모에 따라 추후 검토 |
-| 공개 포트폴리오 상세 | `/portfolio/[id]` | 공개 | SSG 우선 | 현재는 SSR 제외 |
+| 공지 목록 페이지 | `/notice` | 공개 | CSR | 정적 export 제약으로 클라이언트 fetch + `useSearchParams` 구현 |
+| 공지 상세 페이지 | `/notice/detail?id=` | 공개 | CSR | 쿼리 파라미터 방식(동적 `[id]`는 정적 export에서 404) |
+| 공개 포트폴리오 목록 | `/portfolio` | 공개 | CSR | 정적 export 제약으로 클라이언트 fetch 구현 |
+| 공개 포트폴리오 상세 | `/portfolio/detail?id=` | 공개 | CSR | 쿼리 파라미터 방식 |
 | 사용자 내부 페이지 | `/profile`, `/dashboard` | 비공개 | CSR | 인증/상태/입력 중심 |
 | 작성/편집 페이지 | `/portfolio/edit` | 비공개 | CSR | 폼 상태 중심 |
 
@@ -60,7 +60,7 @@
 
 ### 3.2 전역 상태
 
-- `zustand`는 선제 도입하지 않는다.
+- `zustand`는 전역 클라이언트 상태에 도입되어 사용 중이다(예: 홈 데이터 패칭 `home-store.ts`).
 - 여러 컴포넌트/페이지에서 공유되는 클라이언트 상태가 생길 때만 최소 범위로 도입한다.
 
 예상 후보:
