@@ -11,6 +11,7 @@ import {
 } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
 import { Footer, Pagination } from "@/shared/ui";
+import { Loading, PageLoading } from "@/shared/ui/loading";
 import { PortfolioList } from "./portfolio-list";
 import { PortfolioPageHeader } from "./portfolio-page-header";
 import { PortfolioSearchBar } from "./portfolio-search-bar";
@@ -61,6 +62,9 @@ export const PortfolioListPage = () => {
   const hasMatchingResult = result?.queryKey === queryKey;
   // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
   const isLoading = !isAuthReady || !hasMatchingResult;
+  // 첫 진입은 라우트 전환 로딩에서 그대로 이어받아야 하므로 화면 전체를 덮는다.
+  // 필터·정렬·페이지 변경처럼 이미 화면이 있는 경우는 목록 영역만 로딩으로 바꾼다.
+  const isInitialLoading = isLoading && result === null;
   const data = hasMatchingResult ? result.data : undefined;
   const error = hasMatchingResult ? (result.error ?? null) : null;
 
@@ -132,6 +136,21 @@ export const PortfolioListPage = () => {
 
   const totalElements = data?.totalElements ?? 0;
   const totalPages = data?.totalPages ?? 0;
+
+  if (isInitialLoading) {
+    // 검색어를 들고 들어온 첫 진입(홈 검색)만 물결 덮개로 받는다.
+    // 이동 직후 이미 덮인 상태로 시작하므로 아치를 다시 올리지 않는다.
+    return keyword ? (
+      <Loading
+        isFullScreen
+        hasEnterAnimation={false}
+        text="포트폴리오를 검색하고 있어요"
+        size="large"
+      />
+    ) : (
+      <PageLoading />
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-white">

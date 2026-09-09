@@ -13,7 +13,7 @@ import {
 } from "@/screens/portfolio-form";
 import { Button } from "@/shared/ui/button/button";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { PageLoading } from "@/shared/ui/loading";
 
 export type PortfolioEditPageProps = {
   postId: number;
@@ -132,17 +132,7 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
 
   // 인증/상세/프로필 확정 전에는 로딩 표시 (소유자 판별을 위해 프로필까지 대기)
   if (!isAuthReady || !isAuthenticated || !detail || !isProfileResolved) {
-    return (
-      <CenteredMain>
-        <div
-          className="flex items-center justify-center py-24"
-          role="status"
-          aria-label="불러오는 중"
-        >
-          <Spinner size="large" />
-        </div>
-      </CenteredMain>
-    );
+    return <PageLoading />;
   }
 
   const isOwner = currentUserId != null && currentUserId === detail.userId;

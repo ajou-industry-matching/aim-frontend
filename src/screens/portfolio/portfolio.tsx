@@ -10,7 +10,7 @@ import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { SearchIcon } from "@/shared/ui/icons";
 import { Pagination, Navigation } from "@/shared/ui";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Loading } from "@/shared/ui/loading";
 import { Tag } from "@/shared/ui/tag";
 import type { NavItem } from "@/shared/ui";
 
@@ -230,7 +230,7 @@ const PortfolioPageContent = (): React.ReactElement => {
         {/* 포스트 그리드 */}
         {isLoading ? (
           <div className="flex min-h-100 items-center justify-center">
-            <Spinner size="large" />
+            <Loading text="불러오는 중" size="large" />
           </div>
         ) : errorMessage ? (
           <EmptyState

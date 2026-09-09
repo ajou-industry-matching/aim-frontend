@@ -3,6 +3,7 @@
 import type { PortfolioListItem } from "@/api/posts";
 import { Card } from "@/shared/ui/card/card";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
+import { Loading } from "@/shared/ui/loading";
 
 // 목록이 비었을 때 표시할 문구/아이콘. 검색·프로필 등 사용처마다 다르게 전달한다.
 export type PortfolioListEmptyState = {
@@ -19,7 +20,6 @@ export type PortfolioListProps = {
 };
 
 const gridClasses = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
-const PORTFOLIO_LIST_SKELETON_COUNT = 12;
 const portfolioListStateClasses = "flex min-h-[420px] items-center justify-center";
 
 // 브라우저 타임존과 무관하게 KST(Asia/Seoul) 기준으로 표기한다.
@@ -46,36 +46,12 @@ const toCardTags = (item: PortfolioListItem): string[] =>
 const toAuthorLabel = (item: PortfolioListItem): string =>
   item.authorName?.trim() || `사용자 ${item.userId}`;
 
-const PortfolioCardSkeleton = () => (
-  <div
-    className="flex w-full min-w-[280px] max-w-[360px] flex-col animate-pulse"
-    aria-hidden="true"
-  >
-    <div className="aspect-[360/203] w-full rounded-t-xl border border-b-0 border-[color:var(--color-gray-200,#e5e5e5)] bg-[var(--color-gray-100,#f5f5f5)]" />
-    <div className="flex flex-col gap-4 rounded-b-xl border border-[color:var(--color-gray-200,#e5e5e5)] bg-white p-6">
-      <div className="flex gap-2">
-        <div className="h-6 w-18 rounded-xl bg-[var(--color-gray-100,#f5f5f5)]" />
-        <div className="h-6 w-14 rounded-xl bg-[var(--color-gray-100,#f5f5f5)]" />
-      </div>
-      <div className="h-7 w-4/5 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-      <div className="h-5 w-full rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-      <div className="h-4 w-1/2 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-      <div className="flex gap-4">
-        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-        <div className="h-4 w-10 rounded bg-[var(--color-gray-100,#f5f5f5)]" />
-      </div>
-    </div>
-  </div>
-);
-
 export const PortfolioList = ({ portfolios, isLoading, error, emptyState }: PortfolioListProps) => {
+  // 라우트 전환 로딩과 같은 표현을 써서 한 번의 로딩으로 이어 보이게 한다.
   if (isLoading) {
     return (
-      <div className={gridClasses} role="status" aria-label="포트폴리오 로딩 중">
-        {Array.from({ length: PORTFOLIO_LIST_SKELETON_COUNT }, (_, index) => (
-          <PortfolioCardSkeleton key={index} />
-        ))}
+      <div className="flex min-h-[420px] items-center justify-center">
+        <Loading text="불러오는 중" size="large" />
       </div>
     );
   }
