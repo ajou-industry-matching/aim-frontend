@@ -29,6 +29,9 @@
 # 의존성 설치
 pnpm install
 
+# Next.js 자동 변경 파일 로컬 무시 처리 (필수)
+git update-index --skip-worktree next-env.d.ts
+
 # 개발 서버 실행 (Next.js)
 pnpm dev
 
