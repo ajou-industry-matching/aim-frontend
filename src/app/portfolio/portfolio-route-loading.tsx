@@ -1,6 +1,6 @@
 "use client";
 
-import { Loading, PageLoading } from "@/shared/ui/loading";
+import { PageLoading, SearchCoverLoading } from "@/shared/ui/loading";
 
 /**
  * 목록 화면이 `useSearchParams`로 서스펜드되는 동안 보여줄 로딩.
@@ -11,14 +11,5 @@ export function PortfolioRouteLoading(): React.ReactElement {
   const hasKeyword =
     typeof window !== "undefined" && new URLSearchParams(window.location.search).has("keyword");
 
-  if (!hasKeyword) return <PageLoading />;
-
-  return (
-    <Loading
-      isFullScreen
-      hasEnterAnimation={false}
-      text="포트폴리오를 검색하고 있어요"
-      size="large"
-    />
-  );
+  return hasKeyword ? <SearchCoverLoading /> : <PageLoading />;
 }

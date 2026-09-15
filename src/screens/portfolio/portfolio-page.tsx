@@ -11,7 +11,7 @@ import {
 } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
 import { Footer, Pagination } from "@/shared/ui";
-import { Loading, PageLoading } from "@/shared/ui/loading";
+import { PageLoading, SearchCoverLoading } from "@/shared/ui/loading";
 import { PortfolioList } from "./portfolio-list";
 import { PortfolioPageHeader } from "./portfolio-page-header";
 import { PortfolioSearchBar } from "./portfolio-search-bar";
@@ -139,17 +139,7 @@ export const PortfolioListPage = () => {
 
   if (isInitialLoading) {
     // 검색어를 들고 들어온 첫 진입(홈 검색)만 물결 덮개로 받는다.
-    // 이동 직후 이미 덮인 상태로 시작하므로 아치를 다시 올리지 않는다.
-    return keyword ? (
-      <Loading
-        isFullScreen
-        hasEnterAnimation={false}
-        text="포트폴리오를 검색하고 있어요"
-        size="large"
-      />
-    ) : (
-      <PageLoading />
-    );
+    return keyword ? <SearchCoverLoading /> : <PageLoading />;
   }
 
   return (
