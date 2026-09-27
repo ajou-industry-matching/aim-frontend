@@ -13,7 +13,7 @@ import { Footer } from "@/shared/ui/footer/footer";
 import { FormErrorMessage, FormField, FormHelperText, FormLabel } from "@/shared/ui/form/form";
 import { SelectDropdown } from "@/shared/ui/dropdown";
 import { Input, Textarea } from "@/shared/ui/input/input";
-import { RichEditor } from "@/shared/ui/rich-editor";
+import { RichEditor, isRichTextEmpty } from "@/shared/ui/rich-editor";
 import { Spinner } from "@/shared/ui/spinner/spinner";
 import { Tag } from "@/shared/ui/tag/tag";
 import { XIcon } from "@/shared/ui/icons";
@@ -91,12 +91,6 @@ const formatFileSize = (bytes: number): string => {
   if (kilobytes < 1024) return `${kilobytes.toFixed(1)} KB`;
   return `${(kilobytes / 1024).toFixed(1)} MB`;
 };
-
-const isRichTextEmpty = (html: string): boolean =>
-  html
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, "")
-    .trim().length === 0;
 
 const isValidHttpUrl = (value: string): boolean => {
   try {
