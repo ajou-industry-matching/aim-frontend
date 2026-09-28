@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { signOut, useAuthUser } from "@/lib/auth";
+import { signOut, useAuthUser, useSessionAdminMode } from "@/lib/auth";
 import { Navigation, Footer } from "@/shared/ui";
 import { AdminSidebar } from "@/screens/admin";
 import type { NavItem } from "@/shared/ui";
@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const authUser = useAuthUser();
+  const { isAdminMode, toggleAdminMode } = useSessionAdminMode();
 
   const handleLogout = async () => {
     await signOut();
@@ -29,6 +30,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
+        onProfileClick={() => router.push("/profile")}
+        isAdminMode={isAdminMode}
+        onAdminToggle={toggleAdminMode}
+        onAdminDashboardClick={() => router.push("/admin")}
       />
       <div className="mx-auto flex min-h-[calc(100vh-80px)] w-full max-w-360 border-x border-neutral-200 bg-neutral-50">
         <AdminSidebar />

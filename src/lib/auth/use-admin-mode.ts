@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
+import { useAuthSession } from "./auth-session";
+import { toNavUser } from "./to-nav-user";
 
 const ADMIN_MODE_STORAGE_KEY = "aim.admin-mode";
 const ADMIN_MODE_EVENT = "aim:admin-mode-changed";
@@ -60,4 +62,17 @@ export const useAdminMode = (adminUid: string | null): UseAdminModeResult => {
   }, [adminUid]);
 
   return { isAdminMode, toggleAdminMode };
+};
+
+/**
+ * 로그인 세션에서 관리자 여부와 uid를 직접 읽는 `useAdminMode`.
+ *
+ * Navigation을 렌더하는 곳이 AppLayout, 홈, 관리자 레이아웃 세 군데라
+ * "관리자면 uid, 아니면 null" 판정을 세 번 반복하지 않도록 여기에 둔다.
+ */
+export const useSessionAdminMode = (): UseAdminModeResult => {
+  const { session } = useAuthSession();
+  const isAdmin = toNavUser(session)?.isAdmin ?? false;
+
+  return useAdminMode(isAdmin ? (session?.uid ?? null) : null);
 };
