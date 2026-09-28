@@ -23,3 +23,6 @@ export type { TabsProps, TabItem, TabVariant } from "./tabs/tabs";
 
 // RichEditor component
 export * from "./rich-editor";
+
+// Policy page
+export * from "./policy-page";

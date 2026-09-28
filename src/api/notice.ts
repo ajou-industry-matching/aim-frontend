@@ -21,6 +21,7 @@ export interface Keyword {
 export interface Notice {
   postId: number;
   userId: number;
+  authorName: string | null;
   boardType: string;
   title: string;
   content: string;

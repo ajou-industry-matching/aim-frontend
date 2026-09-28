@@ -91,8 +91,9 @@ export const signInWithEmail = async (
   const credential = await signInWithEmailAndPassword(auth, email, password);
   const idToken = await credential.user.getIdToken();
 
+  // role은 보내지 않는다. 로그인 시점에 이 계정의 역할을 클라이언트는 알 수 없고,
+  // 서버가 저장된 역할을 쓴다. COMPANY로 단언하면 다른 역할 계정이 로그인할 수 없다.
   return createSession(credential.user, idToken, {
-    role: "COMPANY",
     name: credential.user.displayName ?? credential.user.email ?? email,
     department: "",
   });

@@ -32,6 +32,8 @@ interface PostCardSpecificProps {
   variant: "post";
   href?: string;
   thumbnail?: string | { src: string };
+  // true면 썸네일 영역을 렌더하지 않는 compact 카드 (공지 등)
+  hideThumbnail?: boolean;
   tags?: string[];
   title: string;
   description: string;
@@ -99,6 +101,7 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
     const {
       href,
       thumbnail,
+      hideThumbnail = false,
       tags,
       title,
       description,
@@ -132,7 +135,7 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
     const content = (
       <>
         <div
-          className={`relative aspect-[360/203] w-full border border-[color:var(--color-gray-200,#e5e5e5)] border-b-0 rounded-t-xl overflow-hidden bg-[var(--color-gray-100,#f5f5f5)] ${linkedBorderHoverClasses}`}
+          className={`relative aspect-[360/203] w-full border border-[color:var(--color-gray-200,#e5e5e5)] border-b-0 rounded-t-xl overflow-hidden bg-[var(--color-gray-100,#f5f5f5)] ${hideThumbnail ? "hidden" : ""} ${linkedBorderHoverClasses}`}
         >
           {thumbnail ? (
             <img
@@ -162,7 +165,7 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
         </div>
 
         <div
-          className={`bg-white border border-[color:var(--color-gray-200,#e5e5e5)] flex flex-col gap-4 p-6 rounded-b-xl ${linkedBorderHoverClasses}`}
+          className={`bg-white border border-[color:var(--color-gray-200,#e5e5e5)] flex flex-col gap-4 p-6 ${hideThumbnail ? "rounded-xl" : "rounded-b-xl"} ${linkedBorderHoverClasses}`}
         >
           {tags && tags.length > 0 && (
             <div className="flex gap-2 flex-wrap">
