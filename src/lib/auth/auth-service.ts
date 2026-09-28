@@ -18,7 +18,6 @@ import {
 } from "@/api/auth";
 import { auth } from "@/shared/config/firebase";
 import { clearAuthSession, saveAuthSession } from "./auth-session";
-import { clearAdminMode } from "./use-admin-mode";
 
 type SessionResponse = {
   uid: string;
@@ -57,9 +56,6 @@ const createSession = async (
     backendUser,
   };
 
-  // 새 로그인은 이전 로그인과 완전히 분리한다. 로그아웃을 거치지 않고 세션이 끝난
-  // 경우에도 이전 관리자의 모드가 넘어오지 않는다.
-  clearAdminMode();
   saveAuthSession(session);
 
   return session;
