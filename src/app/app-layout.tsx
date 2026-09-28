@@ -29,7 +29,10 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
       (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
     );
   const navigationUser = toNavUser(session) ?? undefined;
-  const { isAdminMode, toggleAdminMode } = useAdminMode(navigationUser?.isAdmin ?? false);
+  // 관리자일 때만 uid를 넘긴다. null이면 토글이 항상 일반 모드로 고정된다.
+  const { isAdminMode, toggleAdminMode } = useAdminMode(
+    navigationUser?.isAdmin ? (session?.uid ?? null) : null,
+  );
 
   const handleLoginClick = () => {
     router.push("/login");

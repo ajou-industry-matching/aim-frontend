@@ -10,8 +10,11 @@ type UseAdminModeResult = {
   toggleAdminMode: () => void;
 };
 
-const readStoredAdminMode = (): boolean =>
-  window.localStorage.getItem(ADMIN_MODE_STORAGE_KEY) === "true";
+// 저장값은 "관리 모드를 켜 둔 관리자의 uid"다. 브라우저를 공유해 다른 계정으로
+// 로그인하면 uid가 달라져 자동으로 일반 모드가 된다.
+// 한 번에 한 계정의 모드만 기억한다. 계정별로 따로 기억해야 하면 키를 uid별로 나눈다.
+const isStoredAdminModeFor = (uid: string): boolean =>
+  window.localStorage.getItem(ADMIN_MODE_STORAGE_KEY) === uid;
 
 // 같은 탭은 커스텀 이벤트로, 다른 탭은 storage 이벤트로 갱신을 받는다.
 const subscribe = (onStoreChange: () => void): (() => void) => {
@@ -24,23 +27,37 @@ const subscribe = (onStoreChange: () => void): (() => void) => {
   };
 };
 
-// 정적 export 시점에는 localStorage가 없으므로 일반 모드로 렌더한다.
+// 정적 export 프리렌더 시점에는 localStorage가 없으므로 일반 모드로 렌더한다.
+// 실제 저장값은 하이드레이션 이후 getSnapshot으로 반영된다.
 const getServerSnapshot = (): boolean => false;
 
 /**
- * 관리자 모드(일반 모드 ↔ 관리 모드) 상태를 다룬다.
+ * 관리자 모드(일반 모드 / 관리 모드) 상태를 다룬다.
+ *
+ * @param adminUid 로그인한 관리자의 uid. 비로그인이거나 관리자가 아니면 null을 넘긴다.
+ *                 null이면 저장값과 무관하게 항상 일반 모드이고 토글도 동작하지 않는다.
  *
  * 새로고침·페이지 이동 후에도 유지되도록 localStorage에 저장한다.
- * 관리자가 아닌 사용자에게는 저장된 값과 무관하게 항상 false를 반환한다.
- * (계정을 바꿔 로그인했을 때 이전 사용자의 모드가 남지 않도록)
  */
-export const useAdminMode = (isAdmin: boolean): UseAdminModeResult => {
-  const isStoredAdminMode = useSyncExternalStore(subscribe, readStoredAdminMode, getServerSnapshot);
+export const useAdminMode = (adminUid: string | null): UseAdminModeResult => {
+  const getSnapshot = useCallback(
+    () => (adminUid === null ? false : isStoredAdminModeFor(adminUid)),
+    [adminUid],
+  );
+
+  const isAdminMode = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggleAdminMode = useCallback(() => {
-    window.localStorage.setItem(ADMIN_MODE_STORAGE_KEY, String(!readStoredAdminMode()));
-    window.dispatchEvent(new Event(ADMIN_MODE_EVENT));
-  }, []);
+    if (adminUid === null) return;
 
-  return { isAdminMode: isAdmin && isStoredAdminMode, toggleAdminMode };
+    if (isStoredAdminModeFor(adminUid)) {
+      window.localStorage.removeItem(ADMIN_MODE_STORAGE_KEY);
+    } else {
+      window.localStorage.setItem(ADMIN_MODE_STORAGE_KEY, adminUid);
+    }
+
+    window.dispatchEvent(new Event(ADMIN_MODE_EVENT));
+  }, [adminUid]);
+
+  return { isAdminMode, toggleAdminMode };
 };
