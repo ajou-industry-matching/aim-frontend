@@ -1,7 +1,9 @@
 export type AuthRole = "STUDENT" | "PROFESSOR" | "COMPANY";
 
 export type BackendLoginRequest = {
-  role: AuthRole;
+  // 신규 등록 때만 보낸다. 로그인은 서버가 저장해 둔 역할을 쓰므로 생략한다.
+  // (보내면 백엔드가 저장된 역할과 대조해 다를 때 INVALID_ROLE로 거부한다)
+  role?: AuthRole;
   name: string;
   department: string;
 };
