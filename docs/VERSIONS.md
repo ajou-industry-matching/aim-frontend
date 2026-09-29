@@ -27,6 +27,13 @@
 | `@tiptap/starter-kit` | ^3.22.5 | 기본 에디터 확장 묶음 |
 | `tiptap-extension-global-drag-handle` | ^0.1.18 | 블록 드래그 핸들 확장 |
 | `tiptap-extension-auto-joiner` | ^0.1.3 | 인접 블록 자동 결합 확장 |
+| `@tiptap/extension-image` | ^3.22.5 | 본문 이미지 노드 |
+| `@tiptap/extension-link` | ^3.22.5 | 링크 노드 |
+| `@tiptap/extension-placeholder` | ^3.22.5 | 빈 문단 플레이스홀더 |
+| `@tiptap/extension-color` | ^3.22.5 | 텍스트 색상 |
+| `@tiptap/extension-text-style` | ^3.22.5 | 텍스트 스타일 마크 (색상 확장의 전제) |
+| `@tiptap/suggestion` | ^3.22.5 | 슬래시 커맨드 등 제안 메뉴 |
+| `zustand` | ^5.0.13 | 전역 클라이언트 상태 (예: `src/screens/home/home-store.ts`) |
 
 ### 개발 의존성
 
