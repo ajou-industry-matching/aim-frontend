@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signOut, useAuthReady, useAuthUser } from "@/lib/auth";
+import { signOut, useAuthReady, useAuthUser, useSessionAdminMode } from "@/lib/auth";
 import { Card } from "@/shared/ui/card";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Footer, Navigation } from "@/shared/ui";
@@ -190,6 +190,7 @@ export const HomePage: React.FC = () => {
   const router = useRouter();
   const authUser = useAuthUser();
   const { isReady: isAuthReady } = useAuthReady();
+  const { isAdminMode, toggleAdminMode } = useSessionAdminMode();
   const searchRef = useRef<HTMLInputElement>(null);
   const newPosts = useHomeStore((state) => state.newPosts);
   const sectionPosts = useHomeStore((state) => state.sectionPosts);
@@ -234,6 +235,10 @@ export const HomePage: React.FC = () => {
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
+        onProfileClick={() => router.push("/profile")}
+        isAdminMode={isAdminMode}
+        onAdminToggle={toggleAdminMode}
+        onAdminDashboardClick={() => router.push("/admin")}
       />
 
       {/* Hero Banner */}
