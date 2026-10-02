@@ -6,7 +6,7 @@ import { AdminNoticesEditPage } from "./notices-edit";
 export const AdminNoticesEditRoute = (): React.ReactElement => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const isValidId = id !== null && (id === "new" || /^\d+$/.test(id));
+  const isValidId = id !== null && /^\d+$/.test(id);
 
   if (!isValidId) {
     return (
