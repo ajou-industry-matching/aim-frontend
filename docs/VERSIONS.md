@@ -22,11 +22,18 @@
 | `react` | 19.2.4 | UI 프레임워크 |
 | `react-dom` | ^19.2.4 | React DOM 렌더러 |
 | `firebase` | ^12.9.0 | Hosting, Firestore, Storage, Auth |
-| `@tiptap/react` | ^3.21.0 | 리치 텍스트 에디터 React 바인딩 |
-| `@tiptap/pm` | ^3.21.0 | Tiptap ProseMirror 패키지 |
-| `@tiptap/starter-kit` | ^3.21.0 | 기본 에디터 확장 묶음 |
+| `@tiptap/react` | ^3.22.5 | 리치 텍스트 에디터 React 바인딩 |
+| `@tiptap/pm` | ^3.22.5 | Tiptap ProseMirror 패키지 |
+| `@tiptap/starter-kit` | ^3.22.5 | 기본 에디터 확장 묶음 |
 | `tiptap-extension-global-drag-handle` | ^0.1.18 | 블록 드래그 핸들 확장 |
 | `tiptap-extension-auto-joiner` | ^0.1.3 | 인접 블록 자동 결합 확장 |
+| `@tiptap/extension-image` | ^3.22.5 | 본문 이미지 노드 |
+| `@tiptap/extension-link` | ^3.22.5 | 링크 노드 |
+| `@tiptap/extension-placeholder` | ^3.22.5 | 빈 문단 플레이스홀더 |
+| `@tiptap/extension-color` | ^3.22.5 | 텍스트 색상 |
+| `@tiptap/extension-text-style` | ^3.22.5 | 텍스트 스타일 마크 (색상 확장의 전제) |
+| `@tiptap/suggestion` | ^3.22.5 | 슬래시 커맨드 등 제안 메뉴 |
+| `zustand` | ^5.0.13 | 전역 클라이언트 상태 (예: `src/screens/home/home-store.ts`) |
 
 ### 개발 의존성
 
@@ -85,7 +92,7 @@
 
 - 폼: `react-hook-form + zod`
 - 전역 클라이언트 상태: `zustand`
-- 단, 위 항목은 설계 기준이며 실제 도입은 화면 구현 시점에 맞춰 진행한다.
+- `zustand`는 현재 도입되어 사용 중이다(`src/screens/home/home-store.ts` 등). `react-hook-form`/`zod`는 폼 라우트 구현 시점에 도입 예정이다.
 
 ---
 
@@ -124,9 +131,9 @@
 
 | 패키지 | 버전 | 분류 |
 |---|---|---|
-| `@tiptap/react` | 3.21.0 | 신규 |
-| `@tiptap/pm` | 3.21.0 | 신규 |
-| `@tiptap/starter-kit` | 3.21.0 | 신규 |
+| `@tiptap/react` | 3.22.5 | 신규 |
+| `@tiptap/pm` | 3.22.5 | 신규 |
+| `@tiptap/starter-kit` | 3.22.5 | 신규 |
 | `tiptap-extension-global-drag-handle` | 0.1.18 | 신규 |
 | `tiptap-extension-auto-joiner` | 0.1.3 | 신규 |
 
