@@ -7,6 +7,7 @@ import { NoticeScreen } from "@/screens/notice";
 import { getNotices, type Notice } from "@/api/notice";
 
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
+import { PageLoading } from "@/shared/ui/loading";
 
 function NoticeListWrapper() {
   const searchParams = useSearchParams();
@@ -55,11 +56,7 @@ function NoticeListWrapper() {
 
   // 로딩 중
   if (isLoading) {
-    return (
-      <div className="mx-auto flex min-h-[500px] w-full max-w-[1440px] items-center justify-center pt-[160px]">
-        <span className="text-[15px] text-gray-500">목록을 불러오는 중입니다...</span>
-      </div>
-    );
+    return <PageLoading />;
   }
 
   // 실제 데이터가 0건일 때
@@ -80,7 +77,7 @@ function NoticeListWrapper() {
 
 export default function NoticeRoute() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PageLoading />}>
       <NoticeListWrapper />
     </Suspense>
   );
