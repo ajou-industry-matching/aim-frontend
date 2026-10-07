@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useAuthReady, useAuthUser, useSessionAdminMode } from "@/lib/auth";
+import { toAuthorLabel } from "@/lib/posts";
 import { Card } from "@/shared/ui/card";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Footer, Navigation } from "@/shared/ui";
@@ -171,7 +172,7 @@ const PostGrid = ({
           tags={post.keywords}
           title={post.title}
           description={post.description}
-          author={{ name: `사용자 ${post.userId}` }}
+          author={{ name: toAuthorLabel(post) }}
           date={formatDate(post.createdAt)}
           stats={{
             likes: post.likeCount,
@@ -346,7 +347,7 @@ export const HomePage: React.FC = () => {
                   tags={post.keywords}
                   title={post.title}
                   description={post.description}
-                  author={{ name: `사용자 ${post.userId}` }}
+                  author={{ name: toAuthorLabel(post, "관리자") }}
                   date={formatDate(post.createdAt)}
                   stats={{
                     likes: post.likeCount,
