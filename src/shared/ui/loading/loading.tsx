@@ -6,6 +6,11 @@ export interface LoadingProps {
   size?: LoadingSize;
   /** 전체 화면 오버레이로 표시 (페이지 이동 시 사용) */
   isFullScreen?: boolean;
+  /**
+   * 아치가 아래에서 올라오는 진입 애니메이션 사용 여부 (isFullScreen 전용).
+   * 덮을 이전 화면이 없는 경우(첫 진입·이동 직후)에는 false로 두어 덮인 상태로 바로 표시한다.
+   */
+  hasEnterAnimation?: boolean;
   className?: string;
 }
 
@@ -57,6 +62,7 @@ export const Loading = ({
   text,
   size = "medium",
   isFullScreen = false,
+  hasEnterAnimation = true,
   className = "",
 }: LoadingProps) => {
   const containerClasses = isFullScreen
@@ -66,7 +72,7 @@ export const Loading = ({
   // 아치 솔리드는 z-0, 문구·점은 z-10 → 덮개가 항상 콘텐츠 뒤에 깔린다
   const contentClasses = [
     "relative flex flex-col items-center justify-center gap-3",
-    isFullScreen ? "z-10 animate-loading-content-in" : "",
+    isFullScreen ? (hasEnterAnimation ? "z-10 animate-loading-content-in" : "z-10") : "",
     className,
   ]
     .filter(Boolean)
@@ -86,7 +92,10 @@ export const Loading = ({
       {isFullScreen && (
         // 솔리드가 아래에서 한 번 올라와 이전 화면을 덮는다 (반복 없음).
         // 윗변은 SVG 2차 베지어 — 가운데 컨트롤 포인트를 당겨 곡률을 만들었다가 마지막에 편다.
-        <div className="loading-panel animate-panel-cover z-0" aria-hidden="true">
+        <div
+          className={`loading-panel z-0 ${hasEnterAnimation ? "animate-panel-cover" : ""}`}
+          aria-hidden="true"
+        >
           <svg className="loading-panel-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
             <path
               className="loading-panel-fill"
