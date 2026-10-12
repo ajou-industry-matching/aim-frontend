@@ -99,9 +99,7 @@ aim-frontend/
  │   ├─ screens/            # 화면 구현 (기존 pages 레이어 대체)
  │   └─ shared/             # 공유 레이어
  │       ├─ ui/             # 재사용 가능한 UI 컴포넌트
- │       ├─ assets/         # 전역 에셋 (images, icons, fonts)
- │       ├─ config/         # 설정 (firebase.ts)
- │       └─ types/          # 공통 타입 정의
+ │       └─ config/         # 설정 (firebase.ts)
  │
  ├─ docs/                   # 문서
  │   └─ VERSIONS.md         # 의존성 버전 관리
@@ -258,6 +256,7 @@ Next.js 전환 작업이나 구조 변경이 포함되면 아래 항목을 함�
 
 - **1명 이상의 리뷰어 승인** 후 머지 가능
 - 리뷰어는 주로 **컨벤션 준수 여부**를 중점적으로 확인합니다
+- 머지 방식: 기능 PR(→`dev`)은 **Squash and merge**, `dev → main` 릴리즈 PR은 **Merge commit**을 사용합니다
 
 ### 5. 코드 리뷰
 
