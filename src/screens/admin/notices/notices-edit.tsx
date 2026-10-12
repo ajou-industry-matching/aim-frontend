@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { clearListCache } from "@/api/cache";
 import { createPost, deletePost, getPostDetail, updatePost } from "@/api/posts";
 import type { PortfolioAttachment } from "@/api/posts";
+import { Loading } from "@/shared/ui/loading";
 
 const BackIcon = () => (
   <svg
@@ -214,7 +215,9 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
       )}
 
       {isLoading ? (
-        <p className="py-16 text-center text-[14px] text-[#999]">불러오는 중...</p>
+        <div className="flex justify-center py-16">
+          <Loading text="불러오는 중" />
+        </div>
       ) : (
         <>
           {/* 기본 정보 */}
