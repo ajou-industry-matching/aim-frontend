@@ -1,2 +1,7 @@
 export { AdminSidebar } from "./admin-sidebar";
-export { AdminNoticesPage, AdminNoticesEditPage, AdminNoticesEditRoute } from "./notices";
+export {
+  AdminNoticesPage,
+  AdminNoticeCreatePage,
+  AdminNoticesEditPage,
+  AdminNoticesEditRoute,
+} from "./notices";

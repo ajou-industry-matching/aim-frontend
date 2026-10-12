@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { clearListCache } from "@/api/cache";
-import { createPost, deletePost, getPostDetail, updatePost } from "@/api/posts";
+import { deletePost, getPostDetail, updatePost } from "@/api/posts";
 import type { PortfolioAttachment } from "@/api/posts";
 
+// 💡 1. 새로 추가된 공용 컴포넌트 Import
+import { RichEditor } from "@/shared/ui/rich-editor";
+import { FileUploader, FileListItem } from "@/shared/ui/file-uploader/file-uploader";
+
+// 💡 2. FileIcon, XIcon 등은 FileListItem에서 자체 제공하므로 상단 아이콘 선언부 삭제 (BackIcon은 헤더에서 쓰므로 유지)
 const BackIcon = () => (
   <svg
     width="20"
@@ -21,37 +26,6 @@ const BackIcon = () => (
   </svg>
 );
 
-const FileIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-  </svg>
-);
-
-const XIcon = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-  >
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
-
 const formatFileSize = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -62,8 +36,7 @@ type Props = { id: string };
 
 export const AdminNoticesEditPage = ({ id }: Props) => {
   const router = useRouter();
-  const isCreateMode = id === "new";
-  const postId = isCreateMode ? null : Number(id);
+  const postId = Number(id);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -71,13 +44,14 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
   const [existingFiles, setExistingFiles] = useState<PortfolioAttachment[]>([]);
   const [deleteAttachmentIds, setDeleteAttachmentIds] = useState<number[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
-  const [isLoading, setIsLoading] = useState(!isCreateMode);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 💡 3. FileUploader가 자체적으로 input을 처리하므로 fileInputRef 상태 제거
 
   useEffect(() => {
-    if (postId === null || Number.isNaN(postId)) return;
+    if (Number.isNaN(postId)) return;
 
     let isMounted = true;
 
@@ -109,12 +83,6 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
     setDeleteAttachmentIds((ids) => [...ids, attachmentId]);
   };
 
-  const handleNewFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = Array.from(event.target.files ?? []);
-    if (selected.length > 0) setNewFiles((files) => [...files, ...selected]);
-    event.target.value = "";
-  };
-
   const removeNewFile = (index: number) => {
     setNewFiles((files) => files.filter((_, i) => i !== index));
   };
@@ -126,21 +94,18 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
       return;
     }
 
+    // 💡 4. (참고) 에디터를 쓸 경우 빈 값인지 검사할 때 HTML 태그를 제거하고 체크하는 것이 좋습니다.
+    if (!content.replace(/<[^>]*>/g, "").trim()) {
+      setError("내용을 입력해주세요.");
+      return;
+    }
+
     setError(null);
     setIsSubmitting(true);
 
     try {
       const request = { title: trimmedTitle, content, visibility: "PUBLIC" as const };
-      if (isCreateMode) {
-        await createPost("NOTICE", request, { files: newFiles });
-      } else if (postId !== null) {
-        await updatePost(
-          "NOTICE",
-          postId,
-          { ...request, deleteAttachmentIds },
-          { files: newFiles },
-        );
-      }
+      await updatePost("NOTICE", postId, { ...request, deleteAttachmentIds }, { files: newFiles });
       clearListCache();
       router.push("/admin/notices");
     } catch (submitError) {
@@ -151,7 +116,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
   };
 
   const handleDelete = async () => {
-    if (postId === null) return;
+    if (Number.isNaN(postId)) return;
     if (!window.confirm("공지사항을 삭제하시겠습니까?")) return;
 
     setError(null);
@@ -170,7 +135,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
 
   return (
     <div className="flex-1 bg-white p-8">
-      {/* Page Header */}
+      {/* Page Header (원본 유지) */}
       <div className="mb-8 flex items-start justify-between">
         <div>
           <button
@@ -181,10 +146,10 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
             목록으로
           </button>
           <h1 className="text-[40px] font-bold leading-[1.3] tracking-[-1px] text-[#111]">
-            {isCreateMode ? "공지사항 작성" : "공지사항 수정"}
+            공지사항 수정
           </h1>
           <p className="mt-2 text-[16px] leading-normal tracking-[-0.4px] text-[#666]">
-            {isCreateMode ? "새 공지사항을 작성하세요." : "공지사항을 수정하세요."}
+            공지사항을 수정하세요.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -193,17 +158,15 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
             disabled={isSubmitting || isLoading}
             className="h-10 px-6 py-2.5 rounded-lg bg-[#004a9c] text-white text-[14px] font-medium leading-[1.43] tracking-[-0.35px] transition-colors hover:bg-[#003d8a] disabled:cursor-not-allowed disabled:bg-[#b3b3b3]"
           >
-            {isCreateMode ? "등록" : "수정"}
+            수정
           </button>
-          {!isCreateMode && (
-            <button
-              onClick={() => void handleDelete()}
-              disabled={isSubmitting || isLoading}
-              className="h-10 px-6 py-2.5 border border-red-500 rounded-lg text-red-500 text-[14px] font-medium leading-[1.43] tracking-[-0.35px] transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              삭제
-            </button>
-          )}
+          <button
+            onClick={() => void handleDelete()}
+            disabled={isSubmitting || isLoading}
+            className="h-10 px-6 py-2.5 border border-red-500 rounded-lg text-red-500 text-[14px] font-medium leading-[1.43] tracking-[-0.35px] transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            삭제
+          </button>
         </div>
       </div>
 
@@ -245,86 +208,67 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
             </div>
           </section>
 
-          {/* 공지 내용 */}
+          {/* 💡 5. 공지 내용: textarea -> RichEditor 로 교체 완료 */}
           <section className="mb-8">
             <h2 className="mb-6 text-[24px] font-semibold leading-[1.33] tracking-[-0.6px] text-[#1a1a1a]">
               공지 내용
             </h2>
             <div>
               <label className="mb-2 block text-[14px] font-medium text-[#333]">내용 *</label>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
+              <RichEditor
+                content={content}
+                onChange={(html) => setContent(html)}
                 placeholder="공지 내용을 입력하세요"
-                className="min-h-75 w-full resize-y rounded-sm border border-[#e5e5e5] bg-white p-4 text-[14px] text-[#333] placeholder-[#999] outline-none focus:border-[#004a9c]"
+                className="min-h-[400px]"
               />
             </div>
           </section>
 
-          {/* 파일 첨부 */}
+          {/* 💡 6. 파일 첨부: 직접 만든 UI -> 공용 FileUploader & FileListItem 으로 교체 완료 */}
           <section>
             <h2 className="mb-6 text-[24px] font-semibold leading-[1.33] tracking-[-0.6px] text-[#1a1a1a]">
               파일 첨부
             </h2>
             <div>
-              <label className="mb-2 block text-[14px] font-medium text-[#333]">첨부파일</label>
-              <div className="flex flex-col gap-2">
-                {existingFiles.map((file) => (
-                  <div
-                    key={file.attachmentId}
-                    className="flex w-full items-center gap-3 rounded-lg border border-[#e5e5e5] bg-white p-3"
-                  >
-                    <span className="text-[#666]">
-                      <FileIcon />
-                    </span>
-                    <div className="flex-1">
-                      <p className="text-[14px] font-medium text-[#333]">{file.originalFilename}</p>
-                      <p className="text-[12px] text-[#999]">{formatFileSize(file.fileSize)}</p>
-                    </div>
-                    <button
-                      onClick={() => removeExistingFile(file.attachmentId)}
-                      aria-label={`${file.originalFilename} 삭제`}
-                      className="text-[#999] transition-colors hover:text-red-500"
-                    >
-                      <XIcon />
-                    </button>
-                  </div>
-                ))}
-                {newFiles.map((file, index) => (
-                  <div
-                    key={`${file.name}-${index}`}
-                    className="flex w-full items-center gap-3 rounded-lg border border-dashed border-[#004a9c]/40 bg-[#f8fafd] p-3"
-                  >
-                    <span className="text-[#004a9c]">
-                      <FileIcon />
-                    </span>
-                    <div className="flex-1">
-                      <p className="text-[14px] font-medium text-[#333]">{file.name}</p>
-                      <p className="text-[12px] text-[#999]">{formatFileSize(file.size)}</p>
-                    </div>
-                    <button
-                      onClick={() => removeNewFile(index)}
-                      aria-label={`${file.name} 삭제`}
-                      className="text-[#999] transition-colors hover:text-red-500"
-                    >
-                      <XIcon />
-                    </button>
-                  </div>
-                ))}
-                <input
-                  ref={fileInputRef}
-                  type="file"
+              <label className="mb-2 block text-[14px] font-medium text-[#333]">
+                첨부파일 (최대 5개, 각 20MB 이하)
+              </label>
+              <div className="flex flex-col gap-4 mt-2">
+                <FileUploader
                   multiple
-                  onChange={handleNewFilesChange}
-                  className="hidden"
+                  onFileSelect={(selected) => setNewFiles((prev) => [...prev, ...selected])}
                 />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex h-10 w-fit items-center gap-2 rounded-lg border border-[#e5e5e5] px-4 text-[14px] font-medium text-[#333] transition-colors hover:bg-[#f9f9f9]"
-                >
-                  <FileIcon />
-                  파일 추가
-                </button>
+
+                {(existingFiles.length > 0 || newFiles.length > 0) && (
+                  <div className="flex flex-col gap-2">
+                    {/* 서버에 이미 올라가 있는 기존 파일 렌더링 */}
+                    {existingFiles.map((file) => (
+                      <FileListItem
+                        key={`existing-file-${file.attachmentId}`}
+                        file={{
+                          id: `existing-${file.attachmentId}`,
+                          name: file.originalFilename,
+                          size: formatFileSize(file.fileSize),
+                          type: file.fileType || "",
+                        }}
+                        onRemove={() => removeExistingFile(file.attachmentId)}
+                      />
+                    ))}
+                    {/* 이번에 새로 업로드 할 파일 렌더링 */}
+                    {newFiles.map((file, index) => (
+                      <FileListItem
+                        key={`${file.name}-${index}`}
+                        file={{
+                          id: String(index),
+                          name: file.name,
+                          size: formatFileSize(file.size),
+                          type: file.type,
+                        }}
+                        onRemove={() => removeNewFile(index)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </section>
