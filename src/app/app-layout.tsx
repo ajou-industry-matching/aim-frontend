@@ -2,7 +2,7 @@
 
 import type { ReactElement, ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, toNavUser, useAdminMode, useAuthSession } from "@/lib/auth";
+import { signOut, toNavUser, useAuthSession, useSessionAdminMode } from "@/lib/auth";
 import { Navigation, type NavItem } from "@/shared/ui";
 
 type AppLayoutProps = Readonly<{
@@ -29,7 +29,7 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
       (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
     );
   const navigationUser = toNavUser(session) ?? undefined;
-  const { isAdminMode, toggleAdminMode } = useAdminMode(navigationUser?.isAdmin ?? false);
+  const { isAdminMode, toggleAdminMode } = useSessionAdminMode();
 
   const handleLoginClick = () => {
     router.push("/login");
