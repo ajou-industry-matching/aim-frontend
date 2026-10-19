@@ -45,15 +45,15 @@
 
 | 페이지 유형 | 경로 | 공개 여부 | 기본 전략 | 비고 |
 | --- | --- | --- | --- | --- |
-| 진입 분기 페이지 | `/` | 공개 | CSR 리다이렉트 | 인증 상태에 따라 `/home` 또는 `/login`으로 분기 |
+| 진입 리다이렉트 | `/` | 공개 | CSR 리다이렉트 | `router.replace("/login")` 만 수행한다. 인증 상태를 보지 않는다 |
 | 인증 진입 페이지 | `/login` | 공개 | CSR | 상호작용 중심, SEO 우선도 낮음. 구글 로그인과 기업(이메일/비밀번호) 로그인 |
 | 정적 공개 페이지 | `/about` | 공개 | SSG | 소개/안내형 콘텐츠 |
 | 정책·안내 페이지 | `/privacy`, `/terms`, `/sitemap` | 공개 | SSG | 공용 `PolicyPage`로 외부 문서 링크만 노출 |
 | 홈 | `/home` | 공개 | CSR | 신규·섹션별·공지 3개 영역을 클라이언트에서 병렬 fetch (`home-store`) |
 | 공지 목록 | `/notice` | 공개 | CSR | 클라이언트 fetch + `useSearchParams`(페이지네이션) |
 | 공지 상세 | `/notice/detail?id=` | 공개 | CSR | 쿼리 파라미터 방식. 동적 `[id]`는 정적 export에서 404가 나므로 쓰지 않는다 |
-| 포트폴리오 목록 | `/portfolio` | 공개 | CSR | 클라이언트 fetch + `useSearchParams`(검색어·필터·정렬) |
-| 포트폴리오 상세 | `/portfolio/detail?id=` | 공개 | CSR | 쿼리 파라미터 방식 |
+| 포트폴리오 목록 | `/portfolio` | 공개 | CSR | 클라이언트 fetch. `useSearchParams` 로 읽는 것은 `keyword` 뿐이고 유형 필터와 정렬은 컴포넌트 상태다 |
+| 포트폴리오 상세 | `/portfolio/detail?id=&type=` | 공개 | CSR | 쿼리 파라미터 방식. `type` 은 포트폴리오가 아닌 게시글 상세를 가리킬 때 쓴다 |
 | 사용자 내부 페이지 | `/profile` | 비공개 | CSR | 인증 확정 후 개인화 API 호출 |
 | 작성/편집 페이지 | `/portfolio/create`, `/portfolio/edit` | 비공개 | CSR | 폼 상태 중심. 편집은 소유자 확인 후 진입 |
 | 관리자 페이지 | `/admin`, `/admin/notices`, `/admin/notices/edit` | 비공개(관리자) | CSR | `/admin` 레이아웃에서 관리자 권한 가드 후 렌더 |
