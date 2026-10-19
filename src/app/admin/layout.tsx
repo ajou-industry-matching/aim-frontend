@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signOut, toNavUser, useAuthSession } from "@/lib/auth";
+import { signOut, toNavUser, useAdminMode, useAuthSession } from "@/lib/auth";
 import { Navigation, Footer } from "@/shared/ui";
 import { Spinner } from "@/shared/ui/spinner/spinner";
 import { AdminSidebar } from "@/screens/admin";
@@ -19,10 +19,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { session, isAuthReady } = useAuthSession();
   const authUser = toNavUser(session);
   const isAdmin = authUser?.isAdmin ?? false;
+  const { isAdminMode, toggleAdminMode } = useAdminMode(isAdmin);
 
   const handleLogout = async () => {
     await signOut();
     router.replace("/login");
+  };
+
+  // 관리 화면에서 모드를 끄면 남을 곳이 없으므로 일반 화면으로 되돌린다.
+  const handleAdminToggle = () => {
+    toggleAdminMode();
+
+    if (isAdminMode) {
+      router.push("/home");
+    }
   };
 
   // 미인증 → 로그인, 관리자 아님 → 홈으로 리다이렉트 (정적 export 환경이라 UI 노출 방지가 목적, 실제 권한은 백엔드가 검증)
@@ -52,9 +62,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Navigation
         items={navItems}
         user={authUser ?? undefined}
+        isAdminMode={isAdminMode}
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
+        onAdminToggle={handleAdminToggle}
       />
       <div className="mx-auto flex min-h-[calc(100vh-80px)] w-full max-w-360 border-x border-neutral-200 bg-neutral-50">
         <AdminSidebar />

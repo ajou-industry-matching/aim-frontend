@@ -1,4 +1,5 @@
 export { signInWithEmail, signInWithGoogle, signOut, signUpCompanyWithEmail } from "./auth-service";
+export { clearAdminMode, useAdminMode } from "./admin-mode";
 export {
   clearAuthSession,
   saveAuthSession,

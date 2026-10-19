@@ -2,7 +2,7 @@
 
 import type { ReactElement, ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, toNavUser, useAuthSession } from "@/lib/auth";
+import { signOut, toNavUser, useAdminMode, useAuthSession } from "@/lib/auth";
 import { Navigation, type NavItem } from "@/shared/ui";
 
 type AppLayoutProps = Readonly<{
@@ -29,6 +29,7 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
       (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
     );
   const navigationUser = toNavUser(session) ?? undefined;
+  const { isAdminMode, toggleAdminMode } = useAdminMode(navigationUser?.isAdmin ?? false);
 
   const handleLoginClick = () => {
     router.push("/login");
@@ -54,11 +55,14 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
           currentPathname={pathname}
           user={navigationUser}
           isAuthLoading={!isAuthReady}
+          isAdminMode={isAdminMode}
           logoHref="/home"
           onLogin={handleLoginClick}
           onSignup={handleSignupClick}
           onLogout={handleLogoutClick}
           onProfileClick={() => router.push("/profile")}
+          onAdminToggle={toggleAdminMode}
+          onAdminDashboardClick={() => router.push("/admin")}
         />
       )}
       {children}
