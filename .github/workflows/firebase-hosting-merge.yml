@@ -6,14 +6,14 @@ on:
   push:
     branches:
       - main
+  # 시크릿을 교체한 뒤 머지를 기다리지 않고 배포를 검증할 수 있게 한다.
+  workflow_dispatch:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: 20
