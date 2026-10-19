@@ -6,7 +6,6 @@ export default (phase: string): NextConfig => {
 
   const nextConfig: NextConfig = {
     reactStrictMode: true,
-    // @ts-ignore: custom property that might not exist in NextConfig type
     allowedDevOrigins: ["10.250.174.185", "10.250.203.166"],
     output: "export",
     trailingSlash: true,
