@@ -1,5 +1,5 @@
 import { GoogleIcon } from "@/shared/ui/icons";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Loading } from "@/shared/ui/loading";
 
 type StudentLoginPanelProps = {
   isSubmitting: boolean;
@@ -20,7 +20,7 @@ export const StudentLoginPanel = ({
       disabled={isSubmitting}
       className="mt-8 flex h-11 items-center justify-center gap-3 rounded-[4px] border border-[var(--color-gray-300)] bg-white px-5 text-[14px] font-medium text-[#4a4a4a] transition-colors duration-200 hover:border-[var(--color-primary-300)] hover:bg-[var(--color-primary-50)] disabled:cursor-wait disabled:opacity-70"
     >
-      {isSubmitting ? <Spinner size="small" /> : <GoogleIcon size={20} />}
+      {isSubmitting ? <Loading size="small" /> : <GoogleIcon size={20} />}
       {isSubmitting ? "로그인 중..." : "Sign in with Google"}
     </button>
   </>
