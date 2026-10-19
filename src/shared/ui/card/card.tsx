@@ -117,8 +117,15 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
       : "";
 
     const linkedBorderHoverClasses = href
-      ? "transition-colors duration-200 ease-out group-hover:border-[var(--color-primary-500,#3385DB)]"
+      ? "transition-colors duration-200 ease-out group-hover:border-[var(--color-primary-200,#b3d1f7)]"
       : "";
+
+    // 썸네일이 있으면 썸네일(상/좌/우) + 내용(하/좌/우)이 하나의 외곽선을 이루므로
+    // 내용 쪽 상단 테두리를 빼야 경계에 구분선이 남지 않는다.
+    // 썸네일이 없는 compact 카드는 내용 div 혼자 외곽선을 그려야 해서 사방을 둘러친다.
+    const contentBorderClasses = hideThumbnail
+      ? "border rounded-xl"
+      : "border-x border-b rounded-b-xl";
 
     const wrapperClasses = `flex w-full min-w-[280px] max-w-[360px] self-start rounded-xl flex-col group ${linkedHoverClasses} ${
       href || onClick ? "cursor-pointer" : ""
@@ -165,7 +172,7 @@ const PostCardContent = React.forwardRef<HTMLDivElement, Extract<CardProps, { va
         </div>
 
         <div
-          className={`bg-white border border-[color:var(--color-gray-200,#e5e5e5)] flex flex-col gap-4 p-6 ${hideThumbnail ? "rounded-xl" : "rounded-b-xl"} ${linkedBorderHoverClasses}`}
+          className={`bg-white border-[color:var(--color-gray-200,#e5e5e5)] flex flex-col gap-4 p-6 ${contentBorderClasses} ${linkedBorderHoverClasses}`}
         >
           {tags && tags.length > 0 && (
             <div className="flex gap-2 flex-wrap">

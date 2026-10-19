@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signOut, toNavUser, useAuthSession } from "@/lib/auth";
+import { signOut, toNavUser, useAuthSession, useSessionAdminMode } from "@/lib/auth";
 import { Navigation, Footer } from "@/shared/ui";
 import { Spinner } from "@/shared/ui/spinner/spinner";
 import { AdminSidebar } from "@/screens/admin";
@@ -19,6 +19,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { session, isAuthReady } = useAuthSession();
   const authUser = toNavUser(session);
   const isAdmin = authUser?.isAdmin ?? false;
+  const { isAdminMode, toggleAdminMode } = useSessionAdminMode();
 
   const handleLogout = async () => {
     await signOut();
@@ -55,6 +56,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
+        onProfileClick={() => router.push("/profile")}
+        isAdminMode={isAdminMode}
+        onAdminToggle={toggleAdminMode}
+        onAdminDashboardClick={() => router.push("/admin")}
       />
       <div className="mx-auto flex min-h-[calc(100vh-80px)] w-full max-w-360 border-x border-neutral-200 bg-neutral-50">
         <AdminSidebar />

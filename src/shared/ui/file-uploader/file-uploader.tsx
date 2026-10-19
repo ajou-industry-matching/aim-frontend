@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef, useState } from "react";
 import { UploadIcon, ImageIcon, XIcon, FileTextAltIcon } from "@/shared/ui/icons";
 import { Button } from "@/shared/ui/button/button";
