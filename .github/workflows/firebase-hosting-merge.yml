@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+  # 시크릿을 교체한 뒤 머지를 기다리지 않고 배포를 검증할 수 있게 한다.
+  workflow_dispatch:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
