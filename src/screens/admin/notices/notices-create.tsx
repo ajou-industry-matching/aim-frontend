@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/button/button";
 import { Input } from "@/shared/ui/input/input";
 import { FileTextAltIcon, UploadIcon } from "@/shared/ui/icons/index";
-import { createNotice } from "@/api/notice";
+import { createPost } from "@/api/posts";
 import { RichEditor, isRichTextEmpty } from "@/shared/ui/rich-editor";
 import { clearListCache } from "@/api/cache";
 
@@ -42,14 +42,13 @@ export function AdminNoticeCreatePage() {
     try {
       setIsSubmitting(true);
 
-      await createNotice({ title, description, content }, files);
+      await createPost("NOTICE", { title, description, content }, { files });
       clearListCache(); // 캐시 지우기 (관리자 목록 갱신 위해)
 
       alert("공지사항이 성공적으로 등록되었습니다.");
       router.push("/admin/notices");
       router.refresh();
-    } catch (error) {
-      console.error("🚨 공지 등록 실패 상세 원인:", error);
+    } catch {
       alert("등록 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
