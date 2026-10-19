@@ -26,6 +26,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.replace("/login");
   };
 
+  // 관리 화면에서 모드를 끄면 남을 곳이 없으므로 일반 화면으로 되돌린다.
+  const handleAdminToggle = () => {
+    toggleAdminMode();
+
+    if (isAdminMode) {
+      router.push("/home");
+    }
+  };
+
   // 미인증 → 로그인, 관리자 아님 → 홈으로 리다이렉트 (정적 export 환경이라 UI 노출 방지가 목적, 실제 권한은 백엔드가 검증)
   useEffect(() => {
     if (!isAuthReady) return;
@@ -53,12 +62,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <Navigation
         items={navItems}
         user={authUser ?? undefined}
+        isAdminMode={isAdminMode}
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
         onProfileClick={() => router.push("/profile")}
-        isAdminMode={isAdminMode}
-        onAdminToggle={toggleAdminMode}
+        onAdminToggle={handleAdminToggle}
         onAdminDashboardClick={() => router.push("/admin")}
       />
       <div className="mx-auto flex min-h-[calc(100vh-80px)] w-full max-w-360 border-x border-neutral-200 bg-neutral-50">

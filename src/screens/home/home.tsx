@@ -234,12 +234,12 @@ export const HomePage: React.FC = () => {
         items={navItems}
         user={authUser ?? undefined}
         isAuthLoading={!isAuthReady}
+        isAdminMode={isAdminMode}
         logoHref="/home"
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
         onProfileClick={() => router.push("/profile")}
-        isAdminMode={isAdminMode}
         onAdminToggle={toggleAdminMode}
         onAdminDashboardClick={() => router.push("/admin")}
       />
