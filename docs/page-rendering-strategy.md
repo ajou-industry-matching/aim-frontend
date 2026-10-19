@@ -12,6 +12,7 @@
   - 클라이언트 fetch(브라우저에서 API 호출): `CSR`로 표기한다.
 - **동적 세그먼트(`/notice/[id]` 같은 경로)는 쓰지 않는다.** `generateStaticParams`로 ID를 전부 미리 열거해야 하고, 목록에 없는 ID는 404가 된다. 대신 쿼리 파라미터(`/notice/detail?id=`) 방식을 쓴다.
 - `Firebase Hosting` 유지가 우선 조건이다. `/api/**`는 `firebase.json` rewrite로 Cloud Run 백엔드에 전달한다.
+  - **`.env.production`의 `NEXT_PUBLIC_BACKEND_API_BASE_URL`은 비워 두어야 한다.** `src/api/client.ts`가 이 값을 경로 앞에 붙이므로, 값을 채우면 요청이 절대 URL로 나가 rewrite를 타지 않고 `firebase.json`의 리전 지정이 무력화된다. 빌드는 통과하므로 경고가 나지 않는다.
 
 ## 1. 확정된 운영 원칙
 
@@ -24,7 +25,9 @@
 
 ### 1.2 데이터 페이지 (`CSR`)
 
-백엔드 API로 본문을 채우는 페이지다. 정적 export라 빌드 시점에 데이터를 넣을 수 없어 전부 클라이언트 fetch로 구현한다.
+백엔드 API로 본문을 채우는 페이지다. 빌드 이후 갱신되는 데이터를 다루므로 전부 클라이언트 fetch로 구현한다.
+
+정적 export에서도 Server Component의 빌드 시점 `fetch`는 쓸 수 있다. 불가능한 것은 요청 시점 서버 렌더링이다. 이 프로젝트가 전부 클라이언트 fetch인 것은 기술 제약이 아니라 데이터가 빌드 이후 바뀌기 때문이다.
 
 - 공개: `/home`, `/notice`, `/notice/detail`, `/portfolio`, `/portfolio/detail`
 - 비공개: `/profile`, `/portfolio/create`, `/portfolio/edit`, `/admin` 계열

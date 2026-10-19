@@ -79,8 +79,8 @@
 
 - 공개 SEO 페이지: `SSG` 우선
 - 내부 기능 페이지: `CSR` 우선
-- `SSR`은 현재 기본 전략이 아님
-- `ISR`은 공지사항 계열만 추후 검토 가능
+- `output: "export"`이므로 `SSR`과 `ISR`은 사용할 수 없다
+- 자세한 기준은 `docs/page-rendering-strategy.md` 참고
 
 ### Storybook
 
