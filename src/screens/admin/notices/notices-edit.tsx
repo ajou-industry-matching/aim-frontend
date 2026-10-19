@@ -8,7 +8,7 @@ import type { PortfolioAttachment } from "@/api/posts";
 import { Loading } from "@/shared/ui/loading";
 
 // 💡 1. 새로 추가된 공용 컴포넌트 Import
-import { RichEditor } from "@/shared/ui/rich-editor";
+import { RichEditor, isRichTextEmpty } from "@/shared/ui/rich-editor";
 import { FileUploader, FileListItem } from "@/shared/ui/file-uploader/file-uploader";
 
 // 💡 2. FileIcon, XIcon 등은 FileListItem에서 자체 제공하므로 상단 아이콘 선언부 삭제 (BackIcon은 헤더에서 쓰므로 유지)
@@ -95,8 +95,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
       return;
     }
 
-    // 💡 4. (참고) 에디터를 쓸 경우 빈 값인지 검사할 때 HTML 태그를 제거하고 체크하는 것이 좋습니다.
-    if (!content.replace(/<[^>]*>/g, "").trim()) {
+    if (isRichTextEmpty(content)) {
       setError("내용을 입력해주세요.");
       return;
     }
