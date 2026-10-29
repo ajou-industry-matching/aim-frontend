@@ -55,12 +55,12 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
           currentPathname={pathname}
           user={navigationUser}
           isAuthLoading={!isAuthReady}
+          isAdminMode={isAdminMode}
           logoHref="/home"
           onLogin={handleLoginClick}
           onSignup={handleSignupClick}
           onLogout={handleLogoutClick}
           onProfileClick={() => router.push("/profile")}
-          isAdminMode={isAdminMode}
           onAdminToggle={toggleAdminMode}
           onAdminDashboardClick={() => router.push("/admin")}
         />
