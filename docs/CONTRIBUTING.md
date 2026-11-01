@@ -113,7 +113,6 @@ aim-frontend/
  ├─ eslint.config.js
  ├─ next.config.ts
  ├─ prettier.config.cjs
- ├─ tailwind.config.js
  ├─ out/                    # Next static export 산출물 (git ignore)
  └─ tsconfig.json
 ```
@@ -387,7 +386,7 @@ export const Loading: Story = {
 
 ```tsx
 // src/app/(auth)/login/page.tsx
-import { LoginPage } from "@/screens"
+import { LoginPage } from "@/screens/login"
 
 export default function LoginRoute() {
   return <LoginPage />

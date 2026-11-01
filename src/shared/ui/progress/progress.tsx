@@ -40,7 +40,7 @@ export const ProgressBar = ({
   const fillClasses = [
     "h-full rounded-full transition-all duration-300 ease-in-out relative overflow-hidden",
     variantClasses[variant],
-    hasStripes ? "bg-stripes bg-[length:1rem_1rem]" : "", // 👈 bg-[length:1rem_1rem] 추가
+    hasStripes ? "bg-stripes bg-[length:1rem_1rem]" : "",
     isAnimated && hasStripes ? "animate-progress-stripes" : "",
   ]
     .filter(Boolean)
@@ -138,28 +138,6 @@ export const CircularProgress = ({
         </span>
       )}
     </div>
-  );
-};
-
-// ==========================================
-// 14-3. Spinner
-// ==========================================
-export interface SpinnerProps {
-  size?: "small" | "medium" | "large";
-  className?: string;
-}
-
-export const Spinner = ({ size = "medium", className = "" }: SpinnerProps) => {
-  const sizeClasses = {
-    small: "w-[16px] h-[16px] border-[2px]",
-    medium: "w-[24px] h-[24px] border-[3px]",
-    large: "w-[48px] h-[48px] border-[4px]",
-  };
-
-  return (
-    <div
-      className={`rounded-full animate-spin border-[color:var(--color-gray-200,#E5E5E5)] border-t-[color:var(--color-primary-800,#004A9C)] ${sizeClasses[size]} ${className}`}
-    />
   );
 };
 

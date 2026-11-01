@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
-import "../../../index.css";
 import { Button } from "./button";
 import { PlusIcon, XIcon, ArrowRightIcon } from "@/shared/ui/icons";
 

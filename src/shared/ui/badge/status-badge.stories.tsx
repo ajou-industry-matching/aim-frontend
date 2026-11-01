@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import "../../../index.css";
 import { StatusBadge } from "./status-badge";
 
 const meta = {

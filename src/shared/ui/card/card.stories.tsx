@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { fn } from "storybook/test";
-import "../../../index.css";
 import { Card } from "./card";
 import { storageAsset } from "@/shared/config/storage-asset";
 

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { ProgressBar, CircularProgress, Spinner, Skeleton } from "./progress";
+import { ProgressBar, CircularProgress, Skeleton } from "./progress";
+import { Spinner } from "../spinner/spinner";
 
 // ==========================================
 // Meta
