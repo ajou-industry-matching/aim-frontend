@@ -12,7 +12,7 @@
   - 클라이언트 fetch(브라우저에서 API 호출): `CSR`로 표기한다.
 - **동적 세그먼트(`/notice/[id]` 같은 경로)는 쓰지 않는다.** `generateStaticParams`로 ID를 전부 미리 열거해야 하고, 목록에 없는 ID는 404가 된다. 대신 쿼리 파라미터(`/notice/detail?id=`) 방식을 쓴다.
 - `Firebase Hosting` 유지가 우선 조건이다. `/api/**`는 `firebase.json` rewrite로 Cloud Run 백엔드에 전달한다.
-  - **`.env.production`의 `NEXT_PUBLIC_BACKEND_API_BASE_URL`은 비워 두어야 한다.** `src/api/client.ts`가 이 값을 경로 앞에 붙이므로, 값을 채우면 요청이 절대 URL로 나가 rewrite를 타지 않고 `firebase.json`의 리전 지정이 무력화된다. 빌드는 통과하므로 경고가 나지 않는다.
+  - **`.env.production`의 `NEXT_PUBLIC_BACKEND_API_BASE_URL`은 비워 두어야 한다.** `src/api/client.ts`와 `src/api/auth/auth-api.ts`가 이 값을 경로 앞에 붙이므로, 값을 채우면 요청이 절대 URL로 나가 rewrite를 타지 않고 `firebase.json`의 리전 지정이 무력화된다. 빌드는 통과하므로 경고가 나지 않는다.
 
 ## 1. 확정된 운영 원칙
 
@@ -55,7 +55,7 @@
 | 포트폴리오 목록 | `/portfolio` | 공개 | CSR | 클라이언트 fetch. `useSearchParams` 로 읽는 것은 `keyword` 뿐이고 유형 필터와 정렬은 컴포넌트 상태다 |
 | 포트폴리오 상세 | `/portfolio/detail?id=&type=` | 공개 | CSR | 쿼리 파라미터 방식. `type` 은 포트폴리오가 아닌 게시글 상세를 가리킬 때 쓴다 |
 | 사용자 내부 페이지 | `/profile` | 비공개 | CSR | 인증 확정 후 개인화 API 호출 |
-| 작성/편집 페이지 | `/portfolio/create`, `/portfolio/edit` | 비공개 | CSR | 폼 상태 중심. 편집은 소유자 확인 후 진입 |
+| 작성/편집 페이지 | `/portfolio/create`, `/portfolio/edit?id=&type=` | 비공개 | CSR | 폼 상태 중심. 편집은 소유자 확인 후 진입 |
 | 관리자 페이지 | `/admin`, `/admin/notices`, `/admin/notices/edit` | 비공개(관리자) | CSR | `/admin` 레이아웃에서 관리자 권한 가드 후 렌더 |
 
 `/notice/create`는 관리자 전용 화면으로 `/admin` 하위로 이관하는 작업이 진행 중이다(#157). 이관이 끝나면 위 표의 관리자 페이지 행에 포함된다.
@@ -70,7 +70,7 @@
 ### 3.2 전역 상태
 
 - `zustand`는 전역 클라이언트 상태에 도입되어 사용 중이다(예: 홈 데이터 패칭 `home-store.ts`).
-- 여러 컴포넌트/페이지에서 공유되는 클라이언트 상태가 생길 때만 최소 범위로 도입한다.
+- 새 전역 상태는 여러 컴포넌트/페이지에서 공유될 때만 최소 범위로 추가한다.
 
 예상 후보:
 

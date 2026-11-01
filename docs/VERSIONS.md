@@ -11,7 +11,7 @@
 
 | 항목 | 버전 | 비고 |
 |---|---|---|
-| Node.js | 20.x | v22 LTS 업그레이드 검토 중 |
+| Node.js | 24.x | CI 기준 (`.github/workflows`, #224) |
 | pnpm | 10.20.0 | 팀 공통 패키지 매니저 |
 
 ### 프로덕션 의존성
@@ -92,7 +92,7 @@
 
 - 폼: `react-hook-form + zod`
 - 전역 클라이언트 상태: `zustand`
-- `zustand`는 현재 도입되어 사용 중이다(`src/screens/home/home-store.ts` 등). `react-hook-form`/`zod`는 폼 라우트 구현 시점에 도입 예정이다.
+- `zustand`는 현재 도입되어 사용 중이다(`src/screens/home/home-store.ts`). `react-hook-form`/`zod`는 폼 라우트 구현 시점에 도입 예정이다.
 
 ---
 
@@ -131,9 +131,9 @@
 
 | 패키지 | 버전 | 분류 |
 |---|---|---|
-| `@tiptap/react` | 3.22.5 | 신규 |
-| `@tiptap/pm` | 3.22.5 | 신규 |
-| `@tiptap/starter-kit` | 3.22.5 | 신규 |
+| `@tiptap/react` | 3.21.0 | 신규 |
+| `@tiptap/pm` | 3.21.0 | 신규 |
+| `@tiptap/starter-kit` | 3.21.0 | 신규 |
 | `tiptap-extension-global-drag-handle` | 0.1.18 | 신규 |
 | `tiptap-extension-auto-joiner` | 0.1.3 | 신규 |
 
@@ -169,12 +169,6 @@
 
 ## 주의사항
 
-### `@types/node` 버전 불일치
-
-- 현재 로컬 Node.js 환경은 v20이다.
-- 하지만 `@types/node`는 24.x를 사용 중이다.
-- 당장 문제는 없지만 Node 정책 정리 후 맞춰보는 것이 좋다.
-
 ### `tailwindcss` 4.2.0 deprecated 유틸리티
 
 - `start-*`, `end-*` 유틸리티는 추후 제거 가능성이 있다.
@@ -191,8 +185,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| Node.js 버전 정책 | v20 유지 또는 v22 LTS 업그레이드 결정, `.nvmrc` 및 CI 버전 명시 |
-| `@types/node` 정리 | Node.js 정책 확정 후 맞춰서 업데이트 |
+| Node.js 버전 고정 | 로컬 버전을 CI(24.x)와 맞추기 위한 `.nvmrc` 추가 여부 |
 | Chromatic 운영 여부 | PR 단위 UI 스냅샷 비교 도입 검토 |
 | Firestore 보안 규칙 | `allow read, write: if true` 제거 및 인증 기반 규칙 정리 |
 
