@@ -8,4 +8,4 @@ export {
 export { useCreatePortfolio, type UseCreatePortfolioResult } from "./use-create-portfolio";
 export { useUpdatePortfolio, type UseUpdatePortfolioResult } from "./use-update-portfolio";
 export { useDeletePortfolio, type UseDeletePortfolioResult } from "./use-delete-portfolio";
-export { toAuthorLabel } from "./author-label";
+export { toAuthorLabel, type AuthorSource } from "./author-label";
