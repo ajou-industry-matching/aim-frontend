@@ -56,6 +56,8 @@ export type PortfolioFormProps = {
   submitError: Error | null;
   onSubmit: (value: PortfolioFormSubmitValue) => void;
   onCancel: () => void;
+  /** 본문 에디터 이미지 업로드. 없으면 에디터에서 이미지 삽입 메뉴가 빠진다. */
+  onUploadEditorImage?: (file: File) => Promise<string>;
   initialValues?: PortfolioFormInitialValues;
   existingThumbnailUrl?: string | null;
   existingImages?: PortfolioAttachment[];
@@ -109,6 +111,7 @@ export const PortfolioForm = ({
   submitError,
   onSubmit,
   onCancel,
+  onUploadEditorImage,
   initialValues = DEFAULT_INITIAL_VALUES,
   existingThumbnailUrl = null,
   existingImages = [],
@@ -129,6 +132,8 @@ export const PortfolioForm = ({
   const [files, setFiles] = useState<File[]>([]);
   const [removedAttachmentIds, setRemovedAttachmentIds] = useState<number[]>([]);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  // 업로드가 끝나기 전에 저장하면 이미지가 빠진 본문이 저장된다.
+  const [isEditorImageUploading, setIsEditorImageUploading] = useState(false);
 
   // 미리보기 objectURL은 렌더 시 파생하고, cleanup에서만 revoke한다.
   const newThumbnailPreview = useMemo(
@@ -193,7 +198,9 @@ export const PortfolioForm = ({
       errors.description = "간단 설명을 입력해주세요.";
     }
 
-    if (isRichTextEmpty(content)) {
+    if (isEditorImageUploading) {
+      errors.content = "이미지를 올리는 중이에요. 업로드가 끝난 뒤 저장해주세요.";
+    } else if (isRichTextEmpty(content)) {
       errors.content = "프로젝트 상세 설명을 입력해주세요.";
     }
 
@@ -326,6 +333,8 @@ export const PortfolioForm = ({
               <RichEditor
                 content={initialValues.content}
                 onChange={(html) => setContent(html)}
+                onUploadImage={onUploadEditorImage}
+                onUploadingChange={setIsEditorImageUploading}
                 placeholder="프로젝트를 자유롭게 소개해주세요"
                 className="min-h-[300px]"
               />

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getPortfolioDetail, type PortfolioBoardType, type PortfolioDetail } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
+import { useEditorImageSession } from "@/lib/editor-images";
 import { useUpdatePortfolio } from "@/lib/posts";
 import { useCurrentUserId } from "@/lib/user";
 import {
@@ -60,6 +61,8 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
   const hasMatchingResult = result?.fetchKey === fetchKey;
   const detail = hasMatchingResult ? result.detail : undefined;
   const loadError = hasMatchingResult ? (result.error ?? null) : null;
+  // 원래 본문에 있던 이미지도 수정 저장 때 빠졌으면 함께 정리한다.
+  const editorImages = useEditorImageSession("posts", detail?.content ?? "");
 
   // 미인증 사용자는 로그인 페이지로 보낸다(수정은 로그인 필수).
   useEffect(() => {
@@ -113,6 +116,8 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
     );
 
     if (updated) {
+      // 저장이 확정된 뒤에만 본문에서 빠진 이미지를 Storage에서 정리한다.
+      editorImages.commit(fields.content ?? "");
       router.push(`/portfolio/detail?id=${updated.postId}&type=${updated.boardType}`);
     }
   };
@@ -168,6 +173,7 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
       submitError={submitError}
       onSubmit={handleSubmit}
       onCancel={() => router.push(`/portfolio/detail?id=${postId}&type=${boardType}`)}
+      onUploadEditorImage={editorImages.uploadImage}
       initialValues={toInitialValues(detail)}
       existingThumbnailUrl={detail.thumbnailImage}
       existingImages={detail.images}

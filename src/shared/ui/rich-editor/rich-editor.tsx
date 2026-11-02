@@ -21,11 +21,16 @@ import {
   CodeIcon,
   ImageIcon,
 } from "@/shared/ui/icons";
-import { Loading } from "@/shared/ui/loading";
 
 import { SlashCommand, filterSuggestionItems, type SlashCommandItem } from "./slash-command";
 import { SlashCommandMenu } from "./slash-command-menu";
-import { EditorImageUploadError, uploadEditorImage } from "./upload-editor-image";
+import {
+  IMAGE_UPLOAD_HTML_PATTERN,
+  IMAGE_UPLOAD_NODE_NAME,
+  ImageUploadNode,
+  getImageUploader,
+  setImageUploader,
+} from "./image-upload-node";
 
 export type RichEditorProps = {
   content?: string;
@@ -33,10 +38,13 @@ export type RichEditorProps = {
   isEditable?: boolean;
   placeholder?: string;
   className?: string;
+  /** 넘기면 슬래시 명령에 "이미지"가 생긴다. 고른 파일을 업로드하고 이미지 URL을 돌려줘야 한다. */
+  onUploadImage?: (file: File) => Promise<string>;
+  /** 본문에 업로드 중인 이미지가 있는지 알려준다. 업로드 중 저장을 막는 데 쓴다. */
+  onUploadingChange?: (isUploading: boolean) => void;
 };
 
-// 이미지 삽입은 업로드 중/실패 상태를 컴포넌트가 그려야 해서 핸들러를 주입받는다.
-const createSlashCommandItems = (onInsertImage: (editor: Editor) => void): SlashCommandItem[] => [
+const baseSlashCommandItems: SlashCommandItem[] = [
   {
     title: "제목 1",
     description: "큰 제목",
@@ -100,18 +108,28 @@ const createSlashCommandItems = (onInsertImage: (editor: Editor) => void): Slash
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run();
     },
   },
-  {
-    title: "이미지",
-    description: "이미지 삽입",
-    searchTerms: ["image", "img", "이미지", "사진"],
-    icon: <ImageIcon size={18} />,
-    command: ({ editor, range }) => {
-      // URL 입력이 아니라 파일을 첨부해 이미지를 삽입한다.
-      editor.chain().focus().deleteRange(range).run();
-      onInsertImage(editor);
-    },
-  },
 ];
+
+// 이미지 삽입은 업로드를 맡길 곳이 있을 때만 메뉴에 넣는다.
+const createSlashCommandItems = (
+  onInsertImage: ((editor: Editor) => void) | null,
+): SlashCommandItem[] =>
+  onInsertImage
+    ? [
+        ...baseSlashCommandItems,
+        {
+          title: "이미지",
+          description: "이미지 삽입",
+          searchTerms: ["image", "img", "이미지", "사진"],
+          icon: <ImageIcon size={18} />,
+          command: ({ editor, range }) => {
+            // URL 입력이 아니라 파일을 첨부해 이미지를 삽입한다.
+            editor.chain().focus().deleteRange(range).run();
+            onInsertImage(editor);
+          },
+        },
+      ]
+    : baseSlashCommandItems;
 
 // 파일 선택 창을 열어 고른 이미지 파일을 반환한다. 취소하면 null.
 const pickImageFile = (): Promise<File | null> => {
@@ -124,13 +142,81 @@ const pickImageFile = (): Promise<File | null> => {
     input.type = "file";
     input.accept = "image/*";
     input.onchange = () => resolve(input.files?.[0] ?? null);
+    // 선택 창을 취소하면 change가 오지 않으므로 cancel에서도 끝낸다.
+    input.addEventListener("cancel", () => resolve(null));
     input.click();
   });
 };
 
 const IMAGE_UPLOAD_FALLBACK_ERROR = "이미지를 올리지 못했어요. 잠시 후 다시 시도해주세요.";
 
-type ImageUploadState = { status: "uploading" } | { status: "error"; message: string } | null;
+const createUploadId = (): string => `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+// 업로드 중 사용자가 글을 고쳐도 자리표시 블록은 id로 다시 찾는다. 이미 지웠으면 null.
+const findUploadNode = (editor: Editor, uploadId: string) => {
+  let found: { pos: number; nodeSize: number; attrs: Record<string, unknown> } | null = null;
+  editor.state.doc.descendants((node, pos) => {
+    if (found) return false;
+    if (node.type.name === IMAGE_UPLOAD_NODE_NAME && node.attrs.uploadId === uploadId) {
+      found = { pos, nodeSize: node.nodeSize, attrs: node.attrs };
+      return false;
+    }
+    return true;
+  });
+  return found as { pos: number; nodeSize: number; attrs: Record<string, unknown> } | null;
+};
+
+const hasUploadingImage = (editor: Editor): boolean => {
+  let isUploading = false;
+  editor.state.doc.descendants((node) => {
+    if (isUploading) return false;
+    if (node.type.name === IMAGE_UPLOAD_NODE_NAME && node.attrs.status === "uploading") {
+      isUploading = true;
+    }
+    return !isUploading;
+  });
+  return isUploading;
+};
+
+const insertImage = async (editor: Editor): Promise<void> => {
+  const upload = getImageUploader(editor);
+  if (!upload) return;
+  const file = await pickImageFile();
+  if (!file || editor.isDestroyed) return;
+
+  // 고른 자리에 업로드 블록을 먼저 넣고, 끝나면 그 블록을 이미지로 바꾼다.
+  const uploadId = createUploadId();
+  editor.chain().focus().insertContent({ type: IMAGE_UPLOAD_NODE_NAME, attrs: { uploadId } }).run();
+
+  try {
+    const url = await upload(file);
+    // 업로드 중 화면을 떠났거나 블록을 지웠으면 삽입하지 않는다. 남은 파일 정리는 업로드를 맡긴 쪽이 한다.
+    if (editor.isDestroyed) return;
+    const target = findUploadNode(editor, uploadId);
+    if (!target) return;
+    // focus 없이 바꿔서 그사이 다른 곳에 있던 커서를 끌고 오지 않는다.
+    editor.view.dispatch(
+      editor.state.tr.replaceWith(
+        target.pos,
+        target.pos + target.nodeSize,
+        editor.schema.nodes.image.create({ src: url }),
+      ),
+    );
+  } catch (error) {
+    console.error("Failed to upload editor image", error);
+    if (editor.isDestroyed) return;
+    const target = findUploadNode(editor, uploadId);
+    if (!target) return;
+    editor.view.dispatch(
+      editor.state.tr.setNodeMarkup(target.pos, undefined, {
+        ...target.attrs,
+        status: "error",
+        message:
+          error instanceof Error && error.message ? error.message : IMAGE_UPLOAD_FALLBACK_ERROR,
+      }),
+    );
+  }
+};
 
 type MenuState = {
   items: SlashCommandItem[];
@@ -178,40 +264,23 @@ export const RichEditor = ({
   isEditable = true,
   placeholder = "내용을 작성해주세요... (/ 를 입력하여 명령어 메뉴를 열 수 있습니다)",
   className = "",
+  onUploadImage,
+  onUploadingChange,
 }: RichEditorProps) => {
   const [menuState, setMenuState] = useState<MenuState | null>(null);
-  const [imageUploadState, setImageUploadState] = useState<ImageUploadState>(null);
   const menuStateRef = useRef<MenuState | null>(null);
   const onChangeRef = useRef(onChange);
+  const onUploadingChangeRef = useRef(onUploadingChange);
+  const isUploadingRef = useRef(false);
 
   useEffect(() => {
     onChangeRef.current = onChange;
-  }, [onChange]);
-
-  const insertImage = useCallback(async (editor: Editor) => {
-    const file = await pickImageFile();
-    if (!file) return;
-
-    setImageUploadState({ status: "uploading" });
-    try {
-      const url = await uploadEditorImage(file);
-      // 업로드 중 화면을 떠나 에디터가 정리됐으면 삽입하지 않는다.
-      if (editor.isDestroyed) return;
-      editor.chain().focus().setImage({ src: url }).run();
-      setImageUploadState(null);
-    } catch (error) {
-      console.error("Failed to upload editor image", error);
-      setImageUploadState({
-        status: "error",
-        message:
-          error instanceof EditorImageUploadError ? error.message : IMAGE_UPLOAD_FALLBACK_ERROR,
-      });
-    }
-  }, []);
+    onUploadingChangeRef.current = onUploadingChange;
+  }, [onChange, onUploadingChange]);
 
   // useEditor 설정은 첫 렌더에 고정되므로, 명령 목록도 한 번만 만든다.
   const [slashCommandItems] = useState(() =>
-    createSlashCommandItems((editor) => void insertImage(editor)),
+    createSlashCommandItems(onUploadImage ? (editor) => void insertImage(editor) : null),
   );
 
   const updateMenu = useCallback((next: MenuState | null) => {
@@ -226,6 +295,7 @@ export const RichEditor = ({
         heading: { levels: [1, 2, 3, 4, 5, 6] },
       }),
       Image,
+      ImageUploadNode,
       Link.configure({ openOnClick: false }),
       TextStyle,
       Color,
@@ -306,7 +376,14 @@ export const RichEditor = ({
       },
     },
     onUpdate: ({ editor }) => {
-      onChangeRef.current?.(editor.getHTML());
+      // 업로드 자리표시 블록은 저장되는 본문에 남기지 않는다.
+      onChangeRef.current?.(editor.getHTML().replace(IMAGE_UPLOAD_HTML_PATTERN, ""));
+
+      const isUploading = hasUploadingImage(editor);
+      if (isUploading !== isUploadingRef.current) {
+        isUploadingRef.current = isUploading;
+        onUploadingChangeRef.current?.(isUploading);
+      }
     },
   });
 
@@ -315,22 +392,14 @@ export const RichEditor = ({
     editor.setEditable(isEditable);
   }, [editor, isEditable]);
 
+  useEffect(() => {
+    if (!editor) return;
+    setImageUploader(editor, onUploadImage ?? null);
+  }, [editor, onUploadImage]);
+
   return (
     <div className={getContainerClasses(isEditable, className)}>
       <EditorContent editor={editor} className={getEditorContentClasses(isEditable)} />
-      {isEditable && imageUploadState?.status === "uploading" && (
-        <div className="border-t border-[var(--border-default,#cccccc)] px-4 py-2">
-          <Loading size="small" text="이미지를 올리는 중" />
-        </div>
-      )}
-      {isEditable && imageUploadState?.status === "error" && (
-        <p
-          role="alert"
-          className="border-t border-[var(--border-default,#cccccc)] px-4 py-2 text-[13px] text-[var(--color-error-500,#ef4444)]"
-        >
-          {imageUploadState.message}
-        </p>
-      )}
       {isEditable && menuState && (
         <SlashCommandMenu
           items={menuState.items}

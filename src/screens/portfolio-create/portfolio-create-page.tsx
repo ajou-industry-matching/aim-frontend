@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { PortfolioBoardType } from "@/api/posts";
 import { useAuthReady } from "@/lib/auth";
+import { useEditorImageSession } from "@/lib/editor-images";
 import { useCreatePortfolio } from "@/lib/posts";
 import { PortfolioForm, type PortfolioFormSubmitValue } from "@/screens/portfolio-form";
 import { PageLoading } from "@/shared/ui/loading";
@@ -15,6 +16,7 @@ export const PortfolioCreatePage = () => {
   const router = useRouter();
   const { isReady: isAuthReady, isAuthenticated } = useAuthReady();
   const { submit, isSubmitting, error: submitError } = useCreatePortfolio();
+  const editorImages = useEditorImageSession("posts");
 
   // 미인증 사용자는 로그인 페이지로 보낸다(작성은 로그인 필수).
   useEffect(() => {
@@ -39,6 +41,8 @@ export const PortfolioCreatePage = () => {
     );
 
     if (created) {
+      // 저장이 확정된 뒤에만 본문에서 빠진 이미지를 Storage에서 정리한다.
+      editorImages.commit(fields.content ?? "");
       router.push(`/portfolio/detail?id=${created.postId}&type=${created.boardType}`);
     }
   };
@@ -57,6 +61,7 @@ export const PortfolioCreatePage = () => {
       submitError={submitError}
       onSubmit={handleSubmit}
       onCancel={() => router.push("/portfolio")}
+      onUploadEditorImage={editorImages.uploadImage}
     />
   );
 };
