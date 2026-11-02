@@ -1,42 +1,54 @@
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { EDITOR_IMAGE_MAX_BYTES, EDITOR_IMAGE_TYPES } from "@/shared/config/editor-image";
 import { auth, storage } from "@/shared/config/firebase";
+import { ImageUploadUserError } from "@/shared/ui/rich-editor/image-upload-error";
 
-// storage.rules의 `{prefix}/{uid}/{fileName}` 규칙과 같은 경로 체계를 쓴다.
-export type EditorImagePathPrefix = "posts" | "notices";
-
-const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/gif", "image/webp", "image/svg+xml"];
-// 백엔드 첨부파일 한도(max-file-size: 20MB)와 맞춘다. storage.rules에도 같은 값이 있다.
-const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
-
-export class EditorImageUploadError extends Error {}
+// 공지 에디터 연결 시 "notices"를 추가한다.
+export type EditorImagePathPrefix = "posts";
 
 // 경로에 쓸 수 없는 문자를 걷어낸다. 한글 등은 밑줄로 바뀌지만 앞의 timestamp로 구분된다.
 const toSafeFileName = (name: string): string => name.replace(/[^\w.-]/g, "_");
 
+const toStorageRef = (url: string) => {
+  try {
+    const imageRef = ref(storage, url);
+    // 다른 버킷의 URL은 우리 이미지가 아니다.
+    return imageRef.bucket === storage.app.options.storageBucket ? imageRef : null;
+  } catch {
+    // Storage 다운로드 URL 형식이 아니면 ref 생성 단계에서 예외가 난다.
+    return null;
+  }
+};
+
 /**
- * 에디터 본문 이미지를 Firebase Storage에 올리고 다운로드 URL을 돌려준다.
+ * 에디터 본문 이미지를 `{prefix}/{uid}/...`에 올리고 다운로드 URL을 돌려준다.
  * 본문에 base64를 그대로 넣으면 Post.content(TEXT, 64KB) 한도를 넘기므로 URL만 남긴다.
+ * 타입·크기 검사는 여기서만 한다. Storage 규칙으로 강제하는 작업은 #227.
  */
 export const uploadEditorImage = async (
   file: File,
   prefix: EditorImagePathPrefix,
 ): Promise<string> => {
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-    throw new EditorImageUploadError("PNG, JPG, GIF, WEBP, SVG 이미지만 넣을 수 있어요.");
+  if (!EDITOR_IMAGE_TYPES.includes(file.type)) {
+    throw new ImageUploadUserError("PNG, JPG, GIF, WEBP 이미지만 넣을 수 있어요.");
   }
-  if (file.size > MAX_IMAGE_BYTES) {
-    throw new EditorImageUploadError("이미지는 20MB 이하만 넣을 수 있어요.");
+  if (file.size > EDITOR_IMAGE_MAX_BYTES) {
+    throw new ImageUploadUserError("이미지는 20MB 이하만 넣을 수 있어요.");
   }
 
   const uid = auth.currentUser?.uid;
   if (!uid) {
-    throw new EditorImageUploadError("로그인 후 이미지를 넣을 수 있어요.");
+    throw new ImageUploadUserError("로그인 후 이미지를 넣을 수 있어요.");
   }
 
   const imageRef = ref(storage, `${prefix}/${uid}/${Date.now()}-${toSafeFileName(file.name)}`);
   await uploadBytes(imageRef, file, { contentType: file.type });
   return getDownloadURL(imageRef);
 };
+
+/** 우리 버킷의 `{prefix}/` 아래 에디터 이미지 URL인지. 붙여넣기 제한에 쓴다. */
+export const isEditorImageUrl = (url: string, prefix: EditorImagePathPrefix): boolean =>
+  toStorageRef(url)?.fullPath.startsWith(`${prefix}/`) ?? false;
 
 /**
  * 내가 올린 에디터 이미지(`{prefix}/{내 uid}/...`)만 지운다.
@@ -47,16 +59,8 @@ export const deleteEditorImage = async (
   prefix: EditorImagePathPrefix,
 ): Promise<boolean> => {
   const uid = auth.currentUser?.uid;
-  if (!uid) return false;
-
-  let imageRef;
-  try {
-    // 우리 버킷의 다운로드 URL이 아니면 ref 생성 단계에서 예외가 난다.
-    imageRef = ref(storage, url);
-  } catch {
-    return false;
-  }
-  if (!imageRef.fullPath.startsWith(`${prefix}/${uid}/`)) return false;
+  const imageRef = toStorageRef(url);
+  if (!uid || !imageRef || !imageRef.fullPath.startsWith(`${prefix}/${uid}/`)) return false;
 
   try {
     await deleteObject(imageRef);

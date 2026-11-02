@@ -174,6 +174,7 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
       onSubmit={handleSubmit}
       onCancel={() => router.push(`/portfolio/detail?id=${postId}&type=${boardType}`)}
       onUploadEditorImage={editorImages.uploadImage}
+      canPasteEditorImage={editorImages.canPasteImage}
       initialValues={toInitialValues(detail)}
       existingThumbnailUrl={detail.thumbnailImage}
       existingImages={detail.images}

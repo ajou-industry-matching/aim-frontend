@@ -58,6 +58,8 @@ export type PortfolioFormProps = {
   onCancel: () => void;
   /** 본문 에디터 이미지 업로드. 없으면 에디터에서 이미지 삽입 메뉴가 빠진다. */
   onUploadEditorImage?: (file: File) => Promise<string>;
+  /** 본문에 붙여넣은 이미지를 받을지. 다른 글의 Storage 이미지를 막는 데 쓴다. */
+  canPasteEditorImage?: (src: string) => boolean;
   initialValues?: PortfolioFormInitialValues;
   existingThumbnailUrl?: string | null;
   existingImages?: PortfolioAttachment[];
@@ -112,6 +114,7 @@ export const PortfolioForm = ({
   onSubmit,
   onCancel,
   onUploadEditorImage,
+  canPasteEditorImage,
   initialValues = DEFAULT_INITIAL_VALUES,
   existingThumbnailUrl = null,
   existingImages = [],
@@ -334,6 +337,7 @@ export const PortfolioForm = ({
                 content={initialValues.content}
                 onChange={(html) => setContent(html)}
                 onUploadImage={onUploadEditorImage}
+                canPasteImage={canPasteEditorImage}
                 onUploadingChange={setIsEditorImageUploading}
                 placeholder="프로젝트를 자유롭게 소개해주세요"
                 className="min-h-[300px]"

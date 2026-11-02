@@ -1,6 +1,6 @@
 export {
   uploadEditorImage,
   deleteEditorImage,
-  EditorImageUploadError,
+  isEditorImageUrl,
   type EditorImagePathPrefix,
 } from "./editor-images-api";

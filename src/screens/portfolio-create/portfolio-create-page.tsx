@@ -62,6 +62,7 @@ export const PortfolioCreatePage = () => {
       onSubmit={handleSubmit}
       onCancel={() => router.push("/portfolio")}
       onUploadEditorImage={editorImages.uploadImage}
+      canPasteEditorImage={editorImages.canPasteImage}
     />
   );
 };
