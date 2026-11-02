@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SuggestionKeyDownProps, SuggestionProps } from "@tiptap/suggestion";
-import { EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
@@ -21,9 +21,11 @@ import {
   CodeIcon,
   ImageIcon,
 } from "@/shared/ui/icons";
+import { Loading } from "@/shared/ui/loading";
 
 import { SlashCommand, filterSuggestionItems, type SlashCommandItem } from "./slash-command";
 import { SlashCommandMenu } from "./slash-command-menu";
+import { EditorImageUploadError, uploadEditorImage } from "./upload-editor-image";
 
 export type RichEditorProps = {
   content?: string;
@@ -33,7 +35,8 @@ export type RichEditorProps = {
   className?: string;
 };
 
-const slashCommandItems: SlashCommandItem[] = [
+// 이미지 삽입은 업로드 중/실패 상태를 컴포넌트가 그려야 해서 핸들러를 주입받는다.
+const createSlashCommandItems = (onInsertImage: (editor: Editor) => void): SlashCommandItem[] => [
   {
     title: "제목 1",
     description: "큰 제목",
@@ -105,31 +108,13 @@ const slashCommandItems: SlashCommandItem[] = [
     command: ({ editor, range }) => {
       // URL 입력이 아니라 파일을 첨부해 이미지를 삽입한다.
       editor.chain().focus().deleteRange(range).run();
-      void pickImageFile().then((dataUrl) => {
-        if (dataUrl) {
-          editor.chain().focus().setImage({ src: dataUrl }).run();
-        }
-      });
+      onInsertImage(editor);
     },
   },
 ];
 
-const SAFE_IMAGE_DATA_URL = /^data:image\/(png|jpeg|jpg|gif|webp|svg\+xml);base64,/i;
-
-const isSafeImageUrl = (raw: string): boolean => {
-  const trimmed = raw.trim();
-  if (!trimmed) return false;
-  if (SAFE_IMAGE_DATA_URL.test(trimmed)) return true;
-  try {
-    const parsed = new URL(trimmed);
-    return parsed.protocol === "http:" || parsed.protocol === "https:";
-  } catch {
-    return false;
-  }
-};
-
-// 파일 첨부로 선택한 이미지를 data URL(base64)로 읽어 반환한다.
-const pickImageFile = (): Promise<string | null> => {
+// 파일 선택 창을 열어 고른 이미지 파일을 반환한다. 취소하면 null.
+const pickImageFile = (): Promise<File | null> => {
   return new Promise((resolve) => {
     if (typeof document === "undefined") {
       resolve(null);
@@ -138,23 +123,14 @@ const pickImageFile = (): Promise<string | null> => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.onchange = () => {
-      const file = input.files?.[0];
-      if (!file) {
-        resolve(null);
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = typeof reader.result === "string" ? reader.result : null;
-        resolve(result && isSafeImageUrl(result) ? result : null);
-      };
-      reader.onerror = () => resolve(null);
-      reader.readAsDataURL(file);
-    };
+    input.onchange = () => resolve(input.files?.[0] ?? null);
     input.click();
   });
 };
+
+const IMAGE_UPLOAD_FALLBACK_ERROR = "이미지를 올리지 못했어요. 잠시 후 다시 시도해주세요.";
+
+type ImageUploadState = { status: "uploading" } | { status: "error"; message: string } | null;
 
 type MenuState = {
   items: SlashCommandItem[];
@@ -204,12 +180,39 @@ export const RichEditor = ({
   className = "",
 }: RichEditorProps) => {
   const [menuState, setMenuState] = useState<MenuState | null>(null);
+  const [imageUploadState, setImageUploadState] = useState<ImageUploadState>(null);
   const menuStateRef = useRef<MenuState | null>(null);
   const onChangeRef = useRef(onChange);
 
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
+
+  const insertImage = useCallback(async (editor: Editor) => {
+    const file = await pickImageFile();
+    if (!file) return;
+
+    setImageUploadState({ status: "uploading" });
+    try {
+      const url = await uploadEditorImage(file);
+      // 업로드 중 화면을 떠나 에디터가 정리됐으면 삽입하지 않는다.
+      if (editor.isDestroyed) return;
+      editor.chain().focus().setImage({ src: url }).run();
+      setImageUploadState(null);
+    } catch (error) {
+      console.error("Failed to upload editor image", error);
+      setImageUploadState({
+        status: "error",
+        message:
+          error instanceof EditorImageUploadError ? error.message : IMAGE_UPLOAD_FALLBACK_ERROR,
+      });
+    }
+  }, []);
+
+  // useEditor 설정은 첫 렌더에 고정되므로, 명령 목록도 한 번만 만든다.
+  const [slashCommandItems] = useState(() =>
+    createSlashCommandItems((editor) => void insertImage(editor)),
+  );
 
   const updateMenu = useCallback((next: MenuState | null) => {
     menuStateRef.current = next;
@@ -315,6 +318,19 @@ export const RichEditor = ({
   return (
     <div className={getContainerClasses(isEditable, className)}>
       <EditorContent editor={editor} className={getEditorContentClasses(isEditable)} />
+      {isEditable && imageUploadState?.status === "uploading" && (
+        <div className="border-t border-[var(--border-default,#cccccc)] px-4 py-2">
+          <Loading size="small" text="이미지를 올리는 중" />
+        </div>
+      )}
+      {isEditable && imageUploadState?.status === "error" && (
+        <p
+          role="alert"
+          className="border-t border-[var(--border-default,#cccccc)] px-4 py-2 text-[13px] text-[var(--color-error-500,#ef4444)]"
+        >
+          {imageUploadState.message}
+        </p>
+      )}
       {isEditable && menuState && (
         <SlashCommandMenu
           items={menuState.items}
