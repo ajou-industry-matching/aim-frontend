@@ -1,7 +1,10 @@
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { EDITOR_IMAGE_MAX_BYTES, EDITOR_IMAGE_TYPES } from "@/shared/config/editor-image";
+import {
+  EDITOR_IMAGE_MAX_BYTES,
+  EDITOR_IMAGE_TYPES,
+  ImageUploadUserError,
+} from "@/shared/config/editor-image";
 import { auth, storage } from "@/shared/config/firebase";
-import { ImageUploadUserError } from "@/shared/ui/rich-editor/image-upload-error";
 
 // 공지 에디터 연결 시 "notices"를 추가한다.
 export type EditorImagePathPrefix = "posts";

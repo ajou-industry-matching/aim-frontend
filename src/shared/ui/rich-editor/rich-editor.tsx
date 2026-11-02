@@ -22,7 +22,7 @@ import {
   ImageIcon,
 } from "@/shared/ui/icons";
 
-import { EDITOR_IMAGE_TYPES } from "@/shared/config/editor-image";
+import { EDITOR_IMAGE_TYPES, ImageUploadUserError } from "@/shared/config/editor-image";
 
 import { SlashCommand, filterSuggestionItems, type SlashCommandItem } from "./slash-command";
 import { SlashCommandMenu } from "./slash-command-menu";
@@ -33,7 +33,6 @@ import {
   getImageUploader,
   setImageUploader,
 } from "./image-upload-node";
-import { ImageUploadUserError } from "./image-upload-error";
 
 export type RichEditorProps = {
   content?: string;
