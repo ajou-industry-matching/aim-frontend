@@ -1,8 +1,9 @@
 "use client";
 
-import type { ReactElement, ReactNode } from "react";
+import { useState, type ReactElement, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, toNavUser, useAuthSession, useSessionAdminMode } from "@/lib/auth";
+import { MyPortfolioModal } from "@/screens/my-portfolio";
 import { Navigation, type NavItem } from "@/shared/ui";
 
 type AppLayoutProps = Readonly<{
@@ -30,6 +31,7 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
     );
   const navigationUser = toNavUser(session) ?? undefined;
   const { isAdminMode, toggleAdminMode } = useSessionAdminMode();
+  const [isMyPortfolioOpen, setIsMyPortfolioOpen] = useState(false);
 
   const handleLoginClick = () => {
     router.push("/login");
@@ -61,11 +63,16 @@ export const AppLayout = ({ children }: AppLayoutProps): ReactElement => {
           onSignup={handleSignupClick}
           onLogout={handleLogoutClick}
           onProfileClick={() => router.push("/profile")}
+          // 크롤링 프로젝트 가져오기는 백엔드에서 학생만 허용한다.
+          onMyPortfolioClick={
+            session?.role === "STUDENT" ? () => setIsMyPortfolioOpen(true) : undefined
+          }
           onAdminToggle={toggleAdminMode}
           onAdminDashboardClick={() => router.push("/admin")}
         />
       )}
       {children}
+      {isMyPortfolioOpen && <MyPortfolioModal onClose={() => setIsMyPortfolioOpen(false)} />}
     </>
   );
 };
