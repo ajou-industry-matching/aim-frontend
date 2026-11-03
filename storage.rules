@@ -2,16 +2,27 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
+    // 에디터 본문 이미지 생성 조건. 프론트 검사(shared/config/editor-image.ts)를 서버에서도 강제한다.
+    // SVG(image/svg+xml)는 링크를 직접 열면 스크립트가 실행될 수 있어 타입을 열거해 막는다.
+    function isValidEditorImage() {
+      return request.resource.size <= 20 * 1024 * 1024
+        && request.resource.contentType.matches('image/(png|jpeg|gif|webp)');
+    }
+
     // 정적 공개 자산 (업로드는 콘솔/CLI 전용)
     match /public/{allPaths=**} {
       allow read: if true;
       allow write: if false;
     }
 
-    // 게시글 이미지 공개 읽기
+    // 게시글 이미지: 읽기는 공개, 쓰기는 본인 uid 경로에서만.
+    // 파일명에 timestamp가 붙어 덮어쓰기(update)는 쓰지 않으므로 막는다.
     match /posts/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+    }
+    match /posts/{uid}/{fileName} {
+      allow create: if request.auth != null && request.auth.uid == uid && isValidEditorImage();
+      allow delete: if request.auth != null && request.auth.uid == uid;
     }
 
     // 게시글 썸네일 공개 읽기
@@ -20,10 +31,13 @@ service firebase.storage {
       allow write: if request.auth != null;
     }
 
-    // 공지 이미지 공개 읽기
+    // 공지 이미지: 게시글 이미지와 같은 규칙
     match /notices/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null;
+    }
+    match /notices/{uid}/{fileName} {
+      allow create: if request.auth != null && request.auth.uid == uid && isValidEditorImage();
+      allow delete: if request.auth != null && request.auth.uid == uid;
     }
 
     // 첨부 파일 공개 읽기
@@ -32,9 +46,10 @@ service firebase.storage {
       allow write: if request.auth != null;
     }
 
-    // 나머지는 인증 필요
+    // 나머지는 인증 사용자 읽기만. 규칙은 하나라도 허용하면 통과하므로
+    // 여기서 쓰기를 열면 위 posts/notices 제한이 무력화된다.
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
     }
   }
 }
