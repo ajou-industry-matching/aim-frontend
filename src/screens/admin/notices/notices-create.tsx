@@ -1,10 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/button/button";
 import { Input } from "@/shared/ui/input/input";
-import { FileTextAltIcon, UploadIcon } from "@/shared/ui/icons/index";
+import {
+  FileUploader,
+  FileListItem,
+  POST_ATTACHMENT_LIMITS,
+  formatFileSize,
+  validateFiles,
+} from "@/shared/ui/file-uploader/file-uploader";
 import { createPost } from "@/api/posts";
 import { RichEditor, isRichTextEmpty } from "@/shared/ui/rich-editor";
 import { clearListCache } from "@/api/cache";
@@ -17,18 +23,13 @@ export function AdminNoticeCreatePage() {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
 
-  // 파일 선택 핸들러
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setFiles((prev) => [...prev, ...newFiles]);
-    }
-  };
+  const filesTotalBytes = files.reduce((sum, file) => sum + file.size, 0);
 
   // 파일 삭제 핸들러
   const handleRemoveFile = (indexToRemove: number) => {
+    setAttachmentError(null);
     setFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
@@ -39,10 +40,19 @@ export function AdminNoticeCreatePage() {
       return;
     }
 
+    const request = { title, description, content };
+    const validationError = validateFiles(files, POST_ATTACHMENT_LIMITS, {
+      requestBytes: new Blob([JSON.stringify(request)]).size,
+    });
+    if (validationError) {
+      setAttachmentError(validationError);
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
-      await createPost("NOTICE", { title, description, content }, { files });
+      await createPost("NOTICE", request, { files });
       clearListCache(); // 캐시 지우기 (관리자 목록 갱신 위해)
 
       alert("공지사항이 성공적으로 등록되었습니다.");
@@ -55,8 +65,6 @@ export function AdminNoticeCreatePage() {
     }
   };
 
-  // 관리자 콘솔 레이아웃이 상단 Navigation·좌측 사이드바·하단 Footer를 감싸므로
-  // 작성 화면은 공개 버전과 동일한 폼 본문만 렌더한다.
   return (
     <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-6 pt-12 pb-[100px] md:px-12 xl:px-24 2xl:px-8">
       {/* 1. 타이틀 영역 */}
@@ -109,44 +117,37 @@ export function AdminNoticeCreatePage() {
         <div className="flex flex-col gap-4">
           <label className="text-[15px] font-medium text-gray-700">첨부파일</label>
 
-          {/* input 태그 */}
-          <input
-            type="file"
+          <FileUploader
             multiple
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleFileChange}
+            {...POST_ATTACHMENT_LIMITS}
+            currentCount={files.length}
+            currentTotalBytes={filesTotalBytes}
+            onFileSelect={(selected) => {
+              setAttachmentError(null);
+              setFiles((prev) => [...prev, ...selected]);
+            }}
           />
 
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="flex h-[120px] cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:bg-gray-100"
-          >
-            <UploadIcon className="mb-2 h-8 w-8 text-gray-400" />
-            <span className="font-medium text-gray-700">파일 추가</span>
-            <span className="mt-1 text-sm text-gray-500">PDF, DOCX, PPTX, ZIP, 이미지 등</span>
-          </div>
-
-          {/* 파일목록 렌더링 */}
-          {files.map((file, index) => (
-            <div
-              key={`${file.name}-${index}`}
-              className="flex items-center justify-between rounded-md border border-gray-200 p-4"
+          {attachmentError && (
+            <p
+              role="alert"
+              className="rounded-lg bg-red-50 px-4 py-3 text-[14px] whitespace-pre-line text-red-600"
             >
-              <div className="flex items-center gap-3">
-                <FileTextAltIcon className="h-6 w-6 text-gray-400" />
-                <span className="font-medium text-gray-700">{file.name}</span>
-                <span className="text-sm text-gray-400">
-                  {(file.size / (1024 * 1024)).toFixed(2)} MB
-                </span>
-              </div>
-              <button
-                onClick={() => handleRemoveFile(index)}
-                className="px-1 text-lg font-medium text-gray-400 transition-colors hover:text-gray-900"
-              >
-                ✕
-              </button>
-            </div>
+              {attachmentError}
+            </p>
+          )}
+
+          {files.map((file, index) => (
+            <FileListItem
+              key={`${file.name}-${index}`}
+              file={{
+                id: String(index),
+                name: file.name,
+                size: formatFileSize(file.size),
+                type: file.type,
+              }}
+              onRemove={() => handleRemoveFile(index)}
+            />
           ))}
         </div>
       </section>

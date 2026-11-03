@@ -6,17 +6,17 @@ import { clearListCache } from "@/api/cache";
 import { deletePost, getPostDetail, updatePost } from "@/api/posts";
 import type { PortfolioAttachment } from "@/api/posts";
 import { Button } from "@/shared/ui/button/button";
-import { FileUploader, FileListItem } from "@/shared/ui/file-uploader/file-uploader";
+import {
+  FileUploader,
+  FileListItem,
+  POST_ATTACHMENT_LIMITS,
+  formatFileSize,
+  validateFiles,
+} from "@/shared/ui/file-uploader/file-uploader";
 import { ChevronLeftIcon, TrashIcon } from "@/shared/ui/icons";
 import { Input } from "@/shared/ui/input/input";
 import { Loading } from "@/shared/ui/loading";
 import { RichEditor, isRichTextEmpty } from "@/shared/ui/rich-editor";
-
-const formatFileSize = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-};
 
 type Props = { id: string };
 
@@ -89,17 +89,28 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
       return;
     }
 
+    const request = {
+      title: trimmedTitle,
+      description: trimmedDescription,
+      content,
+      visibility: "PUBLIC" as const,
+      deleteAttachmentIds,
+    };
+
+    const attachmentError = validateFiles(newFiles, POST_ATTACHMENT_LIMITS, {
+      existingCount: existingFiles.length,
+      requestBytes: new Blob([JSON.stringify(request)]).size,
+    });
+    if (attachmentError) {
+      setError(attachmentError);
+      return;
+    }
+
     setError(null);
     setIsSubmitting(true);
 
     try {
-      const request = {
-        title: trimmedTitle,
-        description: trimmedDescription,
-        content,
-        visibility: "PUBLIC" as const,
-      };
-      await updatePost("NOTICE", postId, { ...request, deleteAttachmentIds }, { files: newFiles });
+      await updatePost("NOTICE", postId, request, { files: newFiles });
       clearListCache();
       router.push("/admin/notices");
     } catch (submitError) {
@@ -128,15 +139,13 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
   };
 
   const isBusy = isSubmitting || isLoading;
+  const newFilesTotalBytes = newFiles.reduce((sum, file) => sum + file.size, 0);
 
-  // 작성 화면(notices-create)과 같은 폼 레이아웃을 쓰되, 뒤로가기 버튼이 들어갈 만큼
-  // 왼쪽 여백을 항상 56px(버튼 40px + 간격 16px)보다 넓게 둔다.
   return (
     <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col pt-12 pr-6 pb-[100px] pl-16 md:px-16 xl:px-24">
       {/* 1. 타이틀 영역 */}
       <div className="mb-12 border-b border-gray-900 pb-6">
         <div className="flex items-center justify-between gap-4">
-          {/* 버튼을 왼쪽 여백으로 빼서 제목이 폼 왼쪽 선에서 시작하게 한다. */}
           <div className="-ml-14 flex items-center gap-4">
             <Button
               variant="secondary"
@@ -173,7 +182,10 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
       </div>
 
       {error && (
-        <p role="alert" className="mb-8 rounded-lg bg-red-50 px-4 py-3 text-[14px] text-red-600">
+        <p
+          role="alert"
+          className="mb-8 rounded-lg bg-red-50 px-4 py-3 text-[14px] whitespace-pre-line text-red-600"
+        >
           {error}
         </p>
       )}
@@ -230,6 +242,9 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
 
               <FileUploader
                 multiple
+                {...POST_ATTACHMENT_LIMITS}
+                currentCount={existingFiles.length + newFiles.length}
+                currentTotalBytes={newFilesTotalBytes}
                 onFileSelect={(selected) => setNewFiles((prev) => [...prev, ...selected])}
               />
 

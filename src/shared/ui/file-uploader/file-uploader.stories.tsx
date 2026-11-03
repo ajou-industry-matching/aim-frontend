@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs";
-import { ThumbnailUploader, FileListItem, FileUploader } from "./file-uploader";
+import { ThumbnailUploader, FileListItem, FileUploader, formatFileSize } from "./file-uploader";
 
 const meta = {
   title: "Shared/UI/FileUploader",
@@ -43,6 +43,39 @@ export const FileList: StoryObj<typeof FileListItem> = {
       />
     </div>
   ),
+};
+
+const LimitedUploaderContainer = () => {
+  const [files, setFiles] = useState<File[]>([]);
+
+  return (
+    <div className="w-[500px] flex flex-col gap-3">
+      <FileUploader
+        maxCount={3}
+        maxSizeBytes={1024 * 1024}
+        maxTotalBytes={2 * 1024 * 1024}
+        currentCount={files.length}
+        currentTotalBytes={files.reduce((sum, file) => sum + file.size, 0)}
+        onFileSelect={(selected) => setFiles((prev) => [...prev, ...selected])}
+      />
+      {files.map((file, index) => (
+        <FileListItem
+          key={`${file.name}-${index}`}
+          file={{
+            id: String(index),
+            name: file.name,
+            size: formatFileSize(file.size),
+            type: file.type,
+          }}
+          onRemove={() => setFiles((prev) => prev.filter((_, i) => i !== index))}
+        />
+      ))}
+    </div>
+  );
+};
+
+export const WithLimits: StoryObj = {
+  render: () => <LimitedUploaderContainer />,
 };
 
 export const CombinedUploader: StoryObj = {
