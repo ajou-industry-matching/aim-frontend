@@ -7,7 +7,7 @@ export default function AdminRoute(): null {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/admin/notices");
+    router.replace("/admin/dashboard");
   }, [router]);
 
   return null;
