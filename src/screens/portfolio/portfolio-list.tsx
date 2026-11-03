@@ -1,6 +1,7 @@
 "use client";
 
 import type { PortfolioListItem } from "@/api/posts";
+import { toAuthorLabel } from "@/lib/posts";
 import { Card } from "@/shared/ui/card/card";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { Loading } from "@/shared/ui/loading";
@@ -41,10 +42,6 @@ const formatPortfolioDate = (iso: string): string => {
 
 const toCardTags = (item: PortfolioListItem): string[] =>
   item.keywords.map((keyword) => `#${keyword.keywordName}`);
-
-// 작성자 이름(authorName)을 표시하고, 비어있으면 사용자 ID로 폴백한다.
-const toAuthorLabel = (item: PortfolioListItem): string =>
-  item.authorName?.trim() || `사용자 ${item.userId}`;
 
 export const PortfolioList = ({ portfolios, isLoading, error, emptyState }: PortfolioListProps) => {
   // 라우트 전환 로딩과 같은 표현을 써서 한 번의 로딩으로 이어 보이게 한다.

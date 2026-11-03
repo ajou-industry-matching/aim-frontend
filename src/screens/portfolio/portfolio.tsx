@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getPosts } from "@/api/posts";
 import type { Post, PostSortType, BoardType } from "@/api/posts";
 import { signOut, useAuthUser } from "@/lib/auth";
+import { toAuthorLabel } from "@/lib/posts";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Card } from "@/shared/ui/card";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
@@ -257,7 +258,7 @@ const PortfolioPageContent = (): React.ReactElement => {
                 tags={post.keywords}
                 title={post.title}
                 description={post.description}
-                author={{ name: `사용자 ${post.userId}` }}
+                author={{ name: toAuthorLabel(post) }}
                 date={formatDate(post.createdAt)}
                 stats={{
                   likes: post.likeCount,

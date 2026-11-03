@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut, useAuthReady, useAuthUser, useSessionAdminMode } from "@/lib/auth";
+import { toAuthorLabel } from "@/lib/posts";
 import { Card } from "@/shared/ui/card";
 import { storageAsset } from "@/shared/config/storage-asset";
 import { Footer, Navigation } from "@/shared/ui";
@@ -11,7 +12,7 @@ import { Loading } from "@/shared/ui/loading";
 import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { SearchIcon } from "@/shared/ui/icons";
 import type { NavItem } from "@/shared/ui";
-import type { BoardType } from "@/api/posts";
+import type { Post } from "@/api/posts";
 import { useHomeStore, type SectionFilter } from "./home-store";
 
 // --- Constants ---
@@ -94,19 +95,8 @@ const PostGrid = ({
   isLoading,
   error,
 }: {
-  posts: {
-    postId: number;
-    boardType: BoardType;
-    thumbnailImage?: string;
-    keywords: string[];
-    title: string;
-    description: string;
-    userId: number;
-    createdAt: string;
-    likeCount: number;
-    commentCount: number;
-    viewCount: number;
-  }[];
+  // 필드를 추려 쓰는 인라인 타입이면 카드에 필요한 값(authorName 등)이 빠져도 타입 검사가 못 잡는다.
+  posts: Post[];
   isLoading: boolean;
   error?: string | null;
 }) => {
@@ -145,7 +135,7 @@ const PostGrid = ({
           tags={post.keywords}
           title={post.title}
           description={post.description}
-          author={{ name: `사용자 ${post.userId}` }}
+          author={{ name: toAuthorLabel(post) }}
           date={formatDate(post.createdAt)}
           stats={{
             likes: post.likeCount,
@@ -234,12 +224,12 @@ export const HomePage: React.FC = () => {
         items={navItems}
         user={authUser ?? undefined}
         isAuthLoading={!isAuthReady}
+        isAdminMode={isAdminMode}
         logoHref="/home"
         onLogin={() => router.push("/login")}
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
         onProfileClick={() => router.push("/profile")}
-        isAdminMode={isAdminMode}
         onAdminToggle={toggleAdminMode}
         onAdminDashboardClick={() => router.push("/admin")}
       />
@@ -349,7 +339,7 @@ export const HomePage: React.FC = () => {
                   tags={post.keywords}
                   title={post.title}
                   description={post.description}
-                  author={{ name: `사용자 ${post.userId}` }}
+                  author={{ name: toAuthorLabel(post, "관리자") }}
                   date={formatDate(post.createdAt)}
                   stats={{
                     likes: post.likeCount,
