@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import type { BackendUser } from "@/api/auth";
 import { auth } from "@/shared/config/firebase";
+import { safeGetItem, safeRemoveItem, safeSetItem } from "@/shared/storage/safe-storage";
 
 export type AuthSession = {
   uid: string;
@@ -68,7 +69,7 @@ const emitAuthSessionChanged = () => {
 };
 
 const readStoredSession = (): StoredSession | null => {
-  const storedValue = window.localStorage.getItem(AUTH_SESSION_STORAGE_KEY);
+  const storedValue = safeGetItem(AUTH_SESSION_STORAGE_KEY);
 
   if (!storedValue) return null;
 
@@ -80,7 +81,9 @@ const readStoredSession = (): StoredSession | null => {
 };
 
 const removeStoredAuthSession = (shouldNotify = true) => {
-  window.localStorage.removeItem(AUTH_SESSION_STORAGE_KEY);
+  // 삭제 실패(저장 차단 환경)여도 저장된 값이 없다는 뜻이므로 UI를 "세션 없음"으로
+  // 맞추기 위해 알림은 그대로 쏜다.
+  safeRemoveItem(AUTH_SESSION_STORAGE_KEY);
 
   if (shouldNotify) {
     emitAuthSessionChanged();
@@ -97,8 +100,11 @@ export const saveAuthSession = (session: AuthSession): void => {
     userId: session.backendUser.userId ?? null,
   };
 
-  window.localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(toStore));
-  emitAuthSessionChanged();
+  // 저장 실패 시 아무것도 저장되지 않았으므로, "변경됨"을 쏘면 구독부가 세션을 null로
+  // 읽어 로그인 상태를 거짓으로 지운다. 저장에 성공했을 때만 알린다.
+  if (safeSetItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(toStore))) {
+    emitAuthSessionChanged();
+  }
 };
 
 // 프로필 수정 등으로 표시 이름만 바뀐 경우 저장된 세션의 name을 갱신한다.
@@ -110,8 +116,10 @@ export const updateStoredSessionName = (name: string): void => {
 
   const next: StoredSession = { ...stored, name: toDisplayName(name) };
 
-  window.localStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(next));
-  emitAuthSessionChanged();
+  // 저장 실패 시 저장값이 그대로이므로 알림을 쏴도 의미가 없다. 성공했을 때만 알린다.
+  if (safeSetItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(next))) {
+    emitAuthSessionChanged();
+  }
 };
 
 export const clearAuthSession = (): void => {
