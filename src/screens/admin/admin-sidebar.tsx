@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BellIcon, LayoutDashboardIcon, UserIcon } from "@/shared/ui/icons";
+import { BellIcon, FileTextAltIcon, LayoutDashboardIcon, UserIcon } from "@/shared/ui/icons";
 
 type SidebarItem = {
   label: string;
@@ -14,6 +14,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: "대시보드", href: "/admin/dashboard", icon: <LayoutDashboardIcon size={16} /> },
   { label: "공지사항 관리", href: "/admin/notices", icon: <BellIcon size={16} /> },
   { label: "사용자 관리", href: "/admin/users", icon: <UserIcon size={16} /> },
+  { label: "포트폴리오 관리", href: "/admin/portfolios", icon: <FileTextAltIcon size={16} /> },
 ];
 
 const baseLinkClasses =

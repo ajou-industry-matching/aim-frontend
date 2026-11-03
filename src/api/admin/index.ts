@@ -12,3 +12,4 @@ export {
   type GetAdminUsersParams,
   type UserStatus,
 } from "./admin-users-api";
+export { createKeyword, deleteKeyword, updateKeyword } from "./admin-keywords-api";
