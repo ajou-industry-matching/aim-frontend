@@ -327,13 +327,20 @@ export const RichEditor = ({
   );
 };
 
+const EMBED_TAG_PATTERN = /<(img|video|iframe)\b/i;
+
 /**
  * 리치 에디터 본문이 비었는지 판단한다.
- * 에디터는 내용을 모두 지워도 빈 문단 태그(`<p></p>`)를 돌려주므로,
- * 태그와 `&nbsp;`를 걷어낸 텍스트 기준으로 확인해야 한다.
+ * 에디터는 내용을 모두 지워도 빈 문단 태그(`<p></p>`)를 돌려주므로 텍스트 기준으로 보되,
+ * 이미지처럼 텍스트가 없는 임베드만 있는 본문은 비어 있지 않은 것으로 본다.
  */
-export const isRichTextEmpty = (html: string): boolean =>
-  html
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, "")
-    .trim().length === 0;
+export const isRichTextEmpty = (html: string): boolean => {
+  if (EMBED_TAG_PATTERN.test(html)) return false;
+
+  return (
+    html
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, "")
+      .trim().length === 0
+  );
+};

@@ -52,6 +52,16 @@ const subscribe = (onStoreChange: () => void): (() => void) => {
   };
 };
 
+export const clearAdminMode = (): void => {
+  try {
+    window.localStorage.removeItem(ADMIN_MODE_STORAGE_KEY);
+  } catch {
+    return;
+  }
+
+  window.dispatchEvent(new Event(ADMIN_MODE_EVENT));
+};
+
 // 정적 export 프리렌더 시점에는 localStorage가 없으므로 일반 모드로 렌더한다.
 // 실제 저장값은 하이드레이션 이후 getSnapshot으로 반영된다.
 const getServerSnapshot = (): boolean => false;
