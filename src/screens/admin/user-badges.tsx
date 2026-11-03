@@ -20,12 +20,35 @@ export const UserRoleBadge = ({ user }: { user: Pick<AdminUser, "role" | "adminR
     </Badge>
   );
 
-export const AdminFlagBadge = ({ adminRole }: { adminRole: AdminUser["adminRole"] }) => {
+type AdminFlagBadgeProps = {
+  adminRole: AdminUser["adminRole"];
+  /** 컬럼 제목이 있는 표에서는 Y/N만 표시한다. */
+  isCompact?: boolean;
+};
+
+export const AdminFlagBadge = ({ adminRole, isCompact = false }: AdminFlagBadgeProps) => {
   const isAdmin = adminRole !== "NONE";
+  const value = isAdmin ? "Y" : "N";
 
   return (
     <Badge variant={isAdmin ? "warning" : "secondary"} className="rounded-full">
-      관리자 {isAdmin ? "Y" : "N"}
+      {isCompact ? value : `관리자 ${value}`}
     </Badge>
   );
 };
+
+const statusBadges: Record<AdminUser["status"], { label: string; variant: BadgeVariant }> = {
+  ACTIVE: { label: "정상", variant: "success" },
+  PENDING: { label: "승인 대기", variant: "warning" },
+  SUSPENDED: { label: "정지", variant: "error" },
+  BLOCKED: { label: "차단", variant: "error" },
+};
+
+export const toUserStatusLabel = (status: AdminUser["status"]): string =>
+  statusBadges[status].label;
+
+export const UserStatusBadge = ({ status }: { status: AdminUser["status"] }) => (
+  <Badge variant={statusBadges[status].variant} className="rounded-full">
+    {statusBadges[status].label}
+  </Badge>
+);

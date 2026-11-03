@@ -48,3 +48,15 @@ export const getAdminUsers = ({
 
   return backendJson<AdminUserPage>(`/api/admin/users${query ? `?${query}` : ""}`);
 };
+
+// 권한 변경 응답은 userId·role·adminRole·status만 채워서 온다(이름·이메일 등은 null).
+export type AdminUserChange = Pick<AdminUser, "userId" | "role" | "adminRole" | "status">;
+
+const patchUser = (userId: number, action: string): Promise<AdminUserChange> =>
+  backendJson<AdminUserChange>(`/api/admin/users/${userId}/${action}`, { method: "PATCH" });
+
+export const grantAdmin = (userId: number) => patchUser(userId, "grant-admin");
+export const revokeAdmin = (userId: number) => patchUser(userId, "revoke-admin");
+export const grantSuperAdmin = (userId: number) => patchUser(userId, "grant-super-admin");
+export const revokeSuperAdmin = (userId: number) => patchUser(userId, "revoke-super-admin");
+export const approveCompany = (userId: number) => patchUser(userId, "approve-company");

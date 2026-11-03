@@ -111,7 +111,7 @@ export const AdminDashboardPage = () => {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <RecentSection title="최근 가입한 사용자">
+            <RecentSection title="최근 가입한 사용자" href="/admin/users">
               {data.recentUsers === null ? (
                 <SectionMessage>{SECTION_ERROR_MESSAGE}</SectionMessage>
               ) : data.recentUsers.length === 0 ? (
