@@ -20,8 +20,7 @@ type UseAdminModeResult = {
 // localStorage 접근은 저장 차단 환경에서 SecurityError를 던지므로 safe-storage 헬퍼로만
 // 접근한다. 읽기 실패는 일반 모드(false)로 간주하고, 쓰기 실패 시 호출부가 갱신 이벤트를
 // 쏘지 않아 상태가 그대로 유지된다.
-const isStoredAdminModeFor = (uid: string): boolean =>
-  safeGetItem(ADMIN_MODE_STORAGE_KEY) === uid;
+const isStoredAdminModeFor = (uid: string): boolean => safeGetItem(ADMIN_MODE_STORAGE_KEY) === uid;
 
 // 쓰기 성공 여부를 돌려준다. 실패하면 호출부가 갱신 이벤트를 쏘지 않는다.
 const writeStoredAdminMode = (uid: string, next: boolean): boolean =>

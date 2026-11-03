@@ -43,13 +43,10 @@
 | `tailwindcss` | ^4.2.0 | CSS 프레임워크 |
 | `@tailwindcss/postcss` | ^4.1.18 | Tailwind PostCSS 플러그인 |
 | `postcss` | ^8.5.6 | CSS 후처리기 |
-| `autoprefixer` | ^10.4.24 | CSS 벤더 프리픽스 |
 | `eslint` | ^9.39.2 | 린터 |
-| `eslint-config-next` | ^16.2.1 | Next.js ESLint 규칙 |
 | `@eslint/js` | ^9.39.2 | ESLint JS 규칙 |
 | `typescript-eslint` | ^8.46.3 | TypeScript ESLint |
 | `eslint-plugin-react-hooks` | ^7.0.1 | React Hooks 린트 규칙 |
-| `eslint-plugin-storybook` | ^10.3.3 | Storybook 린트 규칙 |
 | `globals` | ^16.5.0 | ESLint 글로벌 변수 정의 |
 | `prettier` | ^3.8.1 | 코드 포매터 |
 | `husky` | ^9.1.7 | Git hooks |
