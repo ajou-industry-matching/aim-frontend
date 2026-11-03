@@ -33,5 +33,5 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
-// #187: 리치에디터 이미지 업로드에서 사용
+// 리치에디터 이미지 업로드에서 사용
 export const storage = getStorage(app);
