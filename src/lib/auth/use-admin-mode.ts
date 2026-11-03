@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
+import { safeGetItem, safeRemoveItem, safeSetItem } from "@/shared/storage/safe-storage";
 import { useAuthSession } from "./auth-session";
 import { toNavUser } from "./to-nav-user";
 
@@ -16,30 +17,15 @@ type UseAdminModeResult = {
 // 로그인하면 uid가 달라져 자동으로 일반 모드가 된다.
 // 한 번에 한 계정의 모드만 기억한다. 계정별로 따로 기억해야 하면 키를 uid별로 나눈다.
 //
-// localStorage 접근은 사파리 프라이빗이나 사이트 데이터 차단 환경에서 SecurityError를
-// 던진다. getSnapshot은 React가 자주 호출하는 자리라 여기서 throw하면 화면 전체가
-// 렌더되지 않으므로, 읽기 실패는 일반 모드로 간주하고 쓰기 실패는 상태를 그대로 둔다.
-const isStoredAdminModeFor = (uid: string): boolean => {
-  try {
-    return window.localStorage.getItem(ADMIN_MODE_STORAGE_KEY) === uid;
-  } catch {
-    return false;
-  }
-};
+// localStorage 접근은 저장 차단 환경에서 SecurityError를 던지므로 safe-storage 헬퍼로만
+// 접근한다. 읽기 실패는 일반 모드(false)로 간주하고, 쓰기 실패 시 호출부가 갱신 이벤트를
+// 쏘지 않아 상태가 그대로 유지된다.
+const isStoredAdminModeFor = (uid: string): boolean =>
+  safeGetItem(ADMIN_MODE_STORAGE_KEY) === uid;
 
 // 쓰기 성공 여부를 돌려준다. 실패하면 호출부가 갱신 이벤트를 쏘지 않는다.
-const writeStoredAdminMode = (uid: string, next: boolean): boolean => {
-  try {
-    if (next) {
-      window.localStorage.setItem(ADMIN_MODE_STORAGE_KEY, uid);
-    } else {
-      window.localStorage.removeItem(ADMIN_MODE_STORAGE_KEY);
-    }
-    return true;
-  } catch {
-    return false;
-  }
-};
+const writeStoredAdminMode = (uid: string, next: boolean): boolean =>
+  next ? safeSetItem(ADMIN_MODE_STORAGE_KEY, uid) : safeRemoveItem(ADMIN_MODE_STORAGE_KEY);
 
 // 같은 탭은 커스텀 이벤트로, 다른 탭은 storage 이벤트로 갱신을 받는다.
 const subscribe = (onStoreChange: () => void): (() => void) => {
@@ -53,11 +39,7 @@ const subscribe = (onStoreChange: () => void): (() => void) => {
 };
 
 export const clearAdminMode = (): void => {
-  try {
-    window.localStorage.removeItem(ADMIN_MODE_STORAGE_KEY);
-  } catch {
-    return;
-  }
+  if (!safeRemoveItem(ADMIN_MODE_STORAGE_KEY)) return;
 
   window.dispatchEvent(new Event(ADMIN_MODE_EVENT));
 };
