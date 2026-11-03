@@ -56,9 +56,9 @@
 | 포트폴리오 상세 | `/portfolio/detail?id=&type=` | 공개 | CSR | 쿼리 파라미터 방식. `type` 은 포트폴리오가 아닌 게시글 상세를 가리킬 때 쓴다 |
 | 사용자 내부 페이지 | `/profile` | 비공개 | CSR | 인증 확정 후 개인화 API 호출 |
 | 작성/편집 페이지 | `/portfolio/create`, `/portfolio/edit?id=&type=` | 비공개 | CSR | 폼 상태 중심. 편집은 소유자 확인 후 진입 |
-| 관리자 페이지 | `/admin`, `/admin/notices`, `/admin/notices/edit` | 비공개(관리자) | CSR | `/admin` 레이아웃에서 관리자 권한 가드 후 렌더 |
+| 관리자 페이지 | `/admin`, `/admin/notices`, `/admin/notices/create`, `/admin/notices/edit` | 비공개(관리자) | CSR | `/admin` 레이아웃에서 관리자 권한 가드 후 렌더 |
 
-`/notice/create`는 관리자 전용 화면으로 `/admin` 하위로 이관하는 작업이 진행 중이다(#157). 이관이 끝나면 위 표의 관리자 페이지 행에 포함된다.
+공지 작성 화면은 관리자 전용으로 `/admin` 하위(`/admin/notices/create`)로 이관이 완료되어 위 표의 관리자 페이지 행에 포함되어 있다(#157). 기존 `/notice/create` 경로는 제거되었다.
 
 ## 3. 도구 사용 기준
 
