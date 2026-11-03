@@ -24,6 +24,26 @@ export const PlusIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   </svg>
 );
 
+// LayoutDashboard 아이콘
+export const LayoutDashboardIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 20 20"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M8.33333 2.5H2.5V9.16667H8.33333V2.5ZM17.5 2.5H11.6667V6.25H17.5V2.5ZM17.5 9.58333H11.6667V17.5H17.5V9.58333ZM8.33333 12.5H2.5V17.5H8.33333V12.5Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 // Search 아이콘
 export const SearchIcon: React.FC<IconProps> = ({ size = 20, ...props }) => (
   <svg

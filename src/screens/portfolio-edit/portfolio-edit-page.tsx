@@ -21,7 +21,9 @@ export type PortfolioEditPageProps = {
   boardType: PortfolioBoardType;
 };
 
-const toInitialValues = (detail: PortfolioDetail): PortfolioFormInitialValues => ({
+export const toPortfolioFormInitialValues = (
+  detail: PortfolioDetail,
+): PortfolioFormInitialValues => ({
   title: detail.title,
   description: detail.description ?? "",
   content: detail.content ?? "",
@@ -175,7 +177,7 @@ export const PortfolioEditPage = ({ postId, boardType }: PortfolioEditPageProps)
       onCancel={() => router.push(`/portfolio/detail?id=${postId}&type=${boardType}`)}
       onUploadEditorImage={editorImages.uploadImage}
       canPasteEditorImage={editorImages.canPasteImage}
-      initialValues={toInitialValues(detail)}
+      initialValues={toPortfolioFormInitialValues(detail)}
       existingThumbnailUrl={detail.thumbnailImage}
       existingImages={detail.images}
       existingFiles={detail.files}
