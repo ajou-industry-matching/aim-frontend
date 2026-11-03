@@ -1,5 +1,5 @@
 import { ImageIcon } from "@/shared/ui/icons";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { Loading } from "@/shared/ui/loading";
 
 export type ImageUploadBlockProps = {
   status: "uploading" | "error";
@@ -21,7 +21,10 @@ export const ImageUploadBlock = ({ status, message, onRemove }: ImageUploadBlock
         <span role="status" className="flex-1 text-[15px] text-[var(--color-gray-500,#808080)]">
           이미지를 올리는 중
         </span>
-        <Spinner size="small" className="shrink-0 text-[var(--color-gray-400,#999999)]" />
+        {/* 문구가 이미 status로 읽히므로 점 로딩의 대체 문구는 스크린리더에서 숨긴다 */}
+        <div aria-hidden="true" className="shrink-0">
+          <Loading size="small" />
+        </div>
       </div>
     );
   }
