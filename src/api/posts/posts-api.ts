@@ -23,7 +23,8 @@ export type PostSortType = "LATEST" | "POPULAR" | "VIEWS";
 export type Post = {
   postId: number;
   userId: number;
-  authorName?: string;
+  // 목록 응답은 작성자(User.name, not null)를 항상 채운다. optional이면 필드를 빼고 넘겨도 타입 검사가 못 잡는다.
+  authorName: string;
   boardType: BoardType;
   title: string;
   description: string;

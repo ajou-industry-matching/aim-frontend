@@ -17,6 +17,7 @@ import {
   type BackendUser,
 } from "@/api/auth";
 import { auth } from "@/shared/config/firebase";
+import { clearAdminMode } from "./use-admin-mode";
 import { clearAuthSession, saveAuthSession } from "./auth-session";
 
 type SessionResponse = {
@@ -124,5 +125,6 @@ export const signOut = async (): Promise<void> => {
     await firebaseSignOut(auth);
   } finally {
     clearAuthSession();
+    clearAdminMode();
   }
 };

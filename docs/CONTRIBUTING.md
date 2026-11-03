@@ -20,7 +20,7 @@
 
 ### 사전 요구사항
 
-- **Node.js**: v20.x (v22 LTS 업그레이드 검토 중 — 현재 v20 사용)
+- **Node.js**: v24.x (CI 기준)
 - **pnpm**: 패키지 매니저 (의존성 관리를 위해 npm/yarn 사용 금지)
 
 ### 설치 및 실행
@@ -99,12 +99,13 @@ aim-frontend/
  │   ├─ screens/            # 화면 구현 (기존 pages 레이어 대체)
  │   └─ shared/             # 공유 레이어
  │       ├─ ui/             # 재사용 가능한 UI 컴포넌트
- │       ├─ assets/         # 전역 에셋 (images, icons, fonts)
- │       ├─ config/         # 설정 (firebase.ts)
- │       └─ types/          # 공통 타입 정의
+ │       └─ config/         # 설정 (firebase.ts)
  │
  ├─ docs/                   # 문서
- │   └─ VERSIONS.md         # 의존성 버전 관리
+ │   ├─ CONTRIBUTING.md     # 기여 가이드
+ │   ├─ VERSIONS.md         # 의존성 버전 관리
+ │   ├─ handover.md         # 인수인계
+ │   └─ page-rendering-strategy.md # 페이지 렌더링 전략
  ├─ .github/workflows/      # PR Preview & Live Deploy CI/CD
  ├─ .husky/                 # pre-commit hooks
  ├─ firebase.json
@@ -253,10 +254,12 @@ Next.js 전환 작업이나 구조 변경이 포함되면 아래 항목을 함�
 
 ### 4. PR 생성
 
-`dev` 브랜치로 PR을 올립니다. PR 템플릿에 맞춰 작성하세요.
+`dev` 브랜치로 PR을 올립니다. PR 템플릿에 맞춰 작성하세요. (예외: 운영 hotfix·배포 인프라 변경은 `main`으로 직접 올린 사례가 있습니다.)
 
 - **1명 이상의 리뷰어 승인** 후 머지 가능
 - 리뷰어는 주로 **컨벤션 준수 여부**를 중점적으로 확인합니다
+- 머지 방식: 기능 PR(`dev` 대상)은 **Squash and merge**, `dev → main` 릴리즈 PR은 **Merge commit**을 사용합니다
+- 릴리즈 PR에 Squash and merge를 쓰지 마세요. `main`에 `dev` 커밋과 무관한 새 커밋이 생겨 두 브랜치의 머지 베이스가 뒤처지고, 이후 PR에서 실제 변경이 아닌 충돌이 생깁니다. 그때는 `main`을 `dev`로 역머지해 수습해야 합니다
 
 ### 5. 코드 리뷰
 
