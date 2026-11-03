@@ -6,11 +6,15 @@ import { Button } from "@/shared/ui/button/button";
 import { Input } from "@/shared/ui/input/input";
 import { FileTextAltIcon, UploadIcon } from "@/shared/ui/icons/index";
 import { createPost } from "@/api/posts";
+import { useEditorImageSession } from "@/lib/editor-images";
 import { RichEditor, isRichTextEmpty } from "@/shared/ui/rich-editor";
 import { clearListCache } from "@/api/cache";
 
 export function AdminNoticeCreatePage() {
   const router = useRouter();
+  const editorImages = useEditorImageSession("notices");
+  // 업로드가 끝나기 전에 저장하면 이미지가 빠진 본문이 저장된다.
+  const [isEditorImageUploading, setIsEditorImageUploading] = useState(false);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,6 +38,11 @@ export function AdminNoticeCreatePage() {
 
   // 등록 로직 핸들러
   const handleSubmit = async () => {
+    if (isEditorImageUploading) {
+      alert("이미지를 올리는 중이에요. 업로드가 끝난 뒤 저장해주세요.");
+      return;
+    }
+
     if (!title.trim() || !description.trim() || isRichTextEmpty(content)) {
       alert("모든 필수 항목(*)을 입력해주세요.");
       return;
@@ -44,6 +53,8 @@ export function AdminNoticeCreatePage() {
 
       await createPost("NOTICE", { title, description, content }, { files });
       clearListCache(); // 캐시 지우기 (관리자 목록 갱신 위해)
+      // 저장이 확정된 뒤에만 본문에서 빠진 이미지를 Storage에서 정리한다.
+      editorImages.commit(content);
 
       alert("공지사항이 성공적으로 등록되었습니다.");
       router.push("/admin/notices");
@@ -99,6 +110,9 @@ export function AdminNoticeCreatePage() {
             onChange={(html) => setContent(html)}
             placeholder="공지 내용을 입력하세요"
             className="min-h-[400px]"
+            onUploadImage={editorImages.uploadImage}
+            onUploadingChange={setIsEditorImageUploading}
+            canPasteImage={editorImages.canPasteImage}
           />
         </div>
       </section>

@@ -6,8 +6,7 @@ import {
 } from "@/shared/config/editor-image";
 import { auth, storage } from "@/shared/config/firebase";
 
-// 공지 에디터 연결 시 "notices"를 추가한다.
-export type EditorImagePathPrefix = "posts";
+export type EditorImagePathPrefix = "posts" | "notices";
 
 // 경로에 쓸 수 없는 문자를 걷어낸다. 한글 등은 밑줄로 바뀌지만 앞의 timestamp로 구분된다.
 const toSafeFileName = (name: string): string => name.replace(/[^\w.-]/g, "_");

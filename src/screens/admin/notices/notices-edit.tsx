@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { clearListCache } from "@/api/cache";
 import { deletePost, getPostDetail, updatePost } from "@/api/posts";
 import type { PortfolioAttachment } from "@/api/posts";
+import { useEditorImageSession } from "@/lib/editor-images";
 import { Button } from "@/shared/ui/button/button";
 import { FileUploader, FileListItem } from "@/shared/ui/file-uploader/file-uploader";
 import { ChevronLeftIcon, TrashIcon } from "@/shared/ui/icons";
@@ -27,6 +28,11 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
+  // 저장 시 원래 본문에서 빠진 이미지를 지우려면 불러온 시점의 본문이 필요하다.
+  const [originalContent, setOriginalContent] = useState("");
+  const editorImages = useEditorImageSession("notices", originalContent);
+  // 업로드가 끝나기 전에 저장하면 이미지가 빠진 본문이 저장된다.
+  const [isEditorImageUploading, setIsEditorImageUploading] = useState(false);
   const [existingFiles, setExistingFiles] = useState<PortfolioAttachment[]>([]);
   const [deleteAttachmentIds, setDeleteAttachmentIds] = useState<number[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
@@ -46,6 +52,7 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
         setTitle(detail.title);
         setDescription(detail.description ?? "");
         setContent(detail.content ?? "");
+        setOriginalContent(detail.content ?? "");
         setExistingFiles([...detail.files, ...detail.images]);
       } catch (fetchError) {
         console.error("[admin] 공지사항 상세 조회 실패", fetchError);
@@ -72,6 +79,11 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
   };
 
   const handleSubmit = async () => {
+    if (isEditorImageUploading) {
+      setError("이미지를 올리는 중이에요. 업로드가 끝난 뒤 저장해주세요.");
+      return;
+    }
+
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
       setError("제목을 입력해주세요.");
@@ -101,6 +113,8 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
       };
       await updatePost("NOTICE", postId, { ...request, deleteAttachmentIds }, { files: newFiles });
       clearListCache();
+      // 저장이 확정된 뒤에만 본문에서 빠진 이미지를 Storage에서 정리한다.
+      editorImages.commit(content);
       router.push("/admin/notices");
     } catch (submitError) {
       console.error("[admin] 공지사항 저장 실패", submitError);
@@ -218,6 +232,9 @@ export const AdminNoticesEditPage = ({ id }: Props) => {
                 onChange={(html) => setContent(html)}
                 placeholder="공지 내용을 입력하세요"
                 className="min-h-[400px]"
+                onUploadImage={editorImages.uploadImage}
+                onUploadingChange={setIsEditorImageUploading}
+                canPasteImage={editorImages.canPasteImage}
               />
             </div>
           </section>
