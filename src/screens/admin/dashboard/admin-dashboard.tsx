@@ -146,11 +146,11 @@ export const AdminDashboardPage = () => {
                 <SectionMessage>등록된 공지사항이 없습니다.</SectionMessage>
               ) : (
                 data.recentNotices.map((notice) => (
-                  // 구분선은 왼쪽 사용자 목록과 같은 너비로 두고, 호버 배경만 살짝 넓힌다.
+                  // 호버 배경은 구분선과 같은 너비로 두고, 글자만 안쪽으로 띄운다.
                   <div key={notice.postId} className={rowClasses}>
                     <Link
                       href={`/admin/notices/edit?id=${notice.postId}`}
-                      className="-mx-2 -my-2 flex min-w-0 flex-1 items-center justify-between px-2 py-2 transition-colors hover:bg-[var(--color-gray-50,#f9f9f9)]"
+                      className="-my-2 flex min-w-0 flex-1 items-center justify-between px-2 py-2 transition-colors hover:bg-[var(--color-gray-50,#f9f9f9)]"
                     >
                       <p className="min-w-0 flex-1 truncate text-[14px] leading-[1.43] tracking-[-0.35px] text-[var(--color-gray-900,#1a1a1a)]">
                         {notice.title}
