@@ -53,7 +53,7 @@
 | 공지 목록 | `/notice` | 공개 | CSR | 클라이언트 fetch + `useSearchParams`(페이지네이션) |
 | 공지 상세 | `/notice/detail?id=` | 공개 | CSR | 쿼리 파라미터 방식. 동적 `[id]`는 정적 export에서 404가 나므로 쓰지 않는다 |
 | 포트폴리오 목록 | `/portfolio` | 공개 | CSR | 클라이언트 fetch. `useSearchParams` 로 읽는 것은 `keyword` 뿐이고 유형 필터와 정렬은 컴포넌트 상태다 |
-| 포트폴리오 상세 | `/portfolio/detail?id=&type=` | 공개 | CSR | 쿼리 파라미터 방식. `type` 은 포트폴리오가 아닌 게시글 상세를 가리킬 때 쓴다 |
+| 포트폴리오 상세 | `/portfolio/detail?id=&type=` | 공개 | CSR | 쿼리 파라미터 방식. `type` 은 게시글 종류(`boardType`)를 전달하며, 포트폴리오도 `type=PORTFOLIO`로 넘어온다 |
 | 사용자 내부 페이지 | `/profile` | 비공개 | CSR | 인증 확정 후 개인화 API 호출 |
 | 작성/편집 페이지 | `/portfolio/create`, `/portfolio/edit?id=&type=` | 비공개 | CSR | 폼 상태 중심. 편집은 소유자 확인 후 진입 |
 | 관리자 페이지 | `/admin`, `/admin/notices`, `/admin/notices/create`, `/admin/notices/edit` | 비공개(관리자) | CSR | `/admin` 레이아웃에서 관리자 권한 가드 후 렌더 |
