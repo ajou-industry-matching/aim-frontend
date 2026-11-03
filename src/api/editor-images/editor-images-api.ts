@@ -6,7 +6,8 @@ import {
 } from "@/shared/config/editor-image";
 import { auth, storage } from "@/shared/config/firebase";
 
-export type EditorImagePathPrefix = "posts" | "notices";
+const EDITOR_IMAGE_PATH_PREFIXES = ["posts", "notices"] as const;
+export type EditorImagePathPrefix = (typeof EDITOR_IMAGE_PATH_PREFIXES)[number];
 
 // 경로에 쓸 수 없는 문자를 걷어낸다. 한글 등은 밑줄로 바뀌지만 앞의 timestamp로 구분된다.
 const toSafeFileName = (name: string): string => name.replace(/[^\w.-]/g, "_");
@@ -25,7 +26,7 @@ const toStorageRef = (url: string) => {
 /**
  * 에디터 본문 이미지를 `{prefix}/{uid}/...`에 올리고 다운로드 URL을 돌려준다.
  * 본문에 base64를 그대로 넣으면 Post.content(TEXT, 64KB) 한도를 넘기므로 URL만 남긴다.
- * 타입·크기 검사는 여기서만 한다. Storage 규칙으로 강제하는 작업은 #227.
+ * 타입·크기 검사는 storage.rules의 isValidEditorImage와 같은 조건이다. 바꿀 때 함께 맞춘다.
  */
 export const uploadEditorImage = async (
   file: File,
@@ -48,9 +49,16 @@ export const uploadEditorImage = async (
   return getDownloadURL(imageRef);
 };
 
-/** 우리 버킷의 `{prefix}/` 아래 에디터 이미지 URL인지. 붙여넣기 제한에 쓴다. */
-export const isEditorImageUrl = (url: string, prefix: EditorImagePathPrefix): boolean =>
-  toStorageRef(url)?.fullPath.startsWith(`${prefix}/`) ?? false;
+/**
+ * 우리 버킷의 에디터 이미지 URL인지. 붙여넣기 제한에 쓴다.
+ * 경로 구분 없이 모두 확인해야 포트폴리오↔공지 사이 붙여넣기로 한 파일을 두 글이 나눠 쓰지 않는다.
+ */
+export const isEditorImageUrl = (url: string): boolean => {
+  const fullPath = toStorageRef(url)?.fullPath;
+  return (
+    !!fullPath && EDITOR_IMAGE_PATH_PREFIXES.some((prefix) => fullPath.startsWith(`${prefix}/`))
+  );
+};
 
 /**
  * 내가 올린 에디터 이미지(`{prefix}/{내 uid}/...`)만 지운다.

@@ -67,10 +67,10 @@ export const useEditorImageSession = (
 
   const canPasteImage = useCallback(
     (src: string) =>
-      !isEditorImageUrl(src, prefix) ||
+      !isEditorImageUrl(src) ||
       uploadedUrlsRef.current.has(src) ||
       extractImageSrcs(originalContentRef.current).has(src),
-    [prefix],
+    [],
   );
 
   const commit = useCallback(
