@@ -30,6 +30,8 @@ export type NavigationProps = {
   onSignup?: () => void;
   onLogout?: () => void;
   onProfileClick?: () => void;
+  /** 넘기면 프로필 메뉴에 "내 포트폴리오" 항목을 보여준다. */
+  onMyPortfolioClick?: () => void;
   onAccountSettingsClick?: () => void;
   onAdminDashboardClick?: () => void;
   logoHref?: string;
@@ -135,6 +137,7 @@ export const Navigation = ({
   onSignup,
   onLogout,
   onProfileClick,
+  onMyPortfolioClick,
   onAccountSettingsClick,
   onAdminDashboardClick,
   logoHref = "/",
@@ -267,12 +270,17 @@ export const Navigation = ({
                       >
                         내 프로필
                       </button>
-                      <button
-                        onClick={() => setShowProfile(false)}
-                        className="text-left px-3 py-2 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-[#f5f5f5] rounded-md transition-colors"
-                      >
-                        내 포트폴리오
-                      </button>
+                      {onMyPortfolioClick && (
+                        <button
+                          onClick={() => {
+                            onMyPortfolioClick();
+                            setShowProfile(false);
+                          }}
+                          className="text-left px-3 py-2 text-[14px] text-(--color-gray-900,#1a1a1a) hover:bg-[#f5f5f5] rounded-md transition-colors"
+                        >
+                          내 포트폴리오
+                        </button>
+                      )}
                       <button
                         onClick={() => {
                           onAccountSettingsClick?.();

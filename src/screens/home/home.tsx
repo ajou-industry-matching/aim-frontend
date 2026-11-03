@@ -3,7 +3,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signOut, useAuthReady, useAuthUser, useSessionAdminMode } from "@/lib/auth";
+import {
+  signOut,
+  useAuthReady,
+  useAuthSession,
+  useAuthUser,
+  useSessionAdminMode,
+} from "@/lib/auth";
 import { toAuthorLabel } from "@/lib/posts";
 import { Card } from "@/shared/ui/card";
 import { storageAsset } from "@/shared/config/storage-asset";
@@ -13,6 +19,7 @@ import { EmptyState } from "@/shared/ui/empty-states/empty-states";
 import { SearchIcon } from "@/shared/ui/icons";
 import type { NavItem } from "@/shared/ui";
 import type { Post } from "@/api/posts";
+import { MyPortfolioModal } from "@/screens/my-portfolio";
 import { useHomeStore, type SectionFilter } from "./home-store";
 
 // --- Constants ---
@@ -155,6 +162,8 @@ export const HomePage: React.FC = () => {
   const authUser = useAuthUser();
   const { isReady: isAuthReady } = useAuthReady();
   const { isAdminMode, toggleAdminMode } = useSessionAdminMode();
+  const { session } = useAuthSession();
+  const [isMyPortfolioOpen, setIsMyPortfolioOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const newPosts = useHomeStore((state) => state.newPosts);
   const sectionPosts = useHomeStore((state) => state.sectionPosts);
@@ -230,6 +239,10 @@ export const HomePage: React.FC = () => {
         onSignup={() => router.push("/login")}
         onLogout={() => void handleLogout()}
         onProfileClick={() => router.push("/profile")}
+        // 크롤링 프로젝트 가져오기는 백엔드에서 학생만 허용한다.
+        onMyPortfolioClick={
+          session?.role === "STUDENT" ? () => setIsMyPortfolioOpen(true) : undefined
+        }
         onAdminToggle={toggleAdminMode}
         onAdminDashboardClick={() => router.push("/admin")}
       />
@@ -352,6 +365,8 @@ export const HomePage: React.FC = () => {
           )}
         </section>
       </main>
+
+      {isMyPortfolioOpen && <MyPortfolioModal onClose={() => setIsMyPortfolioOpen(false)} />}
 
       <Footer
         copyright="Copyright © 2026 Ajou University. All Rights Reserved."

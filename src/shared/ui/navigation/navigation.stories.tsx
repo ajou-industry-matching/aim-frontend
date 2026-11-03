@@ -52,6 +52,7 @@ const meta = {
     onLogout: fn(),
     onAdminToggle: fn(),
     onProfileClick: fn(),
+    onMyPortfolioClick: fn(),
     onAdminDashboardClick: fn(),
   },
 } satisfies Meta<typeof Navigation>;
