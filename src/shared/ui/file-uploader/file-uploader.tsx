@@ -89,7 +89,7 @@ export const formatFileSize = (bytes: number): string => {
 const formatLimitSize = (bytes: number): string =>
   bytes % MB === 0 ? `${bytes / MB}MB` : formatFileSize(bytes);
 
-export const getFileLimitsHint = ({ maxCount, maxSizeBytes, maxTotalBytes }: FileLimits) => {
+const getFileLimitsHint = ({ maxCount, maxSizeBytes, maxTotalBytes }: FileLimits) => {
   const parts = [
     maxCount !== undefined && `최대 ${maxCount}개`,
     maxSizeBytes !== undefined && `파일당 ${formatLimitSize(maxSizeBytes)}`,
@@ -101,7 +101,7 @@ export const getFileLimitsHint = ({ maxCount, maxSizeBytes, maxTotalBytes }: Fil
     : `${parts.join(", ")} 이하`;
 };
 
-export const checkFileLimits = (
+const checkFileLimits = (
   files: File[],
   { maxCount, maxSizeBytes, maxTotalBytes, currentCount = 0, currentTotalBytes = 0 }: FileLimits,
 ): FileLimitViolation[] => {
@@ -121,7 +121,7 @@ export const checkFileLimits = (
   return violations;
 };
 
-export const formatFileLimitViolations = (
+const formatFileLimitViolations = (
   violations: FileLimitViolation[],
   limits: FileLimits,
 ): string[] =>
