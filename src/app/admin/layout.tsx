@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut, toNavUser, useAuthSession, useSessionAdminMode } from "@/lib/auth";
 import { Navigation, Footer } from "@/shared/ui";
-import { Spinner } from "@/shared/ui/spinner/spinner";
+import { PageLoading } from "@/shared/ui/loading";
 import { AdminSidebar } from "@/screens/admin";
 import type { NavItem } from "@/shared/ui";
 
@@ -46,15 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [isAuthReady, session, isAdmin, router]);
 
   if (!isAuthReady || !session || !isAdmin) {
-    return (
-      <div
-        className="flex min-h-screen items-center justify-center bg-gray-50"
-        role="status"
-        aria-label="불러오는 중"
-      >
-        <Spinner size="large" />
-      </div>
-    );
+    return <PageLoading />;
   }
 
   return (
