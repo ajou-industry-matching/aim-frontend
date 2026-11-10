@@ -58,6 +58,7 @@ export const PortfolioListPage = () => {
   }
 
   const effectiveQuery = lastKeyword === keyword ? query : { ...query, page: 1 };
+  const { page, sort, selectedTypes } = effectiveQuery;
   const queryKey = toPortfolioQueryKey(effectiveQuery, keyword);
   const hasMatchingResult = result?.queryKey === queryKey;
   // 비로그인도 조회 가능. 인증 상태가 확정(isReady)되면 조회한다.
@@ -71,12 +72,13 @@ export const PortfolioListPage = () => {
   useEffect(() => {
     if (!isAuthReady) return;
 
+    const requestKey = toPortfolioQueryKey({ page, sort, selectedTypes }, keyword);
     let isCancelled = false;
     const pageable = {
-      page: effectiveQuery.page - 1,
+      page: page - 1,
       size: PORTFOLIO_PAGE_SIZE,
-      sort: effectiveQuery.sort,
-      boardTypes: effectiveQuery.selectedTypes,
+      sort,
+      boardTypes: selectedTypes,
     };
     const request = keyword
       ? searchPortfolios({ ...pageable, keyword })
@@ -85,18 +87,18 @@ export const PortfolioListPage = () => {
     request
       .then((response) => {
         if (isCancelled) return;
-        setResult({ queryKey, data: response });
+        setResult({ queryKey: requestKey, data: response });
       })
       .catch((cause: unknown) => {
         console.error("Failed to fetch portfolios", cause);
         if (isCancelled) return;
-        setResult({ queryKey, error: GENERIC_FETCH_ERROR_MESSAGE });
+        setResult({ queryKey: requestKey, error: GENERIC_FETCH_ERROR_MESSAGE });
       });
 
     return () => {
       isCancelled = true;
     };
-  }, [isAuthReady, queryKey]);
+  }, [isAuthReady, keyword, page, sort, selectedTypes]);
 
   const handleSearchSubmit = (nextKeyword: string) => {
     const keyword = nextKeyword.trim();
